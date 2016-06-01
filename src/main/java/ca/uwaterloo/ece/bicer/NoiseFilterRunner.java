@@ -1,11 +1,16 @@
 package ca.uwaterloo.ece.bicer;
 
+import java.util.ArrayList;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
+
+import ca.uwaterloo.ece.bicer.data.BIChange;
+import ca.uwaterloo.ece.bicer.utils.Utils;
 
 public class NoiseFilterRunner {
 	
@@ -26,6 +31,16 @@ public class NoiseFilterRunner {
 				printHelp(options);
 				return;
 			}
+			
+			loadBIChanges();
+		}
+	}
+
+	private void loadBIChanges() {
+		ArrayList<String> BIChangeInfo = Utils.getLines(pathToBIChangeData, true);
+		ArrayList<BIChange> BIChanges = new ArrayList<BIChange>();
+		for(String info: BIChangeInfo){
+			BIChanges.add(new BIChange(info));
 		}
 	}
 	
