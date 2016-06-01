@@ -5,6 +5,7 @@ public class BIChange {
 	String path;
 	String FixSha1;
 	int lineNum;
+	boolean isAddedLine;
 	String line;
 	
 	BIChange(String changeInfo){
@@ -14,7 +15,8 @@ public class BIChange {
 		path = splitString[1];
 		FixSha1 = splitString[2];
 		lineNum = Integer.parseInt(splitString[3]);
-		line = splitString[4];
+		isAddedLine = splitString[4].equals("t")?true:false;
+		line = splitString[5];
 	}
 	
 	public String getBISha1() {
