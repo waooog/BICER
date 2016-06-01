@@ -1,3 +1,4 @@
+package ca.uwaterloo.ece.bicer;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -7,9 +8,8 @@ import static org.junit.Assert.*;
  *
  * @author j22nam, @date 27/05/16 5:45 PM
  */
-public class LibraryTest {
+public class NoiseFilterRunnerTest {
     @Test public void testSomeLibraryMethod() {
-        Library classUnderTest = new Library();
-        assertTrue("someLibraryMethod should return 'true'", classUnderTest.someLibraryMethod());
+        //assertTrue("someLibraryMethod should return 'true'", classUnderTest.someLibraryMethod());
     }
 }
