@@ -10,6 +10,13 @@ import static org.junit.Assert.*;
  */
 public class NoiseFilterRunnerTest {
     @Test public void testSomeLibraryMethod() {
-        //assertTrue("someLibraryMethod should return 'true'", classUnderTest.someLibraryMethod());
+        
+    	NoiseFilterRunner runner = new NoiseFilterRunner();
+    	
+    	String [] args ={};
+    	
+    	runner.run(args);
+    	
+    	//assertTrue("someLibraryMethod should return 'true'", classUnderTest.someLibraryMethod());
     }
 }
