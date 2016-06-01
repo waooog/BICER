@@ -1,0 +1,5 @@
+bug_introducing_change	path	fix_change	line_num	is_added_line	line_bug_introducing
+1895e7104bfb933f0142304ef709c9b9c6c4c19f	jackrabbit-core/src/main/java/org/apache/jackrabbit/core/xml/SessionImporter.java	c2d2d88fe575c215930317f583b422aa5e81e099	203	t	|| uuidBehavior == ImportUUIDBehavior.IMPORT_UUID_COLLISION_REMOVE_EXISTING))) {
+1895e7104bfb933f0142304ef709c9b9c6c4c19f	jackrabbit-core/src/main/java/org/apache/jackrabbit/core/xml/WorkspaceImporter.java	c2d2d88fe575c215930317f583b422aa5e81e099	435	t	|| uuidBehavior == ImportUUIDBehavior.IMPORT_UUID_COLLISION_REMOVE_EXISTING))) {
+c8406704341b2e01a196d452fcbbb4f343607823	jackrabbit-jcr2spi/src/main/java/org/apache/jackrabbit/jcr2spi/hierarchy/NodeEntryImpl.java	72d84c7db6959aa7dc3b6935cf16ecc499fe4bd3	1368	t	private void completeTransientChanges() {
+c4cd6a2a734a8e65f1db0a18a6349671e3b68c42	jackrabbit-core/src/main/java/org/apache/jackrabbit/core/SearchManager.java	5e8bb93d675c57484f0813356e88cb86f6e6a3cf	336	t	if (e.isExternal()) {
