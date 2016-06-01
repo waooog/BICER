@@ -8,7 +8,7 @@ public class BIChange {
 	boolean isAddedLine;
 	String line;
 	
-	BIChange(String changeInfo){
+	public BIChange(String changeInfo){
 		String[] splitString = changeInfo.split("\t");
 		
 		BISha1 = splitString[0];
