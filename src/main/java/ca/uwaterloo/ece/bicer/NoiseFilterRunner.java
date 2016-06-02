@@ -24,7 +24,7 @@ public class NoiseFilterRunner {
 	String pathToBIChangeData;
 	boolean help;
 	boolean verbose;
-	ArrayList<BIChange> BIChanges;
+	ArrayList<BIChange> biChanges;
 	
 	Git git;
 	Repository repo;
@@ -44,42 +44,46 @@ public class NoiseFilterRunner {
 			
 			loadBIChanges();
 			
-			try {
-				git = Git.open( new File( gitURI) );
-				repo = git.getRepository();
-				
-			} catch (IOException e) {
-				System.err.println("Repository does not exist: " + gitURI);
+			filterOutNoises();
+		}
+	}
+
+	private void filterOutNoises() {
+		try {
+			git = Git.open( new File( gitURI) );
+			repo = git.getRepository();
+			
+		} catch (IOException e) {
+			System.err.println("Repository does not exist: " + gitURI);
+		}
+		
+		String currentFixSha1="",currentPath="";
+		String[] currentLines;
+		for(BIChange biChange:biChanges){
+			
+			if(!currentFixSha1.equals(biChange.getFixSha1()) || currentPath.equals(biChange.getPath())){
+				currentFixSha1 = biChange.getFixSha1();
+				currentPath = biChange.getPath();
+				try {
+					currentLines = Utils.fetchBlob(repo, currentFixSha1, currentPath).split("\n");
+				} catch (MissingObjectException e) {
+					System.err.println("The sha1 does not exist: " + currentFixSha1);
+				} catch (IncorrectObjectTypeException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					System.err.println("The file path does not exist: " + currentPath);
+				}
 			}
 			
-			String currentFixSha1="",currentPath="";
-			String[] currentLines;
-			for(BIChange biChange:BIChanges){
-				
-				if(!currentFixSha1.equals(biChange.getFixSha1()) || currentPath.equals(biChange.getPath())){
-					currentFixSha1 = biChange.getFixSha1();
-					currentPath = biChange.getPath();
-					try {
-						currentLines = Utils.fetchBlob(repo, currentFixSha1, currentPath).split("\n");
-					} catch (MissingObjectException e) {
-						System.err.println("The sha1 does not exist: " + currentFixSha1);
-					} catch (IncorrectObjectTypeException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
-						System.err.println("The file path does not exist: " + currentPath);
-					}
-				}
-				
-				// TODO Implement filtering
-			}
+			// TODO Implement filtering
 		}
 	}
 
 	private void loadBIChanges() {
 		ArrayList<String> BIChangeInfo = Utils.getLines(pathToBIChangeData, true);
-		BIChanges = new ArrayList<BIChange>();
+		biChanges = new ArrayList<BIChange>();
 		for(String info: BIChangeInfo){
-			BIChanges.add(new BIChange(info));
+			biChanges.add(new BIChange(info));
 		}
 	}
 	
