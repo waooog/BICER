@@ -10,7 +10,7 @@ public class FilterFactory {
 		COSMETIC_CHANGE
 	}
 	
-	public Filter createFlter(Filters filter,BIChange biChange, String[] wholeFixCode){
+	public Filter createFilter(Filters filter,BIChange biChange, String[] wholeFixCode){
 		if (filter == Filters.POSITION_CHANGE)
 			return new PositionChange(biChange,wholeFixCode);
 		
