@@ -13,7 +13,7 @@ public class NoiseFilterRunnerTest {
         
     	NoiseFilterRunner runner = new NoiseFilterRunner();
     	
-    	String [] args ={"-d","data/exampleBIChanges.txt", "-g", "https://github.com/lifove/BICER.git"};
+    	String [] args ={"-d","data/exampleBIChanges.txt", "-g", System.getProperty("user.home") + "/git/BICER"};
     	
     	runner.run(args);
     	
