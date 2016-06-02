@@ -13,12 +13,13 @@ public class PositionChange implements Filter {
 
 	BIChange biChange;
 	String[] wholeFixCode;
+	boolean isNoise=false;
 	
 	public PositionChange(BIChange biChange, String[] wholeFixCode) {
 		this.biChange = biChange;
 		this.wholeFixCode = wholeFixCode;
 		
-		filterOut();
+		isNoise = filterOut();
 	}
 
 	@Override
@@ -53,5 +54,10 @@ public class PositionChange implements Filter {
 			return true;
 		
 		return false;		
+	}
+
+	@Override
+	public boolean isNoise() {
+		return isNoise;
 	}
 }

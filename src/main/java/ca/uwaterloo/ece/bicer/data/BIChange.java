@@ -7,6 +7,7 @@ public class BIChange {
 	int lineNum;
 	boolean isAddedLine;
 	String line;
+	boolean isNoise;
 	
 	public BIChange(String changeInfo){
 		String[] splitString = changeInfo.split("\t");
@@ -17,6 +18,10 @@ public class BIChange {
 		lineNum = Integer.parseInt(splitString[3]);
 		isAddedLine = splitString[4].equals("t")?true:false;
 		line = splitString[5];
+	}
+	
+	public void setIsNoise(boolean isNoise){
+		this.isNoise = isNoise;
 	}
 	
 	public String getBISha1() {
