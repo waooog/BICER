@@ -38,4 +38,8 @@ public class BIChange {
 	public String getLine() {
 		return line;
 	}
+	
+	public boolean getIsAddedLine() {
+		return isAddedLine;
+	}
 }
