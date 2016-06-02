@@ -16,6 +16,9 @@ import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.lib.Repository;
 
 import ca.uwaterloo.ece.bicer.data.BIChange;
+import ca.uwaterloo.ece.bicer.noisefilters.Filter;
+import ca.uwaterloo.ece.bicer.noisefilters.FilterFactory;
+import ca.uwaterloo.ece.bicer.noisefilters.FilterFactory.Filters;
 import ca.uwaterloo.ece.bicer.utils.Utils;
 
 public class NoiseFilterRunner {
@@ -58,24 +61,40 @@ public class NoiseFilterRunner {
 		}
 		
 		String currentFixSha1="",currentPath="";
-		String[] currentLines;
+		String[] currentLines=null;
 		for(BIChange biChange:biChanges){
 			
 			if(!currentFixSha1.equals(biChange.getFixSha1()) || currentPath.equals(biChange.getPath())){
-				currentFixSha1 = biChange.getFixSha1();
-				currentPath = biChange.getPath();
+				String newFixSha1 = biChange.getFixSha1();
+				String newPath = biChange.getPath();
 				try {
-					currentLines = Utils.fetchBlob(repo, currentFixSha1, currentPath).split("\n");
+					currentLines = Utils.fetchBlob(repo, newFixSha1, newPath).split("\n");
+					
+					currentFixSha1 = newFixSha1;
+					currentPath = newPath;
+					
 				} catch (MissingObjectException e) {
-					System.err.println("The sha1 does not exist: " + currentFixSha1);
+					System.err.println("The sha1 does not exist: " + newFixSha1 + ":" + newPath);
+					continue;
 				} catch (IncorrectObjectTypeException e) {
 					e.printStackTrace();
+					continue;
 				} catch (IOException e) {
-					System.err.println("The file path does not exist: " + currentPath);
+					System.err.println("The file path does not exist: " + newFixSha1 + ":" + newPath);
+					continue;
 				}
 			}
 			
 			// TODO Implement filtering
+			
+			FilterFactory factory = new FilterFactory();
+			
+			// (1) Position change of declaration statements
+			Filter postisionChangeFilter = factory.createFilter(Filters.POSITION_CHANGE, biChange, currentLines);
+			if(postisionChangeFilter.isNoise()){
+				biChange.setIsNoise(postisionChangeFilter.isNoise());
+				continue;
+			}
 		}
 	}
 
