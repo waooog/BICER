@@ -70,4 +70,28 @@ public class Utils {
 		    reader.close();
 		}
 	}
+	
+	static public boolean doesSameLineExist(String line,String[] lines,boolean trim,boolean ignoreLineComments){
+		
+		line = ignoreLineComments?removeLineComments(line):line;
+		
+		for(String lineCompare:lines){
+			lineCompare = ignoreLineComments?removeLineComments(lineCompare):lineCompare;
+			if(trim){
+				if(line.trim().equals(lineCompare.trim()))
+					return true;
+			}
+			else{
+				if(line.equals(lineCompare))
+					return true;
+			}
+		}
+		
+		return false;
+	}
+
+	public static String removeLineComments(String line) {
+		// http://stackoverflow.com/questions/2613432/remove-source-file-comments-using-intellij
+		return line.replaceAll("(/\\*([^*]|[\\r\\n]|(\\*+([^*/]|[\\r\\n])))*\\*+/|[ \\t]*//.*)", "");
+	}
 }
