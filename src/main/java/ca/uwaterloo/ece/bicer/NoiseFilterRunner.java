@@ -1,5 +1,7 @@
 package ca.uwaterloo.ece.bicer;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.apache.commons.cli.CommandLine;
@@ -8,6 +10,10 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.errors.IncorrectObjectTypeException;
+import org.eclipse.jgit.errors.MissingObjectException;
+import org.eclipse.jgit.lib.Repository;
 
 import ca.uwaterloo.ece.bicer.data.BIChange;
 import ca.uwaterloo.ece.bicer.utils.Utils;
@@ -18,6 +24,10 @@ public class NoiseFilterRunner {
 	String pathToBIChangeData;
 	boolean help;
 	boolean verbose;
+	ArrayList<BIChange> BIChanges;
+	
+	Git git;
+	Repository repo;
 
 	public static void main(String[] args) {
 		new NoiseFilterRunner().run(args);
@@ -33,12 +43,41 @@ public class NoiseFilterRunner {
 			}
 			
 			loadBIChanges();
+			
+			try {
+				git = Git.open( new File( gitURI) );
+				repo = git.getRepository();
+				
+			} catch (IOException e) {
+				System.err.println("Repository does not exist: " + gitURI);
+			}
+			
+			String currentFixSha1="",currentPath="";
+			String[] currentLines;
+			for(BIChange biChange:BIChanges){
+				
+				if(!currentFixSha1.equals(biChange.getFixSha1()) || currentPath.equals(biChange.getPath())){
+					currentFixSha1 = biChange.getFixSha1();
+					currentPath = biChange.getPath();
+					try {
+						currentLines = Utils.fetchBlob(repo, currentFixSha1, currentPath).split("\n");
+					} catch (MissingObjectException e) {
+						System.err.println("The sha1 does not exist: " + currentFixSha1);
+					} catch (IncorrectObjectTypeException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						System.err.println("The file path does not exist: " + currentPath);
+					}
+				}
+				
+				// TODO Implement filtering
+			}
 		}
 	}
 
 	private void loadBIChanges() {
 		ArrayList<String> BIChangeInfo = Utils.getLines(pathToBIChangeData, true);
-		ArrayList<BIChange> BIChanges = new ArrayList<BIChange>();
+		BIChanges = new ArrayList<BIChange>();
 		for(String info: BIChangeInfo){
 			BIChanges.add(new BIChange(info));
 		}
