@@ -1,6 +1,7 @@
 package ca.uwaterloo.ece.bicer.noisefilters;
 
 import ca.uwaterloo.ece.bicer.data.BIChange;
+import ca.uwaterloo.ece.bicer.utils.Utils;
 
 public class CosmeticChange implements Filter {
 	
@@ -23,7 +24,7 @@ public class CosmeticChange implements Filter {
 		if(!biChange.getIsAddedLine())
 			return false;
 		
-		String stmt = biChange.getLine();
+		String stmt = Utils.removeLineComments(biChange.getLine());
 		
 		if(doesAFixCosmeticChange(stmt,wholeFixCode))
 			return true;
@@ -41,7 +42,7 @@ public class CosmeticChange implements Filter {
 		String wholeCodeWithoutSpace = "";
 		
 		for(String s:fixCode){
-			wholeCodeWithoutSpace += s.replaceAll("\\s", "");
+			wholeCodeWithoutSpace += Utils.removeLineComments(s).replaceAll("\\s", "");
 		}
 		
 		if(wholeCodeWithoutSpace.indexOf(stmtWithoutSpaces)!= -1)
