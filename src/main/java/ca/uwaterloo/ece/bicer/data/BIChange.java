@@ -19,7 +19,7 @@ public class BIChange {
 		FixSha1 = splitString[2];
 		BIDate = splitString[3];
 		FixDate = splitString[4];
-		lineNum = Integer.parseInt(splitString[6]);
+		lineNum = Integer.parseInt(splitString[5]);
 		isAddedLine = splitString[6].equals("t")?true:false;
 		line = splitString[7];
 	}
