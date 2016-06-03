@@ -107,13 +107,25 @@ public class NoiseFilterRunner {
 		
 		// TODO Implement filtering
 		
-		// (1) Position change of declaration statements
-		Filter postisionChangeFilter = factory.createFilter(Filters.POSITION_CHANGE, biChange, currentLines);
-		if(postisionChangeFilter.isNoise()){
-			biChange.setIsNoise(postisionChangeFilter.isNoise());
-			return true;
-		}
+		ArrayList<Filter> filters = new ArrayList<Filter>();
 		
+		// Filter 01: Position change of declaration statements
+		Filter postisionChangeFilter = factory.createFilter(Filters.POSITION_CHANGE, biChange, currentLines);
+		
+		filters.add(postisionChangeFilter);
+		
+		// Filter 02: Remove unnecessary import (java) and include (c)
+		Filter removeUnnImportFilter = factory.createFilter(Filters.REMOVE_UN_IMPORT, biChange, currentLines);
+		
+		filters.add(removeUnnImportFilter);
+		
+		for(Filter filter:filters){
+			if(filter.isNoise()){
+				biChange.setIsNoise(filter.isNoise());
+				return true;
+			}
+		}
+
 		return false;
 	}
 
