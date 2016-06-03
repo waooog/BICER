@@ -48,7 +48,19 @@ public class NoiseFilterRunner {
 			loadBIChanges();
 			
 			filterOutNoises();
+			
+			printCleanBIChanges();
 		}
+	}
+	
+	public void printCleanBIChanges(){
+		
+		for(BIChange biChange:biChanges){
+			if(!biChange.isNoise())
+				System.out.println(biChange.getBISha1() + "\t" + biChange.getPath() +
+									"\t" + biChange.getBIDate() + "\t" + biChange.getFixDate());
+		}
+		
 	}
 
 	private void filterOutNoises() {
@@ -85,17 +97,24 @@ public class NoiseFilterRunner {
 				}
 			}
 			
-			// TODO Implement filtering
-			
-			FilterFactory factory = new FilterFactory();
-			
-			// (1) Position change of declaration statements
-			Filter postisionChangeFilter = factory.createFilter(Filters.POSITION_CHANGE, biChange, currentLines);
-			if(postisionChangeFilter.isNoise()){
-				biChange.setIsNoise(postisionChangeFilter.isNoise());
-				continue;
-			}
+			biChange.setIsNoise(isNoise(biChange,currentLines));
 		}
+	}
+	
+	private boolean isNoise(BIChange biChange,String[] currentLines){
+		
+		FilterFactory factory = new FilterFactory();
+		
+		// TODO Implement filtering
+		
+		// (1) Position change of declaration statements
+		Filter postisionChangeFilter = factory.createFilter(Filters.POSITION_CHANGE, biChange, currentLines);
+		if(postisionChangeFilter.isNoise()){
+			biChange.setIsNoise(postisionChangeFilter.isNoise());
+			return true;
+		}
+		
+		return false;
 	}
 
 	private void loadBIChanges() {
