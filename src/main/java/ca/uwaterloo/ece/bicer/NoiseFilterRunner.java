@@ -73,7 +73,8 @@ public class NoiseFilterRunner {
 		for(BIChange biChange:noisyBIChanges){
 			System.out.println(biChange.getBISha1() + "\t" + biChange.getPath() +
 					"\t" + biChange.getBIDate() + "\t" + biChange.getFixDate() +
-					"\t" + biChange.getFilteredDueTo());
+					"\t" + biChange.getFilteredDueTo() + "\t" +  biChange.getIsAddedLine() + 
+					"\t" + biChange.getLine());
 		}
 	}
 
