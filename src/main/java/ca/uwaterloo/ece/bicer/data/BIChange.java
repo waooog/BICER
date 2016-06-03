@@ -4,6 +4,8 @@ public class BIChange {
 	String BISha1;
 	String path;
 	String FixSha1;
+	String BIDate;
+	String FixDate;
 	int lineNum;
 	boolean isAddedLine;
 	String line;
@@ -15,9 +17,11 @@ public class BIChange {
 		BISha1 = splitString[0];
 		path = splitString[1];
 		FixSha1 = splitString[2];
-		lineNum = Integer.parseInt(splitString[3]);
-		isAddedLine = splitString[4].equals("t")?true:false;
-		line = splitString[5];
+		BIDate = splitString[3];
+		FixDate = splitString[4];
+		lineNum = Integer.parseInt(splitString[6]);
+		isAddedLine = splitString[6].equals("t")?true:false;
+		line = splitString[7];
 	}
 	
 	public void setIsNoise(boolean isNoise){
@@ -38,6 +42,14 @@ public class BIChange {
 	
 	public String getFixSha1() {
 		return FixSha1;
+	}
+	
+	public String getBIDate() {
+		return BIDate;
+	}
+	
+	public String getFixDate() {
+		return FixDate;
 	}
 	
 	public int getLineNum() {
