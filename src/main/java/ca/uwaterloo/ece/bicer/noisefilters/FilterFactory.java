@@ -11,8 +11,12 @@ public class FilterFactory {
 	}
 	
 	public Filter createFilter(Filters filter,BIChange biChange, String[] wholeFixCode){
+		
 		if (filter == Filters.POSITION_CHANGE)
 			return new PositionChange(biChange,wholeFixCode);
+		
+		if(filter == Filters.REMOVE_UN_IMPORT)
+			return new RemoveUnnImport(biChange,wholeFixCode);
 		
 		return null;
 	}

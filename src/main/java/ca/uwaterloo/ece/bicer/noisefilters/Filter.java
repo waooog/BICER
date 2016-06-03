@@ -4,4 +4,5 @@ public interface Filter {
 	
 	boolean filterOut();
 	boolean isNoise();
+	String getName();
 }

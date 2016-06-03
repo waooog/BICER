@@ -11,11 +11,13 @@ import ca.uwaterloo.ece.bicer.utils.Utils;
  */
 public class PositionChange implements Filter {
 
+	final String name="Position change of declarative statements";
 	BIChange biChange;
 	String[] wholeFixCode;
 	boolean isNoise=false;
 	
 	public PositionChange(BIChange biChange, String[] wholeFixCode) {
+		
 		this.biChange = biChange;
 		this.wholeFixCode = wholeFixCode;
 		
@@ -67,5 +69,10 @@ public class PositionChange implements Filter {
 	@Override
 	public boolean isNoise() {
 		return isNoise;
+	}
+
+	@Override
+	public String getName() {
+		return name;
 	}
 }
