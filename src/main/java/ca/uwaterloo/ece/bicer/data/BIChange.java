@@ -24,6 +24,10 @@ public class BIChange {
 		this.isNoise = isNoise;
 	}
 	
+	public boolean isNoise() {
+		return isNoise;
+	}
+	
 	public String getBISha1() {
 		return BISha1;
 	}
