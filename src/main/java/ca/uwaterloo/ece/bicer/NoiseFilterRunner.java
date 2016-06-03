@@ -55,12 +55,26 @@ public class NoiseFilterRunner {
 	
 	public void printCleanBIChanges(){
 		
+		ArrayList<BIChange> noisyBIChanges = new ArrayList<BIChange>();
+		
+		// List cleaned BI changes
+		System.out.println("BI_SHA1\tPATH\tBIDATE\tFixDATE");
 		for(BIChange biChange:biChanges){
 			if(!biChange.isNoise())
 				System.out.println(biChange.getBISha1() + "\t" + biChange.getPath() +
 									"\t" + biChange.getBIDate() + "\t" + biChange.getFixDate());
+			else{
+				noisyBIChanges.add(biChange);
+			}
 		}
 		
+		// List Noisy BI changes
+		System.out.println("\n\nNoisy BI changes\nBI_SHA1\tPATH\tBIDATE\tFixDATE\t DUE_TO");
+		for(BIChange biChange:noisyBIChanges){
+			System.out.println(biChange.getBISha1() + "\t" + biChange.getPath() +
+					"\t" + biChange.getBIDate() + "\t" + biChange.getFixDate() +
+					"\t" + biChange.getFilteredDueTo());
+		}
 	}
 
 	private void filterOutNoises() {
@@ -122,6 +136,7 @@ public class NoiseFilterRunner {
 		for(Filter filter:filters){
 			if(filter.isNoise()){
 				biChange.setIsNoise(filter.isNoise());
+				biChange.setFilteredDueTo(filter.getName());
 				return true;
 			}
 		}
