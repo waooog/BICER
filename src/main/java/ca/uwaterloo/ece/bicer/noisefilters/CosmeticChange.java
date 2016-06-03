@@ -45,8 +45,12 @@ public class CosmeticChange implements Filter {
 			wholeCodeWithoutSpace += Utils.removeLineComments(s).replaceAll("\\s", "");
 		}
 		
-		if(wholeCodeWithoutSpace.indexOf(stmtWithoutSpaces)!= -1)
+		int indexOf;
+		if((indexOf = wholeCodeWithoutSpace.indexOf(stmtWithoutSpaces))!= -1){
+			if(indexOf != wholeCodeWithoutSpace.lastIndexOf(stmtWithoutSpaces))
+				System.err.println("WARNING(" + name + "): not a single occurence for: " + stmt);
 			return true;
+		}
 		
 		return false;
 	}
