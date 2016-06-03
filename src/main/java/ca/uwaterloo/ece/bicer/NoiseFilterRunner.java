@@ -90,7 +90,8 @@ public class NoiseFilterRunner {
 		String[] currentLines=null;
 		for(BIChange biChange:biChanges){
 			
-			if(!currentFixSha1.equals(biChange.getFixSha1()) || currentPath.equals(biChange.getPath())){
+			if(!currentFixSha1.equals(biChange.getFixSha1())
+					|| currentPath.equals(biChange.getPath())){
 				String newFixSha1 = biChange.getFixSha1();
 				String newPath = biChange.getPath();
 				try {
