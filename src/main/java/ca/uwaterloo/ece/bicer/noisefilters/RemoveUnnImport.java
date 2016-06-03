@@ -52,7 +52,6 @@ public class RemoveUnnImport implements Filter {
 
 	@Override
 	public boolean isNoise() {
-		// TODO Auto-generated method stub
 		return isNoise;
 	}
 
