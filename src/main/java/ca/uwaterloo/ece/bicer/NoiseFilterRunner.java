@@ -111,6 +111,12 @@ public class NoiseFilterRunner {
 				}
 			}
 			
+			// ignore line with only one character such as {,}
+			if(biChange.getLine().trim().length()<2){
+				biChange.setIsNoise(true);
+				continue;
+			}
+			
 			biChange.setIsNoise(isNoise(biChange,currentLines));
 		}
 	}
