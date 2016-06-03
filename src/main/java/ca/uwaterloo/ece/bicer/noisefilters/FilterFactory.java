@@ -18,6 +18,9 @@ public class FilterFactory {
 		if(filter == Filters.REMOVE_UN_IMPORT)
 			return new RemoveUnnImport(biChange,wholeFixCode);
 		
+		if(filter == Filters.COSMETIC_CHANGE)
+			return new CosmeticChange(biChange,wholeFixCode);
+		
 		return null;
 	}
 

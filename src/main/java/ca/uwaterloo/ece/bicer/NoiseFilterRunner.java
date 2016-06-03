@@ -132,13 +132,15 @@ public class NoiseFilterRunner {
 		
 		// Filter 01: Position change of declaration statements
 		Filter postisionChangeFilter = factory.createFilter(Filters.POSITION_CHANGE, biChange, currentLines);
-		
 		filters.add(postisionChangeFilter);
 		
 		// Filter 02: Remove unnecessary import (java) and include (c)
 		Filter removeUnnImportFilter = factory.createFilter(Filters.REMOVE_UN_IMPORT, biChange, currentLines);
-		
 		filters.add(removeUnnImportFilter);
+		
+		// Filter 03: Cosmetic change
+		Filter cosmeticChangeFilter = factory.createFilter(Filters.COSMETIC_CHANGE, biChange, currentLines);
+		filters.add(cosmeticChangeFilter);
 		
 		for(Filter filter:filters){
 			if(filter.isNoise()){
