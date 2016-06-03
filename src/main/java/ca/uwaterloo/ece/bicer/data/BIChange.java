@@ -11,6 +11,8 @@ public class BIChange {
 	String line;
 	boolean isNoise;
 	
+	String filteredDueTo;
+	
 	public BIChange(String changeInfo){
 		String[] splitString = changeInfo.split("\t");
 		
@@ -26,6 +28,10 @@ public class BIChange {
 	
 	public void setIsNoise(boolean isNoise){
 		this.isNoise = isNoise;
+	}
+	
+	public void setFilteredDueTo(String filterName) {
+		filteredDueTo = filterName;
 	}
 	
 	public boolean isNoise() {
@@ -62,5 +68,9 @@ public class BIChange {
 	
 	public boolean getIsAddedLine() {
 		return isAddedLine;
+	}
+	
+	public String getFilteredDueTo() {
+		return filteredDueTo;
 	}
 }
