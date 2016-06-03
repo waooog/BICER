@@ -53,6 +53,14 @@ public class PositionChange implements Filter {
 		if (stmt.matches("^\\s*#include\\s\\s*[\"<]\\s*[\\w\\-. ]+\\s*[\">].*"))
 			return true;
 		
+		// TODO java members / constants
+		
+		// TODO java methods
+		
+		// TODO c constants / variables
+		
+		// TODO c functions / structs
+		
 		return false;		
 	}
 
