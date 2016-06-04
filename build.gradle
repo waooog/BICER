@@ -9,6 +9,9 @@
 
 // Apply the java plugin to add support for Java
 apply plugin: 'java'
+apply plugin: 'application' // gradle distZip to generate a runnable package, $ gradle distZip
+
+mainClassName = "ca.uwaterloo.ece.bicer.NoiseFilterRunner"
 
 // In this section you declare where to find the dependencies of your project
 repositories {
