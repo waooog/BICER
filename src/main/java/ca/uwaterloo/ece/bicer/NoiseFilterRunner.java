@@ -87,16 +87,39 @@ public class NoiseFilterRunner {
 			System.err.println("Repository does not exist: " + gitURI);
 		}
 		
+		String currentBISha1="";
 		String currentFixSha1="",currentPath="";
-		String[] currentLines=null;
+		String[] wholeBICode=null;
+		String[] wholeFixCode=null;
 		for(BIChange biChange:biChanges){
 			
-			if(!currentFixSha1.equals(biChange.getFixSha1())
-					|| currentPath.equals(biChange.getPath())){
+			if(!currentPath.equals(biChange.getPath())){
+				currentPath = biChange.getPath();
+			}
+			
+			if(!currentBISha1.equals(biChange.getBISha1())){
+				String newBISha1 = biChange.getBISha1();
+				try {
+					wholeBICode = Utils.fetchBlob(repo, newBISha1, currentPath).split("\n");
+					currentBISha1 = newBISha1;
+					
+				} catch (MissingObjectException e) {
+					System.err.println("The sha1 does not exist: " + newBISha1 + ":" + currentPath);
+					continue;
+				} catch (IncorrectObjectTypeException e) {
+					e.printStackTrace();
+					continue;
+				} catch (IOException e) {
+					System.err.println("The file path does not exist: " + newBISha1 + ":" + currentPath);
+					continue;
+				}
+			}
+				
+			if(!currentFixSha1.equals(biChange.getFixSha1())){
 				String newFixSha1 = biChange.getFixSha1();
 				String newPath = biChange.getPath();
 				try {
-					currentLines = Utils.fetchBlob(repo, newFixSha1, newPath).split("\n");
+					wholeFixCode = Utils.fetchBlob(repo, newFixSha1, newPath).split("\n");
 					
 					currentFixSha1 = newFixSha1;
 					currentPath = newPath;
@@ -119,11 +142,11 @@ public class NoiseFilterRunner {
 				continue;
 			}
 			
-			biChange.setIsNoise(isNoise(biChange,currentLines));
+			biChange.setIsNoise(isNoise(biChange,wholeBICode,wholeFixCode));
 		}
 	}
 	
-	private boolean isNoise(BIChange biChange,String[] currentLines){
+	private boolean isNoise(BIChange biChange,String[] wholeBICode, String[] wholeFixCode){
 		
 		FilterFactory factory = new FilterFactory();
 		
@@ -132,16 +155,20 @@ public class NoiseFilterRunner {
 		ArrayList<Filter> filters = new ArrayList<Filter>();
 		
 		// Filter 01: Position change of declaration statements
-		Filter postisionChangeFilter = factory.createFilter(Filters.POSITION_CHANGE, biChange, currentLines);
+		Filter postisionChangeFilter = factory.createFilter(Filters.POSITION_CHANGE, biChange, wholeFixCode);
 		filters.add(postisionChangeFilter);
 		
 		// Filter 02: Remove unnecessary import (java) and include (c)
-		Filter removeUnnImportFilter = factory.createFilter(Filters.REMOVE_UN_IMPORT, biChange, currentLines);
+		Filter removeUnnImportFilter = factory.createFilter(Filters.REMOVE_UN_IMPORT, biChange, wholeFixCode);
 		filters.add(removeUnnImportFilter);
 		
 		// Filter 03: Cosmetic change
-		Filter cosmeticChangeFilter = factory.createFilter(Filters.COSMETIC_CHANGE, biChange, currentLines);
+		Filter cosmeticChangeFilter = factory.createFilter(Filters.COSMETIC_CHANGE, biChange, wholeFixCode);
 		filters.add(cosmeticChangeFilter);
+		
+		// Filter 05: Remove unnecessary method
+		Filter removeUnnecessaryMethod = factory.createFilter(Filters.REMOVE_UN_METHOD, biChange, wholeBICode, wholeFixCode);
+		filters.add(removeUnnecessaryMethod);
 		
 		for(Filter filter:filters){
 			if(filter.isNoise()){

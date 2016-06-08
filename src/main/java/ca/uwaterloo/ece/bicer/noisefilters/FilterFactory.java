@@ -7,7 +7,8 @@ public class FilterFactory {
 	public static enum Filters {
 		POSITION_CHANGE,
 		REMOVE_UN_IMPORT,
-		COSMETIC_CHANGE
+		COSMETIC_CHANGE,
+		REMOVE_UN_METHOD
 	}
 	
 	public Filter createFilter(Filters filter,BIChange biChange, String[] wholeFixCode){
@@ -20,6 +21,14 @@ public class FilterFactory {
 		
 		if(filter == Filters.COSMETIC_CHANGE)
 			return new CosmeticChange(biChange,wholeFixCode);
+		
+		return null;
+	}
+	
+public Filter createFilter(Filters filter,BIChange biChange, String[] wholeFBICode, String[] wholeFixCode){
+
+		if(filter == Filters.REMOVE_UN_METHOD)
+			return new RemoveUnnecessaryMethod(biChange,wholeFBICode,wholeFixCode);
 		
 		return null;
 	}
