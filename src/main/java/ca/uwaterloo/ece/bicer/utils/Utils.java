@@ -104,4 +104,9 @@ public class Utils {
 		
 		return string;
 	}
+	
+	
+	public static void dummy(){
+		System.out.println("BI introduced");
+	}
 }
