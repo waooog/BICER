@@ -94,4 +94,14 @@ public class Utils {
 		// http://stackoverflow.com/questions/2613432/remove-source-file-comments-using-intellij
 		return line.replaceAll("(/\\*([^*]|[\\r\\n]|(\\*+([^*/]|[\\r\\n])))*\\*+/|[ \\t]*//.*)", "");
 	}
+
+	public static String getStringFromStringArray(String[] wholeFixCode) {
+		
+		String string="";
+		
+		for(String line:wholeFixCode)
+			string += line +"\n";
+		
+		return string;
+	}
 }
