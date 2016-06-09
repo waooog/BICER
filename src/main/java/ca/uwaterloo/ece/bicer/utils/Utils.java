@@ -1,19 +1,33 @@
 package ca.uwaterloo.ece.bicer.utils;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.diff.DiffFormatter;
+import org.eclipse.jgit.diff.Edit;
+import org.eclipse.jgit.diff.EditList;
+import org.eclipse.jgit.diff.RawText;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.errors.MissingObjectException;
+import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.patch.FileHeader;
+import org.eclipse.jgit.patch.HunkHeader;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
+import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
+import org.eclipse.jgit.treewalk.filter.PathFilter;
 
 public class Utils {
 	static public ArrayList<String> getLines(String file,boolean removeHeader){
@@ -31,50 +45,99 @@ public class Utils {
 			System.err.println("Error: " + e);
 			//System.exit(0);
 		}
-		
+
 		if(removeHeader)
 			lines.remove(0);
-		
+
 		return lines;
 	}
-	
+
+	static public void diff(Git git,String oldSha1, String newSha1, String path){
+
+		Repository repo = git.getRepository();
+
+		ObjectId oldId;
+		try {
+			oldId = repo.resolve(oldSha1 + "^{tree}");
+			ObjectId newId = repo.resolve(newSha1 + "^{tree}");
+
+
+			ObjectReader reader = repo.newObjectReader();
+
+			CanonicalTreeParser oldTreeIter = new CanonicalTreeParser();
+			oldTreeIter.reset(reader, oldId);
+			CanonicalTreeParser newTreeIter = new CanonicalTreeParser();
+			newTreeIter.reset(reader, newId);
+
+			List<DiffEntry> diffs= git.diff()
+					.setPathFilter(PathFilter.create(path))
+					.setNewTree(newTreeIter)
+					.setOldTree(oldTreeIter)
+					.call();
+
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			DiffFormatter df = new DiffFormatter(out);
+			df.setRepository(repo);
+
+			for(DiffEntry entry : diffs)
+			{
+				df.format(entry);
+				String diffText = out.toString("UTF-8");
+
+				System.out.println( diffText );
+				FileHeader fileHeader = df.toFileHeader( entry );
+				List<? extends HunkHeader> hunks = fileHeader.getHunks();
+				EditList editList = fileHeader.toEditList();
+
+				for(Edit edit:editList){
+					System.out.println(edit.toString());
+				}
+			}
+
+			df.close();
+
+		} catch (RevisionSyntaxException | IOException | GitAPIException e) {
+			e.printStackTrace();
+		}
+	}
+
 	static public String fetchBlob(Repository repo, String revSpec, String path) throws MissingObjectException, IncorrectObjectTypeException,
-    IOException {
+	IOException {
 
 		// Resolve the revision specification
 		final ObjectId id = repo.resolve(revSpec);
-		
+
 		// Makes it simpler to release the allocated resources in one go
 		ObjectReader reader = repo.newObjectReader();
-		
+
 		try {
-		    // Get the commit object for that revision
-		    RevWalk walk = new RevWalk(reader);
-		    RevCommit commit = walk.parseCommit(id);
-		    walk.close();
-		
-		    // Get the revision's file tree
-		    RevTree tree = commit.getTree();
-		    // .. and narrow it down to the single file's path
-		    TreeWalk treewalk = TreeWalk.forPath(reader, path, tree);
-		
-		    if (treewalk != null) {
-		        // use the blob id to read the file's data
-		        byte[] data = reader.open(treewalk.getObjectId(0)).getBytes();
-		        return new String(data, "utf-8");
-		    } else {
-		        return "";
-		    }
+			// Get the commit object for that revision
+			RevWalk walk = new RevWalk(reader);
+			RevCommit commit = walk.parseCommit(id);
+			walk.close();
+
+			// Get the revision's file tree
+			RevTree tree = commit.getTree();
+			// .. and narrow it down to the single file's path
+			TreeWalk treewalk = TreeWalk.forPath(reader, path, tree);
+
+			if (treewalk != null) {
+				// use the blob id to read the file's data
+				byte[] data = reader.open(treewalk.getObjectId(0)).getBytes();
+				return new String(data, "utf-8");
+			} else {
+				return "";
+			}
 
 		} finally {
-		    reader.close();
+			reader.close();
 		}
 	}
-	
+
 	static public boolean doesSameLineExist(String line,String[] lines,boolean trim,boolean ignoreLineComments){
-		
+
 		line = ignoreLineComments?removeLineComments(line):line;
-		
+
 		for(String lineCompare:lines){
 			lineCompare = ignoreLineComments?removeLineComments(lineCompare):lineCompare;
 			if(trim){
@@ -86,7 +149,7 @@ public class Utils {
 					return true;
 			}
 		}
-		
+
 		return false;
 	}
 
@@ -96,12 +159,12 @@ public class Utils {
 	}
 
 	public static String getStringFromStringArray(String[] wholeFixCode) {
-		
+
 		String string="";
-		
+
 		for(String line:wholeFixCode)
 			string += line +"\n";
-		
+
 		return string;
 	}
 }
