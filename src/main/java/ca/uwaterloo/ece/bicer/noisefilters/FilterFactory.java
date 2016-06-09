@@ -9,7 +9,8 @@ public class FilterFactory {
 		POSITION_CHANGE,
 		REMOVE_UN_IMPORT,
 		COSMETIC_CHANGE,
-		REMOVE_UN_METHOD
+		NAME_CHANGE,
+		REMOVE_UN_METHOD,
 	}
 	
 	public Filter createFilter(Filters filter,BIChange biChange, String[] wholeFixCode){
@@ -28,6 +29,9 @@ public class FilterFactory {
 	
 public Filter createFilter(Filters filter,BIChange biChange, JavaASTParser biWholeCodeAST, JavaASTParser fixWholeCodeAST){
 
+		if(filter == Filters.NAME_CHANGE)
+			return new NameChange(biChange,biWholeCodeAST,fixWholeCodeAST);
+	
 		if(filter == Filters.REMOVE_UN_METHOD)
 			return new RemoveUnnecessaryMethod(biChange,biWholeCodeAST,fixWholeCodeAST);
 		

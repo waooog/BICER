@@ -159,7 +159,7 @@ public class NoiseFilterRunner {
 		FilterFactory factory = new FilterFactory();
 		
 		JavaASTParser biWholeCodeAST = new JavaASTParser(Utils.getStringFromStringArray(wholeBICode));
-		JavaASTParser fixWholeCodeAST = new JavaASTParser(Utils.getStringFromStringArray(wholeFixCode));
+		JavaASTParser fixedWholeCodeAST = new JavaASTParser(Utils.getStringFromStringArray(wholeFixCode));
 		
 		// TODO Implement filtering
 		
@@ -177,8 +177,12 @@ public class NoiseFilterRunner {
 		Filter cosmeticChangeFilter = factory.createFilter(Filters.COSMETIC_CHANGE, biChange, wholeFixCode);
 		filters.add(cosmeticChangeFilter);
 		
+		// Filter 04: Change a name
+		Filter nameChange = factory.createFilter(Filters.NAME_CHANGE, biChange, biWholeCodeAST, fixedWholeCodeAST);
+		filters.add(nameChange);
+		
 		// Filter 05: Remove unnecessary method
-		Filter removeUnnecessaryMethod = factory.createFilter(Filters.REMOVE_UN_METHOD, biChange, biWholeCodeAST, fixWholeCodeAST);
+		Filter removeUnnecessaryMethod = factory.createFilter(Filters.REMOVE_UN_METHOD, biChange, biWholeCodeAST, fixedWholeCodeAST);
 		filters.add(removeUnnecessaryMethod);
 		
 		boolean isNoise = false;
