@@ -24,6 +24,7 @@ public class BIChange {
 		lineNum = Integer.parseInt(splitString[5]);
 		isAddedLine = splitString[6].equals("t")?true:false;
 		line = splitString[7];
+		filteredDueTo = "";
 	}
 	
 	public void setIsNoise(boolean isNoise){
