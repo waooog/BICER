@@ -558,7 +558,7 @@ public class JavaASTParser {
         
 	}
 
-	public ArrayList<MethodDeclaration> getMethodDeclaration() {
+	public ArrayList<MethodDeclaration> getMethodDeclarations() {
 		return lstMethodDeclaration;
 	}
 }

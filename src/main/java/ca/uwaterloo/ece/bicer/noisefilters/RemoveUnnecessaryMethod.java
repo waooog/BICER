@@ -39,7 +39,7 @@ public class RemoveUnnecessaryMethod implements Filter {
 			System.exit(0);
 		}
 
-		ArrayList<MethodDeclaration> lstMethodDeclaration = biWholeCodeAST.getMethodDeclaration();
+		ArrayList<MethodDeclaration> lstMethodDeclaration = biWholeCodeAST.getMethodDeclarations();
 		
 		// (1) get method that contains a BI line.
 		String methodHavingBILine = getMethodHavingBILine(lstMethodDeclaration,startPositionOfBILine);
@@ -48,7 +48,7 @@ public class RemoveUnnecessaryMethod implements Filter {
 		
 		// (2) check if the method and BI line does not exists in fixed source code. No existence, method removed.
 		String fixedSource = fixWholeCodeAST.getStringCode();
-		lstMethodDeclaration = fixWholeCodeAST.getMethodDeclaration();
+		lstMethodDeclaration = fixWholeCodeAST.getMethodDeclarations();
 		return notExistMethodAndBILine(lstMethodDeclaration,fixedSource,methodHavingBILine,biChange.getLine());
 	}
 
