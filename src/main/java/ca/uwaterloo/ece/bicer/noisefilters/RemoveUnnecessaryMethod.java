@@ -41,8 +41,8 @@ public class RemoveUnnecessaryMethod implements Filter {
 
 		ArrayList<MethodDeclaration> lstMethodDeclaration = biWholeCodeAST.getMethodDeclarations();
 		
-		// (1) get method that contains a BI line.
-		String methodHavingBILine = getMethodHavingBILine(lstMethodDeclaration,startPositionOfBILine);
+		// (1) get method that contains a BI line that is not a line for method declaration.
+		MethodDeclaration methodHavingBILine = getMethodHavingBILine(lstMethodDeclaration,startPositionOfBILine);
 		if (methodHavingBILine==null)
 			return false;
 		
@@ -52,28 +52,31 @@ public class RemoveUnnecessaryMethod implements Filter {
 		return notExistMethodAndBILine(lstMethodDeclaration,fixedSource,methodHavingBILine,biChange.getLine());
 	}
 
-	private boolean notExistMethodAndBILine(ArrayList<MethodDeclaration> lstMethodDeclaration, String fixedSource, String methodHavingBILine, String line) {
+	private boolean notExistMethodAndBILine(ArrayList<MethodDeclaration> lstMethodDeclaration, String fixedSource,MethodDeclaration methodHavingBILine, String line) {
 		
-		// if method and BI lines do not exist, it is noise.
-		boolean doesMethodExist = false;
 		for(MethodDeclaration methodDecl:lstMethodDeclaration){
-			String method = methodDecl.getName() + methodDecl.parameters().toString();
-			if(method.equals(methodHavingBILine)){
-				doesMethodExist = true;
-				continue;
-			}
+			
+			// (1) check if a method with the same name and parameters exists. if it exists, not a noise.
+			if(methodDecl.getName().toString().equals(methodHavingBILine.getName().toString())
+					&& methodDecl.parameters().toString().equals(methodHavingBILine.parameters().toString()))
+				return false;
+			
+			// (2) check if an exactly same method exists >> it implies Method position changed
+			if(methodDecl.toString().equals(methodHavingBILine.toString()))
+				return false;
+			
+			// (3) check if an exactly same body exists >> it implies a method name change.
+			if(methodDecl.getBody().toString().equals(methodHavingBILine.getBody().toString()))
+				return false;
 		}
-
-		if(!doesMethodExist && fixedSource.indexOf(line)<0)
-			return true;
 		
-		return false;
+		return true;
 	}
 
-	private String getMethodHavingBILine(ArrayList<MethodDeclaration> lstMethodDeclaration, int startPositionOfBILine) {
+	private MethodDeclaration getMethodHavingBILine(ArrayList<MethodDeclaration> lstMethodDeclaration, int startPositionOfBILine) {
 		
 		for(MethodDeclaration methodDecl:lstMethodDeclaration){
-			String method = methodDecl.getName() + methodDecl.parameters().toString();
+			MethodDeclaration method = methodDecl;
 			int startPosition = methodDecl.getStartPosition();
 			int length = methodDecl.getLength();
 			
