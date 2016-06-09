@@ -6,7 +6,7 @@ import java.util.Map;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.*;
 
-public class CustomASTParser {
+public class JavaASTParser {
 	
 	public static ArrayList<String> praseJavaFile(String source){
 		final ArrayList<String> list = new ArrayList<String>();

@@ -3,7 +3,7 @@ package ca.uwaterloo.ece.bicer.noisefilters;
 import java.util.ArrayList;
 
 import ca.uwaterloo.ece.bicer.data.BIChange;
-import ca.uwaterloo.ece.bicer.utils.CustomASTParser;
+import ca.uwaterloo.ece.bicer.utils.JavaASTParser;
 import ca.uwaterloo.ece.bicer.utils.Utils;
 
 public class RemoveUnnecessaryMethod implements Filter {
@@ -38,7 +38,7 @@ public class RemoveUnnecessaryMethod implements Filter {
 			System.exit(0);
 		}
 
-		ArrayList<String> ast = CustomASTParser.praseJavaFile(biSource);
+		ArrayList<String> ast = JavaASTParser.praseJavaFile(biSource);
 		
 		// (1) get method that contains a BI line.
 		String methodHavingBILine = getMethodHavingBILine(getListOfMethods(ast),startPositionOfBILine);
@@ -47,7 +47,7 @@ public class RemoveUnnecessaryMethod implements Filter {
 		
 		// (2) check if the method and BI line does not exists in fixed source code. No existence, method removed.
 		String fixedSource = Utils.getStringFromStringArray(wholeFixCode);
-		return notExistMethodAndBILine(getListOfMethods(CustomASTParser.praseJavaFile(fixedSource)),fixedSource,methodHavingBILine,biChange.getLine());
+		return notExistMethodAndBILine(getListOfMethods(JavaASTParser.praseJavaFile(fixedSource)),fixedSource,methodHavingBILine,biChange.getLine());
 	}
 
 	private boolean notExistMethodAndBILine(ArrayList<String> listOfMethods, String fixedSource, String methodHavingBILine, String line) {
