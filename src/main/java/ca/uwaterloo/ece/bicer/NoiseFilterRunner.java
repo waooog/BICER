@@ -177,15 +177,16 @@ public class NoiseFilterRunner {
 		Filter removeUnnecessaryMethod = factory.createFilter(Filters.REMOVE_UN_METHOD, biChange, wholeBICode, wholeFixCode);
 		filters.add(removeUnnecessaryMethod);
 		
+		boolean isNoise = false;
 		for(Filter filter:filters){
 			if(filter.isNoise()){
 				biChange.setIsNoise(filter.isNoise());
-				biChange.setFilteredDueTo(filter.getName());
-				return true;
+				biChange.setFilteredDueTo(filter.getName() + "|" + biChange.getFilteredDueTo());
+				isNoise = true;
 			}
 		}
 
-		return false;
+		return isNoise;
 	}
 
 	private void loadBIChanges() {
