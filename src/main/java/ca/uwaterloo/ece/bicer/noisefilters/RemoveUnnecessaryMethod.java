@@ -53,7 +53,17 @@ public class RemoveUnnecessaryMethod implements Filter {
 	private boolean notExistMethodAndBILine(ArrayList<String> listOfMethods, String fixedSource, String methodHavingBILine, String line) {
 		
 		// if method and BI lines do not exist, it is noise.
-		if(!listOfMethods.contains(methodHavingBILine) && fixedSource.indexOf(line)<0)
+		boolean doesMethodExist = false;
+		for(String methodInfo:listOfMethods){
+			String method = methodInfo.split(":")[1];
+			if(method.equals(methodHavingBILine)){
+				doesMethodExist = true;
+				continue;
+			}
+				
+		}
+
+		if(!doesMethodExist && fixedSource.indexOf(line)<0)
 			return true;
 		
 		return false;
