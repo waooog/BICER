@@ -12,13 +12,13 @@ public class NameChange implements Filter {
 	final String name="Change a name";
 	BIChange biChange;
 	JavaASTParser biWholeCodeAST;
-	JavaASTParser fixWholeCodeAST;
+	JavaASTParser fixedWholeCodeAST;
 	boolean isNoise=false;
 	
 	public NameChange(BIChange biChange, JavaASTParser biWholeCodeAST, JavaASTParser fixedWholeCodeAST) {
 		this.biChange = biChange;
 		this.biWholeCodeAST = biWholeCodeAST;
-		this.fixWholeCodeAST = fixedWholeCodeAST;
+		this.fixedWholeCodeAST = fixedWholeCodeAST;
 		
 		isNoise = filterOut();
 	}
@@ -64,7 +64,7 @@ public class NameChange implements Filter {
 			return false;
 		
 		// (2) find a same method except for name from a fixed source code file
-		lstMethodDeclaration =  fixWholeCodeAST.getMethodDeclarations();
+		lstMethodDeclaration =  fixedWholeCodeAST.getMethodDeclarations();
 		
 		for(MethodDeclaration methodDecl:lstMethodDeclaration){
 			
