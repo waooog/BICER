@@ -28,6 +28,7 @@ public class NoiseFilterRunner {
 	boolean help;
 	boolean verbose;
 	ArrayList<BIChange> biChanges;
+	ArrayList<BIChange> biChangesNotExist;
 	
 	Git git;
 	Repository repo;
@@ -60,10 +61,10 @@ public class NoiseFilterRunner {
 		// List cleaned BI changes
 		System.out.println("BI_SHA1\tPATH\tBIDATE\tFixDATE");
 		for(BIChange biChange:biChanges){
-			if(!biChange.isNoise())
+			if(!biChange.isNoise() && !biChangesNotExist.contains(biChange))
 				System.out.println(biChange.getBISha1() + "\t" + biChange.getPath() +
 									"\t" + biChange.getBIDate() + "\t" + biChange.getFixDate());
-			else{
+			else if (biChange.isNoise()){
 				noisyBIChanges.add(biChange);
 			}
 		}
@@ -91,6 +92,7 @@ public class NoiseFilterRunner {
 		String currentFixSha1="",currentPath="";
 		String[] wholeBICode=null;
 		String[] wholeFixCode=null;
+		biChangesNotExist = new ArrayList<BIChange>();
 		for(BIChange biChange:biChanges){
 			
 			if(!currentPath.equals(biChange.getPath())){
@@ -105,39 +107,44 @@ public class NoiseFilterRunner {
 					
 				} catch (MissingObjectException e) {
 					System.err.println("The sha1 does not exist: " + newBISha1 + ":" + currentPath);
+					biChangesNotExist.add(biChange);
 					continue;
 				} catch (IncorrectObjectTypeException e) {
 					e.printStackTrace();
+					biChangesNotExist.add(biChange);
 					continue;
 				} catch (IOException e) {
 					System.err.println("The file path does not exist: " + newBISha1 + ":" + currentPath);
+					biChangesNotExist.add(biChange);
 					continue;
 				}
 			}
 				
 			if(!currentFixSha1.equals(biChange.getFixSha1())){
 				String newFixSha1 = biChange.getFixSha1();
-				String newPath = biChange.getPath();
 				try {
-					wholeFixCode = Utils.fetchBlob(repo, newFixSha1, newPath).split("\n");
+					wholeFixCode = Utils.fetchBlob(repo, newFixSha1, currentPath).split("\n");
 					
 					currentFixSha1 = newFixSha1;
-					currentPath = newPath;
 					
 				} catch (MissingObjectException e) {
-					System.err.println("The sha1 does not exist: " + newFixSha1 + ":" + newPath);
+					System.err.println("The sha1 does not exist: " + newFixSha1 + ":" + currentPath);
+					biChangesNotExist.add(biChange);
 					continue;
 				} catch (IncorrectObjectTypeException e) {
 					e.printStackTrace();
+					biChangesNotExist.add(biChange);
 					continue;
 				} catch (IOException e) {
-					System.err.println("The file path does not exist: " + newFixSha1 + ":" + newPath);
+					System.err.println("The file path does not exist: " + newFixSha1 + ":" + currentPath);
+					biChangesNotExist.add(biChange);
 					continue;
 				}
 			}
 			
 			// ignore line with only one character such as {,}
 			if(biChange.getLine().trim().length()<2){
+				biChange.setFilteredDueTo("One character line");
 				biChange.setIsNoise(true);
 				continue;
 			}
