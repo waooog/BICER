@@ -77,7 +77,7 @@ public class RemoveUnnecessaryMethod implements Filter {
 			int startPosition = methodDecl.getStartPosition();
 			int length = methodDecl.getLength();
 			
-			if(startPosition < startPositionOfBILine && startPositionOfBILine <startPosition+length)
+			if(startPosition <= startPositionOfBILine && startPositionOfBILine <startPosition+length)
 				return method;
 			
 		}
