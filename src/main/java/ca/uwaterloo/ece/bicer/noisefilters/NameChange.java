@@ -2,6 +2,8 @@ package ca.uwaterloo.ece.bicer.noisefilters;
 
 import java.util.ArrayList;
 
+import org.eclipse.jdt.core.dom.FieldAccess;
+import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 
 import ca.uwaterloo.ece.bicer.data.BIChange;
@@ -51,6 +53,14 @@ public class NameChange implements Filter {
 	}
 
 	private boolean isMemberNameChanged(int startPositionOfBILine) {
+		
+		// TODO
+		ArrayList<FieldDeclaration> lstBIFieldDeclaration = biWholeCodeAST.getFieldDeclarations();
+		ArrayList<FieldDeclaration> lstFixedFieldDeclaration = fixedWholeCodeAST.getFieldDeclarations();
+		
+		ArrayList<FieldAccess> lstBIFieldAccess = biWholeCodeAST.getFieldAccesses();
+		ArrayList<FieldAccess> lstFixedFieldAccess = fixedWholeCodeAST.getFieldAccesses();
+		
 		
 		return false;
 	}
