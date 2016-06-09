@@ -45,8 +45,7 @@ public class RemoveUnnecessaryMethod implements Filter {
 		if (methodHavingBILine==null)
 			return false;
 		
-		// (2) check if the method exists and BI line exists.
-		
+		// (2) check if the method and BI line does not exists in fixed source code. No existence, method removed.
 		String fixedSource = Utils.getStringFromStringArray(wholeFixCode);
 		return notExistMethodAndBILine(getListOfMethods(CustomASTParser.praseJavaFile(fixedSource)),fixedSource,methodHavingBILine,biChange.getLine());
 	}
