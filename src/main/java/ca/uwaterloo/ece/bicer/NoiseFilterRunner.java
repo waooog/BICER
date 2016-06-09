@@ -19,6 +19,7 @@ import ca.uwaterloo.ece.bicer.data.BIChange;
 import ca.uwaterloo.ece.bicer.noisefilters.Filter;
 import ca.uwaterloo.ece.bicer.noisefilters.FilterFactory;
 import ca.uwaterloo.ece.bicer.noisefilters.FilterFactory.Filters;
+import ca.uwaterloo.ece.bicer.utils.JavaASTParser;
 import ca.uwaterloo.ece.bicer.utils.Utils;
 
 public class NoiseFilterRunner {
@@ -157,6 +158,9 @@ public class NoiseFilterRunner {
 		
 		FilterFactory factory = new FilterFactory();
 		
+		JavaASTParser biWholeCodeAST = new JavaASTParser(Utils.getStringFromStringArray(wholeBICode));
+		JavaASTParser fixWholeCodeAST = new JavaASTParser(Utils.getStringFromStringArray(wholeFixCode));
+		
 		// TODO Implement filtering
 		
 		ArrayList<Filter> filters = new ArrayList<Filter>();
@@ -174,7 +178,7 @@ public class NoiseFilterRunner {
 		filters.add(cosmeticChangeFilter);
 		
 		// Filter 05: Remove unnecessary method
-		Filter removeUnnecessaryMethod = factory.createFilter(Filters.REMOVE_UN_METHOD, biChange, wholeBICode, wholeFixCode);
+		Filter removeUnnecessaryMethod = factory.createFilter(Filters.REMOVE_UN_METHOD, biChange, biWholeCodeAST, fixWholeCodeAST);
 		filters.add(removeUnnecessaryMethod);
 		
 		boolean isNoise = false;

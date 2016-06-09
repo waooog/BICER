@@ -8,7 +8,19 @@ import org.eclipse.jdt.core.dom.*;
 
 public class JavaASTParser {
 	
-	public static ArrayList<String> praseJavaFile(String source){
+	String source;
+	ArrayList<MethodDeclaration> lstMethodDeclaration = new ArrayList<MethodDeclaration>();
+	
+	public JavaASTParser(String source){
+		this.source = source;
+		praseJavaFile(source);
+	}
+	
+	public String getStringCode(){
+		return source;
+	}
+	
+	public ArrayList<String> praseJavaFile(String source){
 		final ArrayList<String> list = new ArrayList<String>();
 		
 		ASTParser parser = ASTParser.newParser(AST.JLS2);
@@ -71,7 +83,8 @@ public class JavaASTParser {
                     }
                     
                     public boolean visit(MethodDeclaration node) {
-                        list.add("METHOD:" + node.getName().toString() + node.parameters().toString() + ":" + node.getStartPosition() + ":" + node.getLength());
+                    	lstMethodDeclaration.add(node);
+                        //list.add("METHOD:" + node.getName().toString() + node.parameters().toString() + ":" + node.getStartPosition() + ":" + node.getLength());
                         return true;
                     }
                     
@@ -543,5 +556,9 @@ public class JavaASTParser {
             return null;
         }
         
+	}
+
+	public ArrayList<MethodDeclaration> getMethodDeclaration() {
+		return lstMethodDeclaration;
 	}
 }

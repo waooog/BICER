@@ -2,22 +2,23 @@ package ca.uwaterloo.ece.bicer.noisefilters;
 
 import java.util.ArrayList;
 
+import org.eclipse.jdt.core.dom.MethodDeclaration;
+
 import ca.uwaterloo.ece.bicer.data.BIChange;
 import ca.uwaterloo.ece.bicer.utils.JavaASTParser;
-import ca.uwaterloo.ece.bicer.utils.Utils;
 
 public class RemoveUnnecessaryMethod implements Filter {
 	
 	final String name="Remove Unnecessary Method";
 	BIChange biChange;
-	String[] wholeBICode;
-	String[] wholeFixCode;
+	JavaASTParser biWholeCodeAST;
+	JavaASTParser fixWholeCodeAST;
 	boolean isNoise=false;
 	
-	public RemoveUnnecessaryMethod(BIChange biChange, String[] wholeBICode, String[] wholeFixCode) {
+	public RemoveUnnecessaryMethod(BIChange biChange, JavaASTParser biWholeCodeAST, JavaASTParser fixWholeCodeAST) {
 		this.biChange = biChange;
-		this.wholeBICode = wholeBICode;
-		this.wholeFixCode = wholeFixCode;
+		this.biWholeCodeAST = biWholeCodeAST;
+		this.fixWholeCodeAST = fixWholeCodeAST;
 		
 		isNoise = filterOut();
 	}
@@ -29,7 +30,7 @@ public class RemoveUnnecessaryMethod implements Filter {
 		if(!biChange.getIsAddedLine())
 			return false;
 		
-		String biSource = Utils.getStringFromStringArray(wholeBICode);
+		String biSource = biWholeCodeAST.getStringCode();
 		int startPositionOfBILine = biSource.indexOf(biChange.getLine());
 		int startPositionOfBILineFromEnd = biSource.lastIndexOf(biChange.getLine());
 		
@@ -38,29 +39,29 @@ public class RemoveUnnecessaryMethod implements Filter {
 			System.exit(0);
 		}
 
-		ArrayList<String> ast = JavaASTParser.praseJavaFile(biSource);
+		ArrayList<MethodDeclaration> lstMethodDeclaration = biWholeCodeAST.getMethodDeclaration();
 		
 		// (1) get method that contains a BI line.
-		String methodHavingBILine = getMethodHavingBILine(getListOfMethods(ast),startPositionOfBILine);
+		String methodHavingBILine = getMethodHavingBILine(lstMethodDeclaration,startPositionOfBILine);
 		if (methodHavingBILine==null)
 			return false;
 		
 		// (2) check if the method and BI line does not exists in fixed source code. No existence, method removed.
-		String fixedSource = Utils.getStringFromStringArray(wholeFixCode);
-		return notExistMethodAndBILine(getListOfMethods(JavaASTParser.praseJavaFile(fixedSource)),fixedSource,methodHavingBILine,biChange.getLine());
+		String fixedSource = fixWholeCodeAST.getStringCode();
+		lstMethodDeclaration = fixWholeCodeAST.getMethodDeclaration();
+		return notExistMethodAndBILine(lstMethodDeclaration,fixedSource,methodHavingBILine,biChange.getLine());
 	}
 
-	private boolean notExistMethodAndBILine(ArrayList<String> listOfMethods, String fixedSource, String methodHavingBILine, String line) {
+	private boolean notExistMethodAndBILine(ArrayList<MethodDeclaration> lstMethodDeclaration, String fixedSource, String methodHavingBILine, String line) {
 		
 		// if method and BI lines do not exist, it is noise.
 		boolean doesMethodExist = false;
-		for(String methodInfo:listOfMethods){
-			String method = methodInfo.split(":")[1];
+		for(MethodDeclaration methodDecl:lstMethodDeclaration){
+			String method = methodDecl.getName() + methodDecl.parameters().toString();
 			if(method.equals(methodHavingBILine)){
 				doesMethodExist = true;
 				continue;
 			}
-				
 		}
 
 		if(!doesMethodExist && fixedSource.indexOf(line)<0)
@@ -69,13 +70,12 @@ public class RemoveUnnecessaryMethod implements Filter {
 		return false;
 	}
 
-	private String getMethodHavingBILine(ArrayList<String> listOfMethods, int startPositionOfBILine) {
+	private String getMethodHavingBILine(ArrayList<MethodDeclaration> lstMethodDeclaration, int startPositionOfBILine) {
 		
-		for(String element:listOfMethods){
-			String[] methodInfo = element.split(":");
-			String method = methodInfo[1];
-			int startPosition = Integer.parseInt(methodInfo[2]);
-			int length = Integer.parseInt(methodInfo[3]);
+		for(MethodDeclaration methodDecl:lstMethodDeclaration){
+			String method = methodDecl.getName() + methodDecl.parameters().toString();
+			int startPosition = methodDecl.getStartPosition();
+			int length = methodDecl.getLength();
 			
 			if(startPosition < startPositionOfBILine && startPositionOfBILine <startPosition+length)
 				return method;
@@ -83,19 +83,6 @@ public class RemoveUnnecessaryMethod implements Filter {
 		}
 		
 		return null;
-	}
-
-	private ArrayList<String> getListOfMethods(ArrayList<String> ast) {
-		
-		ArrayList<String> list = new ArrayList<String>();
-		
-		for(String element:ast){
-			if(element.startsWith("METHOD:")){
-				list.add(element);
-			}
-		}
-		
-		return list;
 	}
 
 	@Override

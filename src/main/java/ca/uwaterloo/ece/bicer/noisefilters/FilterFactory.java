@@ -1,6 +1,7 @@
 package ca.uwaterloo.ece.bicer.noisefilters;
 
 import ca.uwaterloo.ece.bicer.data.BIChange;
+import ca.uwaterloo.ece.bicer.utils.JavaASTParser;
 
 public class FilterFactory {
 	
@@ -25,10 +26,10 @@ public class FilterFactory {
 		return null;
 	}
 	
-public Filter createFilter(Filters filter,BIChange biChange, String[] wholeFBICode, String[] wholeFixCode){
+public Filter createFilter(Filters filter,BIChange biChange, JavaASTParser biWholeCodeAST, JavaASTParser fixWholeCodeAST){
 
 		if(filter == Filters.REMOVE_UN_METHOD)
-			return new RemoveUnnecessaryMethod(biChange,wholeFBICode,wholeFixCode);
+			return new RemoveUnnecessaryMethod(biChange,biWholeCodeAST,fixWholeCodeAST);
 		
 		return null;
 	}
