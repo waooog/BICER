@@ -24,7 +24,7 @@ public class UtilsTest {
 		Git git;
 		try {
 			git = Git.open( new File( System.getProperty("user.home") + "/git/BICER") );
-			Utils.diff(git, "6a25685e6a4dcf379718057b2465d998242f6ff6~1", "6a25685e6a4dcf379718057b2465d998242f6ff6", "src/main/java/ca/uwaterloo/ece/bicer/noisefilters/NameChange.java");
+			Utils.getEditListFromDiff(git, "6a25685e6a4dcf379718057b2465d998242f6ff6~1", "6a25685e6a4dcf379718057b2465d998242f6ff6", "src/main/java/ca/uwaterloo/ece/bicer/noisefilters/NameChange.java");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

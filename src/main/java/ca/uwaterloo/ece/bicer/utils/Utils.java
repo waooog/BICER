@@ -13,7 +13,6 @@ import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.Edit;
 import org.eclipse.jgit.diff.EditList;
-import org.eclipse.jgit.diff.RawText;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
@@ -52,7 +51,8 @@ public class Utils {
 		return lines;
 	}
 
-	static public void diff(Git git,String oldSha1, String newSha1, String path){
+	// TODO
+	static public EditList getEditListFromDiff(Git git,String oldSha1, String newSha1, String path){
 
 		Repository repo = git.getRepository();
 
@@ -79,26 +79,30 @@ public class Utils {
 			DiffFormatter df = new DiffFormatter(out);
 			df.setRepository(repo);
 
-			for(DiffEntry entry : diffs)
-			{
-				df.format(entry);
-				String diffText = out.toString("UTF-8");
+			//for(DiffEntry entry : diffs)
+			//{
+			DiffEntry entry = diffs.get(0);
+			df.format(entry);
+			String diffText = out.toString("UTF-8");
 
-				System.out.println( diffText );
-				FileHeader fileHeader = df.toFileHeader( entry );
-				List<? extends HunkHeader> hunks = fileHeader.getHunks();
-				EditList editList = fileHeader.toEditList();
+			System.out.println( diffText );
+			FileHeader fileHeader = df.toFileHeader( entry );
+			List<? extends HunkHeader> hunks = fileHeader.getHunks();
+			EditList editList = fileHeader.toEditList();
 
-				for(Edit edit:editList){
-					System.out.println(edit.toString());
-				}
+			for(Edit edit:editList){
+				System.out.println(edit.toString());
 			}
 
 			df.close();
+			
+			return editList;
+			//}
 
 		} catch (RevisionSyntaxException | IOException | GitAPIException e) {
 			e.printStackTrace();
 		}
+		return null;
 	}
 
 	static public String fetchBlob(Repository repo, String revSpec, String path) throws MissingObjectException, IncorrectObjectTypeException,
