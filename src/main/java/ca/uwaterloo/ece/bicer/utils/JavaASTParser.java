@@ -10,6 +10,8 @@ public class JavaASTParser {
 	
 	String source;
 	ArrayList<MethodDeclaration> lstMethodDeclaration = new ArrayList<MethodDeclaration>();
+	ArrayList<FieldDeclaration> lstFieldDeclaration = new ArrayList<FieldDeclaration>();
+	ArrayList<FieldAccess> lstFieldAccess = new ArrayList<FieldAccess>();
 	
 	public JavaASTParser(String source){
 		this.source = source;
@@ -130,6 +132,17 @@ public class JavaASTParser {
                    
                         list.add("WhileStatement");
                         return true;
+                    }
+                    public boolean visit(final FieldAccess node) {
+                    	
+                    	lstFieldAccess.add(node);
+                    	
+                    	return true;
+                    }
+                    
+                    public boolean visit(final FieldDeclaration node) {
+                    	lstFieldDeclaration.add(node);
+                    	return true;
                     }
                     
                     //            @Override public boolean visit(final ExpressionStatement node) {
@@ -560,5 +573,13 @@ public class JavaASTParser {
 
 	public ArrayList<MethodDeclaration> getMethodDeclarations() {
 		return lstMethodDeclaration;
+	}
+	
+	public ArrayList<FieldDeclaration> getFieldDeclarations() {
+		return lstFieldDeclaration;
+	}
+	
+	public ArrayList<FieldAccess> getFieldAccesses() {
+		return lstFieldAccess;
 	}
 }
