@@ -7,7 +7,7 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.*;
 
 public class JavaASTParser {
-	
+	CompilationUnit cUnit;
 	String source;
 	ArrayList<MethodDeclaration> lstMethodDeclaration = new ArrayList<MethodDeclaration>();
 	ArrayList<FieldDeclaration> lstFieldDeclaration = new ArrayList<FieldDeclaration>();
@@ -20,6 +20,10 @@ public class JavaASTParser {
 	
 	public String getStringCode(){
 		return source;
+	}
+	
+	public CompilationUnit getCompilationUnit(){
+		return cUnit;
 	}
 	
 	public ArrayList<String> praseJavaFile(String source){
@@ -44,7 +48,8 @@ public class JavaASTParser {
         parser.setStatementsRecovery(true);
 
         try {
-            final CompilationUnit unit = (CompilationUnit) parser.createAST(null);
+        	final CompilationUnit unit = (CompilationUnit) parser.createAST(null);
+        	cUnit = unit;
             final AST ast = unit.getAST();
 
             // Process the main body
@@ -145,6 +150,12 @@ public class JavaASTParser {
                     	return true;
                     }
                     
+                   /* public boolean visit(final Assignment node) {
+                                    Log.info("Assignment");
+                                       Log.info(node);
+                                        return super.visit(node);
+                                    }
+                    */
                     //            @Override public boolean visit(final ExpressionStatement node) {
                     //                Log.info("ExpressionStatement");
                     //                Log.info(node);
