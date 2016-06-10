@@ -2,9 +2,13 @@ package ca.uwaterloo.ece.bicer.noisefilters;
 
 import java.util.ArrayList;
 
+import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.NodeFinder;
+import org.eclipse.jgit.diff.Edit;
 
 import ca.uwaterloo.ece.bicer.data.BIChange;
 import ca.uwaterloo.ece.bicer.utils.JavaASTParser;
@@ -55,6 +59,22 @@ public class NameChange implements Filter {
 	private boolean isMemberNameChanged(int startPositionOfBILine) {
 		
 		// TODO
+		// BI line can be either declaration or its use. Most cases are one-line replace. So only consider the one-line replace.
+		
+		// check if the edit is an one-line replace
+		Edit edit = biChange.getEdit();
+		
+		if(edit==null) // sometimes edit can be null (e.g., position change)
+			return false;
+		
+		if(edit.getType()!=Edit.Type.REPLACE || (edit.getEndA()-edit.getBeginA())!=1 || (edit.getEndB()-edit.getBeginB())!=1){
+			return false;
+		}
+		
+		// find AST node for a bi line and its fix line
+		int startPosition = biWholeCodeAST.getCompilationUnit().getPosition(19, 0);
+		ASTNode node = NodeFinder.perform(biWholeCodeAST.getCompilationUnit(), startPosition,24);
+		
 		ArrayList<FieldDeclaration> lstBIFieldDeclaration = biWholeCodeAST.getFieldDeclarations();
 		ArrayList<FieldDeclaration> lstFixedFieldDeclaration = fixedWholeCodeAST.getFieldDeclarations();
 		
