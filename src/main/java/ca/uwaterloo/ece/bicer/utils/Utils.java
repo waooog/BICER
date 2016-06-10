@@ -11,7 +11,6 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
-import org.eclipse.jgit.diff.Edit;
 import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.errors.MissingObjectException;
@@ -20,7 +19,6 @@ import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.patch.FileHeader;
-import org.eclipse.jgit.patch.HunkHeader;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
@@ -51,7 +49,6 @@ public class Utils {
 		return lines;
 	}
 
-	// TODO
 	static public EditList getEditListFromDiff(Git git,String oldSha1, String newSha1, String path){
 
 		Repository repo = git.getRepository();
@@ -79,29 +76,17 @@ public class Utils {
 			DiffFormatter df = new DiffFormatter(out);
 			df.setRepository(repo);
 
-			//for(DiffEntry entry : diffs)
-			//{
 			DiffEntry entry = diffs.get(0);
 			df.format(entry);
-			String diffText = out.toString("UTF-8");
 
-			System.out.println( diffText );
 			FileHeader fileHeader = df.toFileHeader( entry );
-			List<? extends HunkHeader> hunks = fileHeader.getHunks();
-			EditList editList = fileHeader.toEditList();
-
-			for(Edit edit:editList){
-				System.out.println(edit.toString());
-			}
-
 			df.close();
-			
-			return editList;
-			//}
+			return fileHeader.toEditList();
 
 		} catch (RevisionSyntaxException | IOException | GitAPIException e) {
 			e.printStackTrace();
 		}
+		
 		return null;
 	}
 

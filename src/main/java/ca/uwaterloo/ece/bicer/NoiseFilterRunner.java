@@ -11,6 +11,8 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.diff.Edit;
+import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.lib.Repository;
@@ -93,6 +95,7 @@ public class NoiseFilterRunner {
 		String currentFixSha1="",currentPath="";
 		String[] wholeBICode=null;
 		String[] wholeFixCode=null;
+		EditList editListFromDiff = null;
 		biChangesNotExist = new ArrayList<BIChange>();
 		for(BIChange biChange:biChanges){
 			
@@ -128,6 +131,8 @@ public class NoiseFilterRunner {
 					
 					currentFixSha1 = newFixSha1;
 					
+					editListFromDiff = Utils.getEditListFromDiff(git, currentBISha1, currentFixSha1, currentPath);
+					
 				} catch (MissingObjectException e) {
 					System.err.println("The sha1 does not exist: " + newFixSha1 + ":" + currentPath);
 					biChangesNotExist.add(biChange);
@@ -150,13 +155,15 @@ public class NoiseFilterRunner {
 				continue;
 			}
 			
-			biChange.setIsNoise(isNoise(biChange,wholeBICode,wholeFixCode));
+			biChange.setIsNoise(isNoise(biChange,wholeBICode,wholeFixCode,editListFromDiff));
 		}
 	}
 	
-	private boolean isNoise(BIChange biChange,String[] wholeBICode, String[] wholeFixCode){
+	private boolean isNoise(BIChange biChange,String[] wholeBICode, String[] wholeFixCode, EditList editListFromDiff){
 		
 		FilterFactory factory = new FilterFactory();
+		
+		updateBIChangeWithEditList(biChange,wholeBICode,wholeFixCode,editListFromDiff);
 		
 		JavaASTParser biWholeCodeAST = new JavaASTParser(Utils.getStringFromStringArray(wholeBICode));
 		JavaASTParser fixedWholeCodeAST = new JavaASTParser(Utils.getStringFromStringArray(wholeFixCode));
@@ -195,6 +202,43 @@ public class NoiseFilterRunner {
 		}
 
 		return isNoise;
+	}
+
+	private void updateBIChangeWithEditList(BIChange biChange,String[] wholeBICode,String[] wholeFixedCode, EditList editListFromDiff) {
+		String biLine = biChange.getLine().trim();
+		
+		ArrayList<Integer> candidateLineNums = new ArrayList<Integer>();
+		ArrayList<Edit> candidateEdits = new ArrayList<Edit>();
+		for(Edit edit:editListFromDiff){
+			int beginA = edit.getBeginA();
+			int endB = edit.getEndA();
+			
+			for(int i=beginA;i<endB;i++){
+				if(biLine.equals(wholeBICode[i].trim())){
+					candidateLineNums.add(i);
+					candidateEdits.add(edit);
+				}
+			}
+		}
+		
+		// adjust actual line num
+		int rawLineNum = biChange.getLineNum();
+		if(candidateLineNums.size()==1){
+			biChange.setLineNum(candidateLineNums.get(0));
+			biChange.setEdit(candidateEdits.get(0));
+		}
+		else{
+			for(int i=0;i<candidateLineNums.size();i++){
+				int lineNum = candidateLineNums.get(i);
+				if((rawLineNum-1)<=lineNum){
+					biChange.setLineNum(lineNum+1);
+					biChange.setEdit(candidateEdits.get(i));
+					break;
+				}
+			}
+		}
+		
+		biChange.setEditList(editListFromDiff);
 	}
 
 	private void loadBIChanges() {

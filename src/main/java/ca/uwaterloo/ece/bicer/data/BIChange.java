@@ -1,5 +1,8 @@
 package ca.uwaterloo.ece.bicer.data;
 
+import org.eclipse.jgit.diff.Edit;
+import org.eclipse.jgit.diff.EditList;
+
 public class BIChange {
 	String BISha1;
 	String path;
@@ -10,6 +13,8 @@ public class BIChange {
 	boolean isAddedLine;
 	String line;
 	boolean isNoise;
+	Edit edit;
+	EditList editList;
 	
 	String filteredDueTo;
 	
@@ -73,5 +78,17 @@ public class BIChange {
 	
 	public String getFilteredDueTo() {
 		return filteredDueTo;
+	}
+
+	public void setLineNum(Integer lineNum) {
+		this.lineNum = lineNum;
+	}
+
+	public void setEdit(Edit edit) {
+		this.edit = edit;
+	}
+
+	public void setEditList(EditList editListFromDiff) {
+		this.editList = editListFromDiff;
 	}
 }
