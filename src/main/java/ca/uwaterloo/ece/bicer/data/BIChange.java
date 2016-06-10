@@ -91,4 +91,8 @@ public class BIChange {
 	public void setEditList(EditList editListFromDiff) {
 		this.editList = editListFromDiff;
 	}
+
+	public Edit getEdit() {
+		return edit;
+	}
 }
