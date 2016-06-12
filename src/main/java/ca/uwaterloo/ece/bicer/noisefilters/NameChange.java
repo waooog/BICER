@@ -72,8 +72,9 @@ public class NameChange implements Filter {
 		}
 		
 		// find AST node for a bi line and its fix line
-		int startPosition = biWholeCodeAST.getCompilationUnit().getPosition(19, 0);
-		ASTNode node = NodeFinder.perform(biWholeCodeAST.getCompilationUnit(), startPosition,24);
+		int startPosition = biWholeCodeAST.getCompilationUnit().getPosition(2, 0); // line num starts from 1
+		ASTNode node = NodeFinder.perform(biWholeCodeAST.getCompilationUnit(), startPosition,1);
+		int a = node.getNodeType();
 		
 		ArrayList<FieldDeclaration> lstBIFieldDeclaration = biWholeCodeAST.getFieldDeclarations();
 		ArrayList<FieldDeclaration> lstFixedFieldDeclaration = fixedWholeCodeAST.getFieldDeclarations();
