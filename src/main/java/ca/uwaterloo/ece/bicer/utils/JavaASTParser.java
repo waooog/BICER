@@ -12,6 +12,7 @@ public class JavaASTParser {
 	ArrayList<MethodDeclaration> lstMethodDeclaration = new ArrayList<MethodDeclaration>();
 	ArrayList<FieldDeclaration> lstFieldDeclaration = new ArrayList<FieldDeclaration>();
 	ArrayList<FieldAccess> lstFieldAccess = new ArrayList<FieldAccess>();
+	ArrayList<IfStatement> lstIfStatement = new ArrayList<IfStatement>();
 	
 	public JavaASTParser(String source){
 		this.source = source;
@@ -57,165 +58,169 @@ public class JavaASTParser {
                 unit.accept(new ASTVisitor() {
                     public boolean visit(CatchClause node) {
                         list.add("CatchClause");
-                        return true;
+                        return super.visit(node);
                     }
                     public boolean visit(ClassInstanceCreation node) {
                         //list.add("ClassInstanceCreation");
                         list.add(node.getName().toString());
-                        return true;
+                        return super.visit(node);
                     }
 
                     public boolean visit(DoStatement node) {
                         list.add("DoStatement");
                         
-                        return true;
+                        return super.visit(node);
                     }
                     public boolean visit(EnumConstantDeclaration node) {
                         list.add(node.getName().toString());
-                        return true;
+                        return super.visit(node);
                     }
                     public boolean visit(EnumDeclaration node) {
                         list.add("EnumDeclaration");
                         list.add(node.getName().toString());
-                        return true;
+                        return super.visit(node);
                     }
                     public boolean visit(ForStatement node) {
                         list.add("ForStatement");
                         
-                        return true;
+                        return super.visit(node);
                     }
                     public boolean visit(IfStatement node) {
                         list.add("IfStatement");
-                        return true;
+                        lstIfStatement.add(node);
+                        return super.visit(node);
                     }
                     
                     public boolean visit(MethodDeclaration node) {
                     	lstMethodDeclaration.add(node);
                         //list.add("METHOD:" + node.getName().toString() + node.parameters().toString() + ":" + node.getStartPosition() + ":" + node.getLength());
-                        return true;
+                        return super.visit(node);
                     }
                     
                     public boolean visit(AssertStatement node) {
                         list.add("AssertStatement");
-                        return true;
+                        return super.visit(node);
                     } 
                     public boolean visit(ContinueStatement node) {
                         list.add("ContinueStatement");
-                        return true;
+                        return super.visit(node);
                     }
                   
                     
                     public boolean visit(MethodInvocation node) {
                         list.add(node.getName().toString());
-                        return true;
+                        return super.visit(node);
                     }
                     public boolean visit(SwitchCase node) {
                         list.add("SwitchCase");
-                        return true;
+                        return super.visit(node);
                     }
                     public boolean visit(SynchronizedStatement node) {
                         list.add("SynchronizedStatement");
-                        return true;
+                        return super.visit(node);
                     }
                     public boolean visit(ThisExpression node) {
                         list.add("ThisExpression");
-                        return true;
+                        return super.visit(node);
                     }
                     public boolean visit(ThrowStatement node) {
                         list.add("ThrowStatement");
-                        return true;
+                        return super.visit(node);
                     }
                     public boolean visit(TryStatement node) {
                         list.add("TryStatement");
-                        return true;
+                        return super.visit(node);
                     }
                     public boolean visit(TypeDeclaration node) {
                         list.add(node.getName().toString());
-                        return true;
+                        return super.visit(node);
                     }
                     public boolean visit(WhileStatement node) {
                    
                         list.add("WhileStatement");
-                        return true;
+                        return super.visit(node);
                     }
                     public boolean visit(final FieldAccess node) {
                     	
                     	lstFieldAccess.add(node);
                     	
-                    	return true;
+                    	return super.visit(node);
                     }
                     
                     public boolean visit(final FieldDeclaration node) {
                     	lstFieldDeclaration.add(node);
-                    	return true;
+                    	return super.visit(node);
                     }
                     
-                   /* public boolean visit(final Assignment node) {
-                                    Log.info("Assignment");
-                                       Log.info(node);
+                    public boolean visit(final Block node) {
+                 
+                                    return super.visit(node);
+                     }
+                    
+                   public boolean visit(final Assignment node) {
+                                   
                                         return super.visit(node);
                                     }
-                    */
-                    //            @Override public boolean visit(final ExpressionStatement node) {
-                    //                Log.info("ExpressionStatement");
-                    //                Log.info(node);
-                    //                return super.visit(node);
-                    //            }
-                    //
-                    //            @Override public boolean visit(final AnnotationTypeDeclaration node) {
-                    //                Log.info("AnnotationTypeDeclaration");
-                    //                Log.info(node);
-                    //                return super.visit(node);
-                    //            }
-                    //
-                    //            @Override public boolean visit(final AnnotationTypeMemberDeclaration node) {
-                    //                Log.info("AnnotationTypeMemberDeclaration");
-                    //                Log.info(node);
-                    //                return super.visit(node);
-                    //            }
-                    //
-                    //            @Override public boolean visit(final AnonymousClassDeclaration node) {
-                    //                Log.info("AnonymousClassDeclaration");
-                    //                Log.info(node);
-                    //                return super.visit(node);
-                    //            }
-                    //
-                    //            @Override public boolean visit(final ArrayAccess node) {
-                    //                Log.info("ArrayAccess");
-                    //                Log.info(node);
-                    //                return super.visit(node);
-                    //            }
-                    //
-                    //            @Override public boolean visit(final ArrayCreation node) {
-                    //                Log.info("ArrayCreation");
-                    //                Log.info(node);
-                    //                return super.visit(node);
-                    //            }
-                    //
-                    //            @Override public boolean visit(final ArrayInitializer node) {
-                    //                Log.info("ArrayInitializer");
-                    //                Log.info(node);
-                    //                return super.visit(node);
-                    //            }
-                    //
-                    //            @Override public boolean visit(final ArrayType node) {
-                    //                Log.info("ArrayType");
-                    //                Log.info(node);
-                    //                return super.visit(node);
-                    //            }
-                    //
-                    //            @Override public boolean visit(final Assignment node) {
-                    //                Log.info("Assignment");
-                    //                Log.info(node);
-                    //                return super.visit(node);
-                    //            }
-                    //
-                    //            //            @Override public boolean visit(final Block node) {
-                    //            //                Log.info("Block");
-                    //            //                Log.info(node);
-                    //            //                return super.visit(node);
-                    //            //            }
-                    //
+                    
+                    public boolean visit(final ExpressionStatement node) {
+                                    
+                                    return super.visit(node);
+                                }
+                    
+                               /* @Override public boolean visit(final AnnotationTypeDeclaration node) {
+                                    Log.info("AnnotationTypeDeclaration");
+                                    Log.info(node);
+                                    return super.visit(node);
+                                }
+                    
+                                @Override public boolean visit(final AnnotationTypeMemberDeclaration node) {
+                                    Log.info("AnnotationTypeMemberDeclaration");
+                                    Log.info(node);
+                                    return super.visit(node);
+                                }
+                    
+                                @Override public boolean visit(final AnonymousClassDeclaration node) {
+                                    Log.info("AnonymousClassDeclaration");
+                                    Log.info(node);
+                                    return super.visit(node);
+                                }
+                    
+                                @Override public boolean visit(final ArrayAccess node) {
+                                    Log.info("ArrayAccess");
+                                    Log.info(node);
+                                    return super.visit(node);
+                                }
+                    
+                                @Override public boolean visit(final ArrayCreation node) {
+                                    Log.info("ArrayCreation");
+                                    Log.info(node);
+                                    return super.visit(node);
+                                }
+                    
+                                @Override public boolean visit(final ArrayInitializer node) {
+                                    Log.info("ArrayInitializer");
+                                    Log.info(node);
+                                    return super.visit(node);
+                                }
+                    
+                                @Override public boolean visit(final ArrayType node) {
+                                    Log.info("ArrayType");
+                                    Log.info(node);
+                                    return super.visit(node);
+                                }
+                    
+                                @Override public boolean visit(final Assignment node) {
+                                    Log.info("Assignment");
+                                    Log.info(node);
+                                    return super.visit(node);
+                                }
+                    
+                                //            @Override public boolean visit(final Block node) {
+                                //                Log.info("Block");
+                                //                Log.info(node);
+                                //                return super.visit(node);
+                                //            }
+*/                    //
                     //            @Override public boolean visit(final BlockComment node) {
                     //                Log.info("BlockComment");
                     //                Log.info(node);
