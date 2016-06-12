@@ -18,19 +18,19 @@ public class BIChange {
 	EditList editList;
 	
 	String filteredDueTo;
-	
+
 	public BIChange(String changeInfo){
 		String[] splitString = changeInfo.split("\t");
 		
 		BISha1 = splitString[0];
 		biPath = splitString[1];
-		path = splitString[1];
-		FixSha1 = splitString[2];
-		BIDate = splitString[3];
-		FixDate = splitString[4];
-		lineNum = Integer.parseInt(splitString[5]);
-		isAddedLine = splitString[6].equals("t")?true:false;
-		line = splitString[7];
+		path = splitString[2];
+		FixSha1 = splitString[3];
+		BIDate = splitString[4];
+		FixDate = splitString[5];
+		lineNum = Integer.parseInt(splitString[6]);
+		isAddedLine = splitString[7].equals("t")?true:false;
+		line = splitString[8];
 		filteredDueTo = "";
 	}
 	
