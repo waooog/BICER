@@ -108,7 +108,7 @@ public class NoiseFilterRunner {
 				String newBISha1 = biChange.getBISha1();
 				try {
 					// TODO when path does not exist in BI change, biPath should be identified.
-					wholeBICode = Utils.fetchBlob(repo, newBISha1, currentPath).split("\n");
+					wholeBICode = Utils.fetchBlob(repo, newBISha1, biChange.getBIPath()).split("\n");
 					currentBISha1 = newBISha1;
 					
 				} catch (MissingObjectException e) {
