@@ -225,7 +225,7 @@ public class NoiseFilterRunner {
 		// adjust actual line num and set edit that is related to a bi line
 		int rawLineNum = biChange.getLineNum();
 		if(candidateLineNums.size()==1){
-			biChange.setLineNum(candidateLineNums.get(0));
+			biChange.setLineNum(candidateLineNums.get(0)+1);
 			biChange.setEdit(candidateEdits.get(0));
 		}
 		else{
