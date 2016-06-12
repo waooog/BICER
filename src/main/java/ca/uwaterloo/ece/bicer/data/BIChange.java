@@ -5,6 +5,7 @@ import org.eclipse.jgit.diff.EditList;
 
 public class BIChange {
 	String BISha1;
+	String biPath;
 	String path;
 	String FixSha1;
 	String BIDate;
@@ -22,6 +23,7 @@ public class BIChange {
 		String[] splitString = changeInfo.split("\t");
 		
 		BISha1 = splitString[0];
+		biPath = splitString[1];
 		path = splitString[1];
 		FixSha1 = splitString[2];
 		BIDate = splitString[3];
@@ -36,6 +38,10 @@ public class BIChange {
 		this.isNoise = isNoise;
 	}
 	
+	public void setBIPath(String biPath){
+		this.biPath = biPath;
+	}
+	
 	public void setFilteredDueTo(String filterName) {
 		filteredDueTo = filterName;
 	}
@@ -46,6 +52,10 @@ public class BIChange {
 	
 	public String getBISha1() {
 		return BISha1;
+	}
+	
+	public String getBIPath() {
+		return biPath;
 	}
 	
 	public String getPath() {
