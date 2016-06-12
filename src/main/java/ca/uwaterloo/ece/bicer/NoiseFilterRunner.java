@@ -215,9 +215,13 @@ public class NoiseFilterRunner {
 			int endB = edit.getEndA();
 			
 			for(int i=beginA;i<endB;i++){
-				if(biLine.equals(wholeBICode[i].trim())){
-					candidateLineNums.add(i);
-					candidateEdits.add(edit);
+				try{
+					if(biLine.equals(wholeBICode[i].trim())){
+						candidateLineNums.add(i);
+						candidateEdits.add(edit);
+					}
+				} catch(ArrayIndexOutOfBoundsException e){
+					System.out.println(biChange.getBISha1() + "\t" + biChange.getPath());
 				}
 			}
 		}
