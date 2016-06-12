@@ -213,9 +213,9 @@ public class NoiseFilterRunner {
 		ArrayList<Edit> candidateEdits = new ArrayList<Edit>();
 		for(Edit edit:editListFromDiff){
 			int beginA = edit.getBeginA();
-			int endB = edit.getEndA();
+			int endA = edit.getEndA();
 			
-			for(int i=beginA;i<endB;i++){
+			for(int i=beginA;i<endA;i++){
 				try{
 					if(biLine.equals(wholeBICode[i].trim())){
 						candidateLineNums.add(i);
