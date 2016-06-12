@@ -12,6 +12,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.EditList;
+import org.eclipse.jgit.errors.AmbiguousObjectException;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
@@ -90,8 +91,7 @@ public class Utils {
 		return null;
 	}
 
-	static public String fetchBlob(Repository repo, String revSpec, String path) throws MissingObjectException, IncorrectObjectTypeException,
-	IOException {
+	static public String fetchBlob(Repository repo, String revSpec, String path) throws RevisionSyntaxException, AmbiguousObjectException, IncorrectObjectTypeException, IOException{
 
 		// Resolve the revision specification
 		final ObjectId id = repo.resolve(revSpec);
