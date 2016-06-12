@@ -111,6 +111,11 @@ public class NoiseFilterRunner {
 					wholeBICode = Utils.fetchBlob(repo, newBISha1, biChange.getBIPath()).split("\n");
 					currentBISha1 = newBISha1;
 					
+					if (wholeBICode.equals("")){
+						System.out.println(biChange.getBISha1() + "\t" + biChange.getFixSha1() + "\t" + biChange.getBIPath());
+						System.exit(0);
+					}
+					
 				} catch (MissingObjectException e) {
 					System.err.println("The sha1 does not exist: " + newBISha1 + ":" + currentPath);
 					biChangesNotExist.add(biChange);
@@ -216,14 +221,9 @@ public class NoiseFilterRunner {
 			int endA = edit.getEndA();
 			
 			for(int i=beginA;i<endA;i++){
-				try{
-					if(biLine.equals(wholeBICode[i].trim())){
-						candidateLineNums.add(i);
-						candidateEdits.add(edit);
-					}
-				} catch(ArrayIndexOutOfBoundsException e){
-					System.out.println(biChange.getBISha1() + "\t" + biChange.getFixSha1() + "\t" + biChange.getBIPath());
-					System.exit(0);
+				if(biLine.equals(wholeBICode[i].trim())){
+					candidateLineNums.add(i);
+					candidateEdits.add(edit);
 				}
 			}
 		}
