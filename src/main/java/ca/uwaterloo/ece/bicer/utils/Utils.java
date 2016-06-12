@@ -86,7 +86,7 @@ public class Utils {
 		} catch (RevisionSyntaxException | IOException | GitAPIException e) {
 			e.printStackTrace();
 		}
-		
+
 		return null;
 	}
 
@@ -99,28 +99,25 @@ public class Utils {
 		// Makes it simpler to release the allocated resources in one go
 		ObjectReader reader = repo.newObjectReader();
 
-		try {
-			// Get the commit object for that revision
-			RevWalk walk = new RevWalk(reader);
-			RevCommit commit = walk.parseCommit(id);
-			walk.close();
+		// Get the commit object for that revision
+		RevWalk walk = new RevWalk(reader);
+		RevCommit commit = walk.parseCommit(id);
+		walk.close();
 
-			// Get the revision's file tree
-			RevTree tree = commit.getTree();
-			// .. and narrow it down to the single file's path
-			TreeWalk treewalk = TreeWalk.forPath(reader, path, tree);
+		// Get the revision's file tree
+		RevTree tree = commit.getTree();
+		// .. and narrow it down to the single file's path
+		TreeWalk treewalk = TreeWalk.forPath(reader, path, tree);
 
-			if (treewalk != null) {
-				// use the blob id to read the file's data
-				byte[] data = reader.open(treewalk.getObjectId(0)).getBytes();
-				return new String(data, "utf-8");
-			} else {
-				return "";
-			}
-
-		} finally {
+		if (treewalk != null) {
+			// use the blob id to read the file's data
+			byte[] data = reader.open(treewalk.getObjectId(0)).getBytes();
 			reader.close();
+			return new String(data, "utf-8");
+		} else {
+			return "";
 		}
+
 	}
 
 	static public boolean doesSameLineExist(String line,String[] lines,boolean trim,boolean ignoreLineComments){
