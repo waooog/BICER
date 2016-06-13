@@ -35,8 +35,8 @@ public class RemoveUnnecessaryMethod implements Filter {
 		int startPositionOfBILineFromEnd = biSource.lastIndexOf(biChange.getLine());
 		
 		if(startPositionOfBILine!=startPositionOfBILineFromEnd){
-			System.err.println("Redundant BI line exists in source code: " + biChange.getLine());
-			System.exit(0);
+			System.err.println("Remove Unnecessary method Redundant BI line exists in source code: " + biChange.getLine());
+			//System.exit(0);
 		}
 
 		ArrayList<MethodDeclaration> lstMethodDeclaration = biWholeCodeAST.getMethodDeclarations();
