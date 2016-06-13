@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.diff.DiffConfig;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.EditList;
@@ -16,10 +17,12 @@ import org.eclipse.jgit.errors.AmbiguousObjectException;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
+import org.eclipse.jgit.lib.Config;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.patch.FileHeader;
+import org.eclipse.jgit.revwalk.FollowFilter;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
@@ -49,7 +52,7 @@ public class Utils {
 
 		return lines;
 	}
-
+	
 	static public EditList getEditListFromDiff(Git git,String oldSha1, String newSha1, String path){
 
 		Repository repo = git.getRepository();
@@ -61,6 +64,11 @@ public class Utils {
 
 
 			ObjectReader reader = repo.newObjectReader();
+			
+			// setting for renamed or copied path
+			Config config = new Config();
+			config.setBoolean("diff", null, "renames", true);
+			DiffConfig diffConfig = config.get(DiffConfig.KEY);
 
 			CanonicalTreeParser oldTreeIter = new CanonicalTreeParser();
 			oldTreeIter.reset(reader, oldId);
@@ -68,7 +76,7 @@ public class Utils {
 			newTreeIter.reset(reader, newId);
 
 			List<DiffEntry> diffs= git.diff()
-					.setPathFilter(PathFilter.create(path))
+					.setPathFilter(FollowFilter.create(path, diffConfig))
 					.setNewTree(newTreeIter)
 					.setOldTree(oldTreeIter)
 					.call();
