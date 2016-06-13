@@ -103,10 +103,15 @@ public class NameChange implements Filter {
 			if(methodDecl.getBody()==null)
 				return false;
 			
+			try{
 			if(!methodDecl.getName().equals(methodHavingBILine.getName())
 					&& methodDecl.parameters().toString().equals(methodHavingBILine.parameters().toString())
 					&& methodDecl.getBody().toString().equals(methodHavingBILine.getBody().toString())){
 				return true;
+			}
+			}catch (NullPointerException e){
+				System.out.println(methodDecl.toString());
+				System.exit(0);
 			}
 		}
 		
