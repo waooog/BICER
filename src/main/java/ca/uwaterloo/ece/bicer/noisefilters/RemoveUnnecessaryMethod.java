@@ -66,7 +66,7 @@ public class RemoveUnnecessaryMethod implements Filter {
 				return false;
 			
 			// (3) check if an exactly same body exists >> it implies a method name change.
-			if(methodDecl.getBody()==null)
+			if(methodDecl.getBody()==null || methodHavingBILine.getBody()==null) // ignore empty body method
 				return false;
 			if(methodDecl.getBody().toString().equals(methodHavingBILine.getBody().toString()))
 				return false;
