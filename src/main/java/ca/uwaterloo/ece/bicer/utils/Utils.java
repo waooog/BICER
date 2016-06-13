@@ -56,7 +56,7 @@ public class Utils {
 
 		ObjectId oldId;
 		try {
-			oldId = repo.resolve(oldSha1 + "^{tree}");
+			oldId = repo.resolve(oldSha1 + "^{tree}:");
 			ObjectId newId = repo.resolve(newSha1 + "^{tree}");
 
 

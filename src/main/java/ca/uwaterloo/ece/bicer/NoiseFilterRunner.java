@@ -112,8 +112,8 @@ public class NoiseFilterRunner {
 					currentBISha1 = newBISha1;
 					
 					if (wholeBICode.equals("")){
-						System.out.println(biChange.getBISha1() + "\t" + biChange.getFixSha1() + "\t" + biChange.getBIPath());
-						System.exit(0);
+						System.err.println("Ignore (no code): " + biChange.getBISha1() + "\t" + biChange.getFixSha1() + "\t" + biChange.getBIPath());
+						continue;
 					}
 					
 				} catch (MissingObjectException e) {
@@ -228,7 +228,7 @@ public class NoiseFilterRunner {
 					}
 				} catch(ArrayIndexOutOfBoundsException e){
 					System.out.println(wholeBICode.length + "\t" +biChange.getBISha1() + "\t" + biChange.getFixSha1() + "\t" + biChange.getBIPath());
-					System.exit(0);
+					//System.exit(0);
 				}
 			}
 		}
