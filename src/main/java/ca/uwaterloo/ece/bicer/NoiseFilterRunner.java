@@ -228,7 +228,7 @@ public class NoiseFilterRunner {
 					}
 				} catch(ArrayIndexOutOfBoundsException e){
 					System.err.println(wholeBICode.length + "\t" +biChange.getBISha1() + "\t" + biChange.getFixSha1() + "\t" + biChange.getBIPath());
-					//System.exit(0);
+					System.exit(0);
 				}
 			}
 		}
