@@ -111,6 +111,7 @@ public class NameChange implements Filter {
 			}
 			}catch (NullPointerException e){
 				System.out.println(methodDecl.toString());
+				System.out.println(methodHavingBILine.toString());
 				System.exit(0);
 			}
 		}
