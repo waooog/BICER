@@ -99,8 +99,8 @@ public class NameChange implements Filter {
 		
 		for(MethodDeclaration methodDecl:lstMethodDeclaration){
 			
-			// ignore abstract method
-			if(methodDecl.getBody()==null)
+			// ignore empty body methods
+			if(methodDecl.getBody()==null || methodHavingBILine.getBody()==null)
 				return false;
 			
 			try{
