@@ -41,9 +41,9 @@ public class NameChange implements Filter {
 		int startPositionOfBILineFromEnd = biSource.lastIndexOf(biChange.getLine());
 		
 		if(startPositionOfBILine!=startPositionOfBILineFromEnd){
-			System.err.println("Redundant BI line exists in source code " + startPositionOfBILine + "!=" + startPositionOfBILineFromEnd + ": " + biChange.getLine());
+			System.err.println("Method Name change Redundant BI line exists in source code " + startPositionOfBILine + "!=" + startPositionOfBILineFromEnd + ": " + biChange.getLine());
 			System.out.println(biSource);
-			System.exit(0);
+			//System.exit(0);
 		}
 
 		// (1) check if method name changed
