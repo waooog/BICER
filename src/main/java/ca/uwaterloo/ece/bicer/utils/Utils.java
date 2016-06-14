@@ -13,6 +13,9 @@ import org.eclipse.jgit.diff.DiffConfig;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.EditList;
+import org.eclipse.jgit.diff.HistogramDiff;
+import org.eclipse.jgit.diff.RawText;
+import org.eclipse.jgit.diff.RawTextComparator;
 import org.eclipse.jgit.errors.AmbiguousObjectException;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.errors.MissingObjectException;
@@ -53,6 +56,14 @@ public class Utils {
 		return lines;
 	}
 	
+	static public EditList getEditListFromDiff(String file1, String file2) {
+        RawText rt1 = new RawText(file1.getBytes());
+        RawText rt2 = new RawText(file2.getBytes());
+        EditList diffList = new EditList();
+        diffList.addAll(new HistogramDiff().diff(RawTextComparator.DEFAULT, rt1, rt2));
+        return diffList;
+	}
+	
 	static public EditList getEditListFromDiff(Git git,String oldSha1, String newSha1, String path){
 
 		Repository repo = git.getRepository();
@@ -67,7 +78,7 @@ public class Utils {
 			
 			// setting for renamed or copied path
 			Config config = new Config();
-			config.setBoolean("diff", null, "renames", true);
+			config.setBoolean("diff", null, "copy", true);
 			DiffConfig diffConfig = config.get(DiffConfig.KEY);
 
 			CanonicalTreeParser oldTreeIter = new CanonicalTreeParser();
@@ -92,7 +103,10 @@ public class Utils {
 			df.close();
 			return fileHeader.toEditList();
 
-		} catch (RevisionSyntaxException | IOException | GitAPIException e) {
+		} catch (IndexOutOfBoundsException e){
+					
+		}
+		catch (RevisionSyntaxException | IOException | GitAPIException e) {
 			e.printStackTrace();
 		}
 
