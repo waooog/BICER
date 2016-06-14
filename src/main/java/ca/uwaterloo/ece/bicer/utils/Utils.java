@@ -78,7 +78,7 @@ public class Utils {
 			
 			// setting for renamed or copied path
 			Config config = new Config();
-			config.setBoolean("diff", null, "copy", true);
+			config.setBoolean("diff", null, "renames", true);
 			DiffConfig diffConfig = config.get(DiffConfig.KEY);
 
 			CanonicalTreeParser oldTreeIter = new CanonicalTreeParser();
