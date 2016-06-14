@@ -8,6 +8,8 @@ import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.NodeFinder;
+import org.eclipse.jdt.core.dom.SimpleName;
+import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jgit.diff.Edit;
 
 import ca.uwaterloo.ece.bicer.data.BIChange;
@@ -37,11 +39,10 @@ public class NameChange implements Filter {
 			return false;
 		
 		String biSource = biWholeCodeAST.getStringCode();
-		int startPositionOfBILine = biSource.indexOf(biChange.getLine());
-		int startPositionOfBILineFromEnd = biSource.lastIndexOf(biChange.getLine());
+		int startPositionOfBILine = getStartPosition(biSource,biChange.getLineNum());
 		
-		if(startPositionOfBILine!=startPositionOfBILineFromEnd){
-			System.err.println("Method Name change Redundant BI line exists in source code " + startPositionOfBILine + "!=" + startPositionOfBILineFromEnd + ": " + biChange.getLine());
+		if(startPositionOfBILine <0){
+			System.err.println("Warning: line does not exist in BI source code " + ": " + biChange.getLine());
 			//System.err.println(biSource);
 			//System.exit(0);
 		}
@@ -50,14 +51,29 @@ public class NameChange implements Filter {
 		if(isMethodNameChanged(startPositionOfBILine))
 			return true;
 		
-		// (2) check if member name changed
-		if(isMemberNameChanged(startPositionOfBILine))
+		// (2) check if variable (including member) name changed
+		if(isVariableNameChanged(startPositionOfBILine))
 			return true;
 		
 		return false;
 	}
 
-	private boolean isMemberNameChanged(int startPositionOfBILine) {
+	private int getStartPosition(String biSource, int lineNum) {
+		
+		int currentPosition = 0;
+		String[] lines = biSource.split("\n");
+		
+		for(int i=0; i < lines.length; i++){
+			if(i==lineNum-1)
+				return currentPosition;
+			
+			currentPosition+=lines[i].length() + 1; // + 1 is for \n
+		}
+		
+		return -1;
+	}
+
+	private boolean isVariableNameChanged(int startPositionOfBILine) {
 		
 		// TODO
 		// BI line can be either declaration or its use. Most cases are one-line replace. So only consider the one-line replace.
@@ -73,16 +89,34 @@ public class NameChange implements Filter {
 		}
 		
 		// find AST node for a bi line and its fix line
-		int startPosition = biWholeCodeAST.getCompilationUnit().getPosition(2, 0); // line num starts from 1
-		ASTNode node = NodeFinder.perform(biWholeCodeAST.getCompilationUnit(), startPosition,1);
-		int a = node.getNodeType();
+		/*int startPosition = biWholeCodeAST.getCompilationUnit().getPosition(biChange.getLineNum(), 0); // line num starts from 1
+		int lineNumFromStartPosition = biWholeCodeAST.getCompilationUnit().getLineNumber(startPosition);
+		ASTNode node = NodeFinder.perform(biWholeCodeAST.getCompilationUnit(), startPosition,2);
+		int a = node.getNodeType();*/
 		
-		ArrayList<FieldDeclaration> lstBIFieldDeclaration = biWholeCodeAST.getFieldDeclarations();
-		ArrayList<FieldDeclaration> lstFixedFieldDeclaration = fixedWholeCodeAST.getFieldDeclarations();
+		int biLineNum = biChange.getLineNum();
+		int fixLineNum = biChange.getEdit().getBeginB()+1;
 		
-		ArrayList<FieldAccess> lstBIFieldAccess = biWholeCodeAST.getFieldAccesses();
-		ArrayList<FieldAccess> lstFixedFieldAccess = fixedWholeCodeAST.getFieldAccesses();
+		ArrayList<VariableDeclarationFragment> lstBIVariableDeclarationFragment = biWholeCodeAST.getVariableDeclarationFragments();
+		ArrayList<VariableDeclarationFragment> lstFixVariableDeclarationFragment = fixedWholeCodeAST.getVariableDeclarationFragments();
 		
+		String originalName = "";
+		String changedName = "";
+		
+		for(ASTNode varDecFragNode:lstBIVariableDeclarationFragment){
+			if(biLineNum==biWholeCodeAST.getCompilationUnit().getLineNumber(varDecFragNode.getStartPosition())){
+				originalName = varDecFragNode.toString();
+			}
+		}
+		
+		for(ASTNode varDecFragNode:lstFixVariableDeclarationFragment){
+			if(fixLineNum==fixedWholeCodeAST.getCompilationUnit().getLineNumber(varDecFragNode.getStartPosition())){
+				changedName = varDecFragNode.toString();
+			}
+		}
+		
+		if(!originalName.equals("") && !originalName.equals(changedName))
+			return true;
 		
 		return false;
 	}
