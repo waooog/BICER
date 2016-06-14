@@ -1,9 +1,7 @@
 package ca.uwaterloo.ece.bicer.utils;
 
 import java.util.ArrayList;
-import java.util.Map;
 
-import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.*;
 
 public class JavaASTParser {
@@ -53,7 +51,6 @@ public class JavaASTParser {
 		try {
 			final CompilationUnit unit = (CompilationUnit) parser.createAST(null);
 			cUnit = unit;
-			final AST ast = unit.getAST();
 
 			// Process the main body
 			try {
