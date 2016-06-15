@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.StructuralPropertyDescriptor;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffConfig;
@@ -62,6 +64,21 @@ public class Utils {
         EditList diffList = new EditList();
         diffList.addAll(new HistogramDiff().diff(RawTextComparator.DEFAULT, rt1, rt2));
         return diffList;
+	}
+	
+	static public Object[] getASTNodeChildren(ASTNode node) {
+	    List list= node.structuralPropertiesForType();
+	    for (int i= 0; i < list.size(); i++) {
+	        StructuralPropertyDescriptor curr= (StructuralPropertyDescriptor) list.get(i);
+	            Object child= node.getStructuralProperty(curr);
+	        if (child instanceof List) {
+	                return ((List) child).toArray();
+	        } else if (child instanceof ASTNode) {
+	            return new Object[] { child };
+	            }
+	        return new Object[0];
+	    }
+		return null;
 	}
 	
 	static public EditList getEditListFromDiff(Git git,String oldSha1, String newSha1, String path){
