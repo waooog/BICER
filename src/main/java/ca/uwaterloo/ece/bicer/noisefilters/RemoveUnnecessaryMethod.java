@@ -30,29 +30,39 @@ public class RemoveUnnecessaryMethod implements Filter {
 		if(!biChange.getIsAddedLine())
 			return false;
 		
-		String biSource = biWholeCodeAST.getStringCode();
-		int startPositionOfBILine = biSource.indexOf(biChange.getLine());
-		int startPositionOfBILineFromEnd = biSource.lastIndexOf(biChange.getLine());
-		
-		if(startPositionOfBILine!=startPositionOfBILineFromEnd){
-			System.err.println("Remove Unnecessary method Redundant BI line exists in source code: " + biChange.getLine());
-			//System.exit(0);
-		}
-
 		ArrayList<MethodDeclaration> lstMethodDeclaration = biWholeCodeAST.getMethodDeclarations();
 		
 		// (1) get method that contains a BI line that is not a line for method declaration.
-		MethodDeclaration methodHavingBILine = getMethodHavingBILine(lstMethodDeclaration,startPositionOfBILine);
-		if (methodHavingBILine==null)
+		MethodDeclaration biMethodDecNodeHavingBILine=null;
+		int potentialBeginALineNum = -1; // deleted line range start line num
+		int potentialEndALineNum = -1; // deleted line range end line num
+		
+		for(MethodDeclaration methodDecNode:lstMethodDeclaration){
+			int beginLineNum = biWholeCodeAST.getCompilationUnit().getLineNumber(methodDecNode.getStartPosition());
+			int endLineNum = biWholeCodeAST.getCompilationUnit().getLineNumber(methodDecNode.getStartPosition()+methodDecNode.getLength());
+			if(biChange.getLineNum()>=beginLineNum && biChange.getLineNum()<= endLineNum){
+				biMethodDecNodeHavingBILine = methodDecNode;
+				potentialBeginALineNum = beginLineNum;
+				potentialEndALineNum = endLineNum;
+				break;
+			}
+		}
+		
+
+		if(biMethodDecNodeHavingBILine==null) // biLine is not a line in a method.
 			return false;
 		
-		// (2) check if the method and BI line does not exists in fixed source code. No existence, method removed.
-		String fixedSource = fixWholeCodeAST.getStringCode();
+		// (2) check all lines for the method are removed.
+		if(!((potentialBeginALineNum >= biChange.getEdit().getBeginA()+1) && (potentialEndALineNum <= biChange.getEdit().getEndA()+1))){
+			return false;
+		}
+		
+		// (3) check if the method and BI line does not exists in fixed source code. No existence, method removed.
 		lstMethodDeclaration = fixWholeCodeAST.getMethodDeclarations();
-		return notExistMethodAndBILine(lstMethodDeclaration,fixedSource,methodHavingBILine,biChange.getLine());
+		return notExistMethodAndBILine(lstMethodDeclaration,biMethodDecNodeHavingBILine);
 	}
 
-	private boolean notExistMethodAndBILine(ArrayList<MethodDeclaration> lstMethodDeclaration, String fixedSource,MethodDeclaration methodHavingBILine, String line) {
+	private boolean notExistMethodAndBILine(ArrayList<MethodDeclaration> lstMethodDeclaration, MethodDeclaration methodHavingBILine) {
 		
 		for(MethodDeclaration methodDecl:lstMethodDeclaration){
 			
@@ -73,21 +83,6 @@ public class RemoveUnnecessaryMethod implements Filter {
 		}
 		
 		return true;
-	}
-
-	private MethodDeclaration getMethodHavingBILine(ArrayList<MethodDeclaration> lstMethodDeclaration, int startPositionOfBILine) {
-		
-		for(MethodDeclaration methodDecl:lstMethodDeclaration){
-			MethodDeclaration method = methodDecl;
-			int startPosition = methodDecl.getStartPosition();
-			int length = methodDecl.getLength();
-			
-			if(startPosition <= startPositionOfBILine && startPositionOfBILine <startPosition+length)
-				return method;
-			
-		}
-		
-		return null;
 	}
 
 	@Override
