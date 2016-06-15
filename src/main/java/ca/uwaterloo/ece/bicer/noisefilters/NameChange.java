@@ -185,7 +185,8 @@ public class NameChange implements Filter {
 			if(biLineNum==biWholeCodeAST.getCompilationUnit().getLineNumber(methodDecNode.getStartPosition())){
 				originalName = methodDecNode.getName().toString();
 				biLineNodes.add(methodDecNode.getModifiers());
-				biLineNodes.add(methodDecNode.getReturnType2());
+				if(methodDecNode.getReturnType2() != null)
+					biLineNodes.add(methodDecNode.getReturnType2());
 				biLineNodes.add(methodDecNode.parameters());
 			}
 		}
@@ -194,7 +195,8 @@ public class NameChange implements Filter {
 			if(fixLineNum==fixedWholeCodeAST.getCompilationUnit().getLineNumber(methodDecNode.getStartPosition())){
 				changedName = methodDecNode.getName().toString();
 				fixLineNodes.add(methodDecNode.getModifiers());
-				fixLineNodes.add(methodDecNode.getReturnType2());
+				if(methodDecNode.getReturnType2() != null)
+					fixLineNodes.add(methodDecNode.getReturnType2());
 				fixLineNodes.add(methodDecNode.parameters());
 			}
 		}
