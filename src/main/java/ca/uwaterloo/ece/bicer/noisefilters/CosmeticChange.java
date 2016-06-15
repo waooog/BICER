@@ -34,9 +34,9 @@ public class CosmeticChange implements Filter {
 
 	private boolean doesAFixCosmeticChange(String stmt, String[] fixCode) {
 		
-		String stmtWithoutSpaces = stmt.replaceAll("\\s", "");
+		String stmtWithoutWhiteSpaces = stmt.replaceAll("\\s", "");
 		
-		if (stmtWithoutSpaces.length()<4)
+		if (stmtWithoutWhiteSpaces.length()<4)
 			System.err.println("WARNING(" + name + "): a too short line: " + stmt);
 		
 		String wholeCodeWithoutSpace = "";
@@ -46,8 +46,8 @@ public class CosmeticChange implements Filter {
 		}
 		
 		int indexOf;
-		if((indexOf = wholeCodeWithoutSpace.indexOf(stmtWithoutSpaces))!= -1){
-			if(indexOf != wholeCodeWithoutSpace.lastIndexOf(stmtWithoutSpaces))
+		if((indexOf = wholeCodeWithoutSpace.indexOf(stmtWithoutWhiteSpaces))!= -1){
+			if(indexOf != wholeCodeWithoutSpace.lastIndexOf(stmtWithoutWhiteSpaces))
 				System.err.println("WARNING(" + name + "): not a single occurence for: " + stmt);
 			return true;
 		}
