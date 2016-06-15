@@ -3,12 +3,16 @@ package ca.uwaterloo.ece.bicer.noisefilters;
 import java.util.ArrayList;
 
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.Expression;
+import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
+import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jgit.diff.Edit;
 
 import ca.uwaterloo.ece.bicer.data.BIChange;
 import ca.uwaterloo.ece.bicer.utils.JavaASTParser;
+import ca.uwaterloo.ece.bicer.utils.Utils;
 
 public class NameChange implements Filter {
 	
@@ -43,11 +47,11 @@ public class NameChange implements Filter {
 		}
 
 		// (1) check if method name changed
-		if(isMethodNameChanged(startPositionOfBILine))
+		if(isMethodNameChanged())
 			return true;
 		
 		// (2) check if variable (including member) name changed
-		if(isVariableNameChanged(startPositionOfBILine))
+		if(isVariableNameChanged())
 			return true;
 		
 		return false;
@@ -68,7 +72,7 @@ public class NameChange implements Filter {
 		return -1;
 	}
 
-	private boolean isVariableNameChanged(int startPositionOfBILine) {
+	private boolean isVariableNameChanged() {
 		
 		// TODO
 		// BI line can be either declaration or its use. Most cases are one-line replace. So only consider the one-line replace.
@@ -98,62 +102,118 @@ public class NameChange implements Filter {
 		String originalName = "";
 		String changedName = "";
 		
+		ArrayList<Object> biLineNodes = new ArrayList<Object>(), fixLineNodes = new ArrayList<Object>();
+		
 		for(ASTNode varDecFragNode:lstBIVariableDeclarationFragment){
 			if(biLineNum==biWholeCodeAST.getCompilationUnit().getLineNumber(varDecFragNode.getStartPosition())){
-				originalName = varDecFragNode.toString();
+				ASTNode parent = varDecFragNode.getParent();
+				
+				if(parent instanceof VariableDeclarationStatement){
+					biLineNodes.add(((VariableDeclarationStatement)parent).getModifiers());
+					biLineNodes.add(((VariableDeclarationStatement)parent).getType());
+				}
+				if(parent instanceof FieldDeclaration){
+					biLineNodes.add(((FieldDeclaration)parent).getModifiers());
+					biLineNodes.add(((FieldDeclaration)parent).getType());
+				}
+
+				Expression exp = ((VariableDeclarationFragment)varDecFragNode).getInitializer();
+				if(exp!=null)
+					biLineNodes.add(exp);
+				originalName = ((VariableDeclarationFragment)varDecFragNode).getName().toString();
 			}
 		}
 		
 		for(ASTNode varDecFragNode:lstFixVariableDeclarationFragment){
 			if(fixLineNum==fixedWholeCodeAST.getCompilationUnit().getLineNumber(varDecFragNode.getStartPosition())){
-				changedName = varDecFragNode.toString();
+				ASTNode parent = varDecFragNode.getParent();
+				if(parent instanceof VariableDeclarationStatement){
+					fixLineNodes.add(((VariableDeclarationStatement)parent).getModifiers());
+					fixLineNodes.add(((VariableDeclarationStatement)parent).getType());
+				}
+				if(parent instanceof FieldDeclaration){
+					fixLineNodes.add(((FieldDeclaration)parent).getModifiers());
+					fixLineNodes.add(((FieldDeclaration)parent).getType());
+				}
+
+				Expression exp = ((VariableDeclarationFragment)varDecFragNode).getInitializer();
+				if(exp!=null)
+					fixLineNodes.add(exp);
+				changedName = ((VariableDeclarationFragment)varDecFragNode).getName().toString();
 			}
 		}
 		
-		if(!originalName.equals("") && !originalName.equals(changedName))
-			return true;
-		
-		return false;
-	}
-
-	private boolean isMethodNameChanged(int startPositionOfBILine) {
-		ArrayList<MethodDeclaration> lstMethodDeclaration = biWholeCodeAST.getMethodDeclarations();
-		
-		// (1) get method that contains a BI line.
-		MethodDeclaration methodHavingBILine = getMethodHavingBILine(lstMethodDeclaration,startPositionOfBILine);
-		if (methodHavingBILine==null) // not exist? then skip
-			return false;
-		
-		// (2) find a same method except for name from a fixed source code file
-		lstMethodDeclaration =  fixedWholeCodeAST.getMethodDeclarations();
-		
-		for(MethodDeclaration methodDecl:lstMethodDeclaration){
+		if(biLineNodes.size()==fixLineNodes.size()){
+			for(int i=0;i<biLineNodes.size();i++){
+				if(!biLineNodes.get(i).toString().equals(fixLineNodes.get(i).toString()))
+					return false;
+			}
 			
-			// ignore empty body methods
-			if(methodDecl.getBody()==null || methodHavingBILine.getBody()==null)
-				return false;
-			
-			if(!methodDecl.getName().equals(methodHavingBILine.getName())
-					&& methodDecl.parameters().toString().equals(methodHavingBILine.parameters().toString())
-					&& methodDecl.getBody().toString().equals(methodHavingBILine.getBody().toString())){
+			if(!originalName.equals("") && !originalName.equals(changedName))
 				return true;
-			}
+			
+		}else{
+			return false;
 		}
 		
 		return false;
 	}
 
-	private MethodDeclaration getMethodHavingBILine(ArrayList<MethodDeclaration> lstMethodDeclaration, int startPositionOfBILine) {
+	private boolean isMethodNameChanged() {
 		
-		for(MethodDeclaration methodDecl:lstMethodDeclaration){
-			int startPosition = methodDecl.getStartPosition();
-			int length = methodDecl.getLength();
-			
-			if(startPosition <= startPositionOfBILine && startPositionOfBILine <startPosition+length)
-				return methodDecl;
+		// check if the edit is an one-line replace
+		Edit edit = biChange.getEdit();
+
+		if(edit==null) // sometimes edit can be null (e.g., position change)
+			return false;
+
+		if(edit.getType()!=Edit.Type.REPLACE || (edit.getEndA()-edit.getBeginA())!=1 || (edit.getEndB()-edit.getBeginB())!=1){
+			return false;
 		}
 		
-		return null;
+		int biLineNum = biChange.getLineNum();
+		int fixLineNum = biChange.getEdit().getBeginB()+1;
+		
+		ArrayList<MethodDeclaration> lstBIMethodDeclaration = biWholeCodeAST.getMethodDeclarations();
+		ArrayList<MethodDeclaration> lstFixMethodDeclaration = fixedWholeCodeAST.getMethodDeclarations();
+		
+		String originalName = "";
+		String changedName = "";
+		
+		ArrayList<Object> biLineNodes = new ArrayList<Object>(), fixLineNodes = new ArrayList<Object>();
+		
+		for(MethodDeclaration methodDecNode:lstBIMethodDeclaration){
+			if(biLineNum==biWholeCodeAST.getCompilationUnit().getLineNumber(methodDecNode.getStartPosition())){
+				originalName = methodDecNode.getName().toString();
+				biLineNodes.add(methodDecNode.getModifiers());
+				biLineNodes.add(methodDecNode.getReturnType2());
+				biLineNodes.add(methodDecNode.parameters());
+			}
+		}
+		
+		for(MethodDeclaration methodDecNode:lstFixMethodDeclaration){
+			if(fixLineNum==fixedWholeCodeAST.getCompilationUnit().getLineNumber(methodDecNode.getStartPosition())){
+				changedName = methodDecNode.getName().toString();
+				fixLineNodes.add(methodDecNode.getModifiers());
+				fixLineNodes.add(methodDecNode.getReturnType2());
+				fixLineNodes.add(methodDecNode.parameters());
+			}
+		}
+		
+		if(biLineNodes.size()==fixLineNodes.size()){
+			for(int i=0;i<biLineNodes.size();i++){
+				if(!biLineNodes.get(i).toString().equals(fixLineNodes.get(i).toString()))
+					return false;
+			}
+			
+			if(!originalName.equals("") && !originalName.equals(changedName))
+				return true;
+
+		}else{
+			return false;
+		}
+						
+		return false;
 	}
 
 	@Override
