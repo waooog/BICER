@@ -52,6 +52,10 @@ public class RemoveUnnecessaryMethod implements Filter {
 		if(biMethodDecNodeHavingBILine==null) // biLine is not a line in a method.
 			return false;
 		
+		// TODO
+		if(biChange.getEdit()==null)
+			return false;
+		
 		// (2) check all lines for the method are removed.
 		if(!((potentialBeginALineNum >= biChange.getEdit().getBeginA()+1) && (potentialEndALineNum <= biChange.getEdit().getEndA()+1))){
 			return false;
