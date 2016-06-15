@@ -212,8 +212,8 @@ public class NoiseFilterRunner {
 			int beginA = edit.getBeginA();
 			int endA = edit.getEndA();
 
-			for(int i=beginA;i<endA;i++){
-				try{
+			for(int i=beginA;i<=endA;i++){
+				try{	
 					if(biLine.equals(wholeBICode[i].trim())){
 						candidateLineNums.add(i);
 						candidateEdits.add(edit);
@@ -223,6 +223,13 @@ public class NoiseFilterRunner {
 				}
 			}
 		}
+		
+		if(candidateLineNums.size()==0 && biChange.getIsAddedLine()){
+			// no matched lines exist
+			System.err.println("WARNING: the following line change is not exist in bi file\n" +
+					biChange.getBISha1()+"," + biChange.getBIPath() + "," + 
+					biChange.getFixSha1()+"," + biChange.getPath() + "\t" + biChange.getLineNum() + "\t" + biLine);
+		}
 
 		// adjust actual line num and set edit that is related to a bi line
 		int rawLineNum = biChange.getLineNum();
@@ -231,12 +238,16 @@ public class NoiseFilterRunner {
 			biChange.setEdit(candidateEdits.get(0));
 		}
 		else{
+			int currentGap = -1;
+			// heuristic to get the best matching line
 			for(int i=0;i<candidateLineNums.size();i++){
 				int lineNum = candidateLineNums.get(i);
-				if((rawLineNum-1)<=lineNum){
+				int gap = Math.abs(lineNum-(rawLineNum-1));
+				
+				if(currentGap < 0 || gap < currentGap){
+					currentGap = gap;
 					biChange.setLineNum(lineNum+1);
 					biChange.setEdit(candidateEdits.get(i));
-					break;
 				}
 			}
 		}
