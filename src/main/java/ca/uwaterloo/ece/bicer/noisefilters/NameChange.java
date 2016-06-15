@@ -12,7 +12,6 @@ import org.eclipse.jgit.diff.Edit;
 
 import ca.uwaterloo.ece.bicer.data.BIChange;
 import ca.uwaterloo.ece.bicer.utils.JavaASTParser;
-import ca.uwaterloo.ece.bicer.utils.Utils;
 
 public class NameChange implements Filter {
 	
