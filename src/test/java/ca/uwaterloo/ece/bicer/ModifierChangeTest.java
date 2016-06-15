@@ -93,7 +93,7 @@ public class ModifierChangeTest {
 		
     	NoiseFilterRunner runner = new NoiseFilterRunner();
     	
-    	//String [] args ={"-d","data/exampleBIChanges.txt", "-g", System.getProperty("user.home") + "/git/BICER"};
+    	//String [] args ={"-d","data/exampleBIChanges.txt", "-g","/Users/jiangchenyang/Documents/uwaterloo/BICER"};
     	String [] args ={"-d","data/exampleJackRabbitBIChanges", "-g", "/Users/jiangchenyang/Documents/uwaterloo/noisybi/git/jackrabbit/git"};
     	runner.run(args);
 	}

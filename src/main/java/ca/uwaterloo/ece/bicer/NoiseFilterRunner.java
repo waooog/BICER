@@ -190,6 +190,10 @@ public class NoiseFilterRunner {
 		// Filter 05: Remove unnecessary method
 		Filter removeUnnecessaryMethod = factory.createFilter(Filters.REMOVE_UN_METHOD, biChange, biWholeCodeAST, fixedWholeCodeAST);
 		filters.add(removeUnnecessaryMethod);
+		
+		// Filter 06: Change a Modifer
+		Filter changeMidifier = factory.createFilter(Filters.MODIFIER_CHANGE, biChange, wholeFixCode);
+		filters.add(changeMidifier);
 
 		boolean isNoise = false;
 		for(Filter filter:filters){
