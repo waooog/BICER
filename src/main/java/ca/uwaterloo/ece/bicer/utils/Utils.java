@@ -62,7 +62,7 @@ public class Utils {
         RawText rt1 = new RawText(file1.getBytes());
         RawText rt2 = new RawText(file2.getBytes());
         EditList diffList = new EditList();
-        diffList.addAll(new HistogramDiff().diff(RawTextComparator.DEFAULT, rt1, rt2));
+        diffList.addAll(new HistogramDiff().diff(RawTextComparator.WS_IGNORE_ALL, rt1, rt2));
         return diffList;
 	}
 	
