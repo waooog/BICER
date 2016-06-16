@@ -105,4 +105,8 @@ public class BIChange {
 	public Edit getEdit() {
 		return edit;
 	}
+
+	public String setBISha1(String biSha1) {
+		return BISha1;
+	}
 }
