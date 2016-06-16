@@ -14,9 +14,11 @@ import static org.junit.Assert.*;
 public class SanitizerTest {
     @Test public void testSomeLibraryMethod() {
         
-    	Sanitizer ster = new Sanitizer();
+    	NoiseFilterRunner runner = new NoiseFilterRunner();
     	
-    	ster.sanitizer("data/exampleBIChanges.txt", System.getProperty("user.home") + "/git/BICER");
+    	String [] args ={"-s", "-d","data/exampleBIChanges.txt", "-g", System.getProperty("user.home") + "/git/BICER"};
+    	
+    	runner.run(args);
     	
     	//assertTrue("someLibraryMethod should return 'true'", classUnderTest.someLibraryMethod());
     }
