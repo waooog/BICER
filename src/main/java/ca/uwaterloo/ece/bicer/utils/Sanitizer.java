@@ -11,6 +11,7 @@ import ca.uwaterloo.ece.bicer.data.BIChange;
 
 public class Sanitizer {
 
+	String header;
 	ArrayList<BIChange> biChanges;
 	Git git;
 	Repository repo;
@@ -30,7 +31,9 @@ public class Sanitizer {
 	}
 	
 	private void loadBIChanges(String pathToBIChangeData) {
-		ArrayList<String> BIChangeInfo = Utils.getLines(pathToBIChangeData, true);
+		ArrayList<String> BIChangeInfo = Utils.getLines(pathToBIChangeData, false);
+		header = BIChangeInfo.get(0);
+		BIChangeInfo.remove(0);
 		biChanges = new ArrayList<BIChange>();
 		for(String info: BIChangeInfo){
 			biChanges.add(new BIChange(info));
@@ -38,8 +41,10 @@ public class Sanitizer {
 	}
 
 	private void sanitizer() {
+		System.out.println(header);
 		for(BIChange biChange:biChanges){
 			biChange = Utils.getBIChangeWithCorrectBISha1(git,biChange);
+			System.out.println(biChange.getRecord());
 		}
 	}
 
