@@ -25,18 +25,18 @@ public class Sanitizer {
 			System.err.println("Repository does not exist: " + gitURI);
 		}
 		
-		loadBIChanges(pathToBIChangeData);
+		loadBIChanges(pathToBIChangeData,true);
 		
 		sanitizer();		
 	}
 	
-	private void loadBIChanges(String pathToBIChangeData) {
+	private void loadBIChanges(String pathToBIChangeData,boolean runSenitizer) {
 		ArrayList<String> BIChangeInfo = Utils.getLines(pathToBIChangeData, false);
 		header = BIChangeInfo.get(0);
 		BIChangeInfo.remove(0);
 		biChanges = new ArrayList<BIChange>();
 		for(String info: BIChangeInfo){
-			biChanges.add(new BIChange(info));
+			biChanges.add(new BIChange(info,runSenitizer));
 		}
 	}
 

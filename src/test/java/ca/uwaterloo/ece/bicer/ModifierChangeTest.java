@@ -17,7 +17,7 @@ public class ModifierChangeTest {
 				+ "	9f2ceaea2b0e36a485ca7a3f6ff75191df9134c6"
 				+ "	2016-06-06 10:18:49-04"
 				+ "	2016-06-07 10:18:49-04	37	t"
-				+ "	public String test(int x){");
+				+ "	public String test(int x){",false);
 		String[] strs=new String[]{" String test(int x){ "," int test(int x){","int x=y;"};
 		ModifierChange mc=new ModifierChange(bic,strs);
 		assertEquals(mc.isNoise(),true);	
@@ -53,7 +53,7 @@ public class ModifierChangeTest {
 				+ "	9f2ceaea2b0e36a485ca7a3f6ff75191df9134c6"
 				+ "	2016-06-06 10:18:49-04"
 				+ "	2016-06-07 10:18:49-04	37	t"
-				+ "	 String test(int x){");
+				+ "	 String test(int x){",false);
 		strs=new String[]{" private String test(int x){ "," int test(int x){","int x=y;"};
 		mc=new ModifierChange(bic,strs);
 		assertEquals(mc.isNoise(),true);
@@ -77,7 +77,7 @@ public class ModifierChangeTest {
 				+ "	9f2ceaea2b0e36a485ca7a3f6ff75191df9134c6"
 				+ "	2016-06-06 10:18:49-04"
 				+ "	2016-06-07 10:18:49-04	37	t"
-				+ "	 public BIChange bic;");
+				+ "	 public BIChange bic;",false);
 		
 		strs=new String[]{" private BIChange bic;"," int test(int x){","int x=y;"};
 		mc=new ModifierChange(bic,strs);

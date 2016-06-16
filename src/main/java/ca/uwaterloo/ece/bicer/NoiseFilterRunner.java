@@ -230,7 +230,7 @@ public class NoiseFilterRunner {
 		ArrayList<String> BIChangeInfo = Utils.getLines(pathToBIChangeData, true);
 		biChanges = new ArrayList<BIChange>();
 		for(String info: BIChangeInfo){
-			biChanges.add(new BIChange(info));
+			biChanges.add(new BIChange(info,runSanitizer));
 		}
 	}
 
