@@ -1,19 +1,24 @@
 package ca.uwaterloo.ece.bicer.utils;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.StructuralPropertyDescriptor;
+import org.eclipse.jgit.api.BlameCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.blame.BlameResult;
 import org.eclipse.jgit.diff.DiffConfig;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
+import org.eclipse.jgit.diff.Edit;
 import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.diff.HistogramDiff;
 import org.eclipse.jgit.diff.RawText;
@@ -24,6 +29,7 @@ import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.lib.Config;
 import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.patch.FileHeader;
@@ -34,6 +40,8 @@ import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
+
+import ca.uwaterloo.ece.bicer.data.BIChange;
 
 public class Utils {
 	static public ArrayList<String> getLines(String file,boolean removeHeader){
@@ -79,6 +87,101 @@ public class Utils {
 	        return new Object[0];
 	    }
 		return null;
+	}
+	
+	public static BIChange getBIChangeWithCorrectBISha1(Git git, BIChange biChange) {
+		
+		// skip biLine is a deleted line
+		if(!biChange.getIsAddedLine())
+			return biChange;
+		
+		Repository repository = git.getRepository();
+		BlameCommand blamer = new BlameCommand(repository);
+        ObjectId commitID;
+		try {
+			commitID = repository.resolve(biChange.getFixSha1() + "~1");
+			blamer.setTextComparator(RawTextComparator.WS_IGNORE_ALL);
+			blamer.setFollowFileRenames(true);
+			blamer.setStartCommit(commitID);
+	        blamer.setFilePath(biChange.getPath());
+	        BlameResult blame = blamer.call();
+	        
+	        // biPath might be different from fixPath
+	        boolean renamed = false;
+	        if(blame==null){
+	        	renamed = true;
+	        	commitID = repository.resolve(biChange.getBISha1());
+				blamer.setTextComparator(RawTextComparator.WS_IGNORE_ALL);
+				blamer.setFollowFileRenames(false);
+				blamer.setStartCommit(commitID);
+		        blamer.setFilePath(biChange.getBIPath());
+		        blame = blamer.call();
+	        }
+	        
+	        // get code
+	        String fixCode = fetchBlob(repository,biChange.getFixSha1(),biChange.getPath());
+	        
+	        String preFixCode = !renamed?fetchBlob(repository,biChange.getFixSha1() + "~1",biChange.getPath())
+	        						:fetchBlob(repository,biChange.getBISha1(),biChange.getBIPath());
+	        
+	        String[] splitlines = preFixCode.split("\n");
+	        
+	        EditList editList = getEditListFromDiff(preFixCode,fixCode);
+	        
+	        // find a biLine among changed lines
+	        ArrayList<Integer> candidateLineNums = new ArrayList<Integer>(); // line num starts from 0
+	        for(Edit edit:editList){
+	        	if(edit.getType()==Edit.Type.DELETE || edit.getType()==Edit.Type.REPLACE){
+		        	for(int i = edit.getBeginA();i<edit.getLengthA();i++){
+		        		if(biChange.getLine().equals(splitlines[i].trim()))
+		        			candidateLineNums.add(i);
+		        	}
+	        	}
+	        }
+	        
+	        // get the best lineNum
+	        int rawLineNum = biChange.getLineNum();
+	        if(candidateLineNums.size()==1){
+				biChange.setLineNum(candidateLineNums.get(0)+1);
+			}
+			else{
+				int currentGap = -1;
+				// heuristic to get the best matching line
+				for(int i=0;i<candidateLineNums.size();i++){
+					int lineNum = candidateLineNums.get(i);
+					int gap = Math.abs(lineNum-(rawLineNum-1));
+					
+					if(currentGap < 0 || gap < currentGap){
+						currentGap = gap;
+						biChange.setLineNum(lineNum+1);
+					}
+				}
+			}
+	        
+	        RevCommit commit = blame.getSourceCommit(biChange.getLineNum()-1);
+	        biChange.setBISha1(commit.name());
+            /*for (int i = 0; i < splitlines.length; i++) {
+                RevCommit commit = blame.getSourceCommit(i);
+                System.out.println("Line: " + (i+1) + ": " + commit.name() + splitlines[i]);
+            }*/  
+		} catch (RevisionSyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (AmbiguousObjectException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IncorrectObjectTypeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (GitAPIException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
+		return biChange;
 	}
 	
 	static public EditList getEditListFromDiff(Git git,String oldSha1, String newSha1, String path){
