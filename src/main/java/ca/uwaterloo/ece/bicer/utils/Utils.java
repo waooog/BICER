@@ -154,6 +154,9 @@ public class Utils {
 			}
 	        
 	        RevCommit commit = blame.getSourceCommit(biChange.getLineNum()-1);
+	        if(!commit.name().equals(biChange.getBISha1())){
+	        	System.err.println("WARNING: Wrong BI Sha1\n" + biChange.toString());
+	        }
 	        biChange.setBISha1(commit.name());
             /*for (int i = 0; i < splitlines.length; i++) {
                 RevCommit commit = blame.getSourceCommit(i);
