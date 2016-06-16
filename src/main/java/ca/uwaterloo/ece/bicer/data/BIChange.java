@@ -119,4 +119,16 @@ public class BIChange {
 				getLineNum() + "\t" +
 				getLine();
 	}
+	
+	public String getRecord(){
+		return getBISha1() + "\t" +
+				getBIPath() + "\t" +
+				getPath() + "\t" + 
+				getFixSha1() + "\t" +
+				getBIDate() + "\t" +
+				getFixDate() + "\t" +
+				getLineNum() + "\t" +
+				getIsAddedLine() + "\t" +
+				getLine();
+	}
 }
