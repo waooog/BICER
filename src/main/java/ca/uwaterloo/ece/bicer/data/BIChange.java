@@ -106,8 +106,8 @@ public class BIChange {
 		return edit;
 	}
 
-	public String setBISha1(String biSha1) {
-		return BISha1;
+	public void setBISha1(String biSha1) {
+		BISha1=biSha1;
 	}
 	
 	public String toString(){
