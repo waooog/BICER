@@ -21,15 +21,18 @@ public class ModifierChange implements Filter{
 		//do not need to consider this case
 		if(!biChange.getIsAddedLine()) return false;
 		String stmt = biChange.getLine();
+		String initStmt=stmt;
 		if(containModifier(stmt)){
+			initStmt=Utils.removeLineComments(stmt).trim();	// initial statement for removing false positive
 			stmt=stmt.replaceAll("(public|private|protected)\\s*", "");// remove modifiers
 			stmt=Utils.removeLineComments(stmt).trim(); // remove comments and space
-			
 			// if stmt contains a modifier, test each statements in the wholeFixCode
 			for(String fixStmt:wholeFixCode){
+				String initFixStmt=fixStmt;
+				initFixStmt=Utils.removeLineComments(initFixStmt).trim();
 				fixStmt=fixStmt.replaceAll("(public|private|protected)\\s*", "");
 				fixStmt=Utils.removeLineComments(fixStmt).trim();
-				if(stmt.equals(fixStmt)) return true;
+				if(stmt.equals(fixStmt)&&!initStmt.equals(initFixStmt)) return true;
 			}
 		}else{
 			stmt=Utils.removeLineComments(stmt).trim(); // remove comments and space
