@@ -11,6 +11,7 @@ public class BIChange {
 	String BIDate;
 	String FixDate;
 	int lineNum;
+	int lineNumInPrevFixRev;
 	boolean isAddedLine;
 	String line;
 	boolean isNoise;
@@ -28,7 +29,8 @@ public class BIChange {
 		FixSha1 = splitString[3];
 		BIDate = splitString[4];
 		FixDate = splitString[5];
-		lineNum = Integer.parseInt(splitString[6]);
+		lineNum = Integer.parseInt(splitString[6]); // if applying Sanitizer, this will be line num in BI code. Otherwise, assign the same line num from the prev of fix revision.
+		lineNumInPrevFixRev = Integer.parseInt(splitString[6]); // lineNum in the prv. of fix revision.
 		isAddedLine = splitString[7].equals("t")||splitString[7].equals("true")?true:false;
 		line = splitString[8];
 		filteredDueTo = "";
@@ -130,5 +132,9 @@ public class BIChange {
 				getLineNum() + "\t" +
 				getIsAddedLine() + "\t" +
 				getLine();
+	}
+
+	public void setLineNumInPrevFixRev(int lineNum) {
+		lineNumInPrevFixRev = lineNum;
 	}
 }

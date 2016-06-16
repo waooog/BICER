@@ -161,6 +161,8 @@ public class Utils {
 	        	biChange.setBISha1(commit.name());
 	        }
 	        biChange.setBISha1(commit.name());
+	        biChange.setLineNumInPrevFixRev(biChange.getLineNum()); // set lineNum in the code of previous revisions of the fix revision
+	        biChange.setLineNum(blame.getSourceLine(biChange.getLineNum()-1)+1); // set lineNum in BI code
             /*for (int i = 0; i < splitlines.length; i++) {
                 RevCommit commit = blame.getSourceCommit(i);
                 System.out.println("Line: " + (i+1) + ": " + commit.name() + splitlines[i]);
