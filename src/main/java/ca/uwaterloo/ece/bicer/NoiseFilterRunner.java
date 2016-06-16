@@ -242,15 +242,12 @@ public class NoiseFilterRunner {
 			biChange.setEdit(candidateEdits.get(0));
 		}
 		else{
-			int currentGap = -1;
 			// heuristic to get the best matching line
 			for(int i=0;i<candidateLineNums.size();i++){
-				int lineNum = candidateLineNums.get(i);
-				int gap = Math.abs(lineNum-(rawLineNum-1));
+				int lineIdx = candidateLineNums.get(i);
 				
-				if(currentGap < 0 || gap < currentGap){
-					currentGap = gap;
-					biChange.setLineNum(lineNum+1);
+				if(lineIdx <=(rawLineNum-1)){
+					biChange.setLineNum(lineIdx+1);
 					biChange.setEdit(candidateEdits.get(i));
 				}
 			}
