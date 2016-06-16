@@ -23,12 +23,14 @@ import ca.uwaterloo.ece.bicer.noisefilters.Filter;
 import ca.uwaterloo.ece.bicer.noisefilters.FilterFactory;
 import ca.uwaterloo.ece.bicer.noisefilters.FilterFactory.Filters;
 import ca.uwaterloo.ece.bicer.utils.JavaASTParser;
+import ca.uwaterloo.ece.bicer.utils.Sanitizer;
 import ca.uwaterloo.ece.bicer.utils.Utils;
 
 public class NoiseFilterRunner {
 
 	String gitURI;
 	String pathToBIChangeData;
+	boolean runSanitizer;
 	boolean help;
 	boolean verbose;
 	ArrayList<BIChange> biChanges;
@@ -50,11 +52,13 @@ public class NoiseFilterRunner {
 				return;
 			}
 
-			loadBIChanges();
-
-			filterOutNoises();
-
-			printCleanBIChanges();
+			if(runSanitizer){
+				(new Sanitizer()).sanitizer(pathToBIChangeData, gitURI);
+			}else{
+				loadBIChanges();
+				filterOutNoises();
+				printCleanBIChanges();
+			}
 		}
 	}
 
@@ -283,6 +287,10 @@ public class NoiseFilterRunner {
 				.argName("file")
 				.required()
 				.build());
+		
+		options.addOption(Option.builder("s").longOpt("sanitize")
+				.desc("Run Sanitizer that regenerate data by correcting a wrong line num")
+				.build());
 
 		options.addOption(Option.builder("h").longOpt("help")
 				.desc("Help")
@@ -307,6 +315,7 @@ public class NoiseFilterRunner {
 			gitURI = cmd.getOptionValue("g");
 			pathToBIChangeData = cmd.getOptionValue("d");
 
+			runSanitizer = cmd.hasOption("s");
 			help = cmd.hasOption("h");
 			verbose = cmd.hasOption("v");
 
