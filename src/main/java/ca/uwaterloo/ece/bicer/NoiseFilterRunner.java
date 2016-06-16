@@ -289,7 +289,7 @@ public class NoiseFilterRunner {
 				.build());
 		
 		options.addOption(Option.builder("s").longOpt("sanitize")
-				.desc("Run Sanitizer that regenerate data by correcting a wrong line num")
+				.desc("Run Sanitizer that regenerates new data by correcting a wrong line num")
 				.build());
 
 		options.addOption(Option.builder("h").longOpt("help")
