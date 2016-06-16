@@ -31,7 +31,7 @@ public class BIChange {
 		FixDate = splitString[5];
 		lineNum = Integer.parseInt(splitString[6]); // if applying Sanitizer, this will be line num in BI code.
 		lineNumInPrevFixRev = Integer.parseInt(splitString[7]); // lineNum in the prv. of fix revision.
-		isAddedLine = splitString[8].equals("t")||splitString[7].equals("true")?true:false;
+		isAddedLine = splitString[8].equals("t")||splitString[8].equals("true")?true:false;
 		line = splitString[9];
 		filteredDueTo = "";
 	}
