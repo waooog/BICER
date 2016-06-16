@@ -130,8 +130,13 @@ public class BIChange {
 				getBIDate() + "\t" +
 				getFixDate() + "\t" +
 				getLineNum() + "\t" +
+				getLineNumInPrevFixRev() + "\t" +
 				getIsAddedLine() + "\t" +
 				getLine();
+	}
+
+	public int getLineNumInPrevFixRev() {
+		return lineNumInPrevFixRev;
 	}
 
 	public void setLineNumInPrevFixRev(int lineNum) {
