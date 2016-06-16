@@ -11,6 +11,7 @@ public class FilterFactory {
 		COSMETIC_CHANGE,
 		NAME_CHANGE,
 		REMOVE_UN_METHOD,
+		MODIFIER_CHANGE,
 	}
 	
 	public Filter createFilter(Filters filter,BIChange biChange, String[] wholeFixCode){
@@ -23,6 +24,9 @@ public class FilterFactory {
 		
 		if(filter == Filters.COSMETIC_CHANGE)
 			return new CosmeticChange(biChange,wholeFixCode);
+		
+		if (filter == Filters.MODIFIER_CHANGE)
+			return new ModifierChange(biChange,wholeFixCode);
 		
 		return null;
 	}
