@@ -40,7 +40,7 @@ public class RemoveUnnecessaryMethod implements Filter {
 		for(MethodDeclaration methodDecNode:lstMethodDeclaration){
 			int beginLineNum = biWholeCodeAST.getCompilationUnit().getLineNumber(methodDecNode.getStartPosition());
 			int endLineNum = biWholeCodeAST.getCompilationUnit().getLineNumber(methodDecNode.getStartPosition()+methodDecNode.getLength());
-			if(biChange.getLineNum()>=beginLineNum && biChange.getLineNum()<= endLineNum){
+			if(biChange.getLineNumInPrevFixRev()>=beginLineNum && biChange.getLineNumInPrevFixRev()<= endLineNum){
 				biMethodDecNodeHavingBILine = methodDecNode;
 				potentialBeginALineNum = beginLineNum;
 				potentialEndALineNum = endLineNum;

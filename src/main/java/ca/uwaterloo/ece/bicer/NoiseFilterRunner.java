@@ -96,46 +96,30 @@ public class NoiseFilterRunner {
 			System.err.println("Repository does not exist: " + gitURI);
 		}
 
-		String[] wholeBICode=null;
+		String[] wholePreFixCode = null;
 		String[] wholeFixCode=null;
 		EditList editListFromDiff = null;
 		biChangesNotExist = new ArrayList<BIChange>();
 		for(BIChange biChange:biChanges){
 
-			String biSha1 = biChange.getBISha1();
+			String preFixSha1 = biChange.getFixSha1() + "~1";
 			String fixSha1 = biChange.getFixSha1();
 			String biPath = biChange.getBIPath();
 			String fixPath = biChange.getPath();
 
-			// load whole BI code
-			try {
-				// TODO when path does not exist in BI change, biPath should be identified.
-				wholeBICode = Utils.fetchBlob(repo, biSha1, biPath).split("\n");
-
-				if (wholeBICode.equals("")){
-					System.err.println("Ignore (no code): " + biSha1 + "\t" + fixSha1 + "\t" + biPath);
-					continue;
-				}
-
-			} catch (MissingObjectException e) {
-				System.err.println("The sha1 does not exist: " + biSha1 + ":" + biPath);
-				biChangesNotExist.add(biChange);
-				continue;
-			} catch (IncorrectObjectTypeException e) {
-				e.printStackTrace();
-				biChangesNotExist.add(biChange);
-				continue;
-			} catch (IOException e) {
-				System.err.println("The file path does not exist: " + biSha1 + ":" + biPath);
-				biChangesNotExist.add(biChange);
-				continue;
-			}
-
 			// load whole fix code
 			try {
+				try{
+					wholePreFixCode = Utils.fetchBlob(repo, preFixSha1, fixPath).split("\n");
+				} catch (IOException e) {
+					System.out.println("WARNING pre fix revision path does not exist: " + fixPath);
+					System.out.println("Try to get code from biPath " + biPath);
+					wholePreFixCode = Utils.fetchBlob(repo, preFixSha1, biPath).split("\n");
+				}
+				
 				wholeFixCode = Utils.fetchBlob(repo, fixSha1, fixPath).split("\n");
 
-				editListFromDiff = Utils.getEditListFromDiff(Utils.getStringFromStringArray(wholeBICode),Utils.getStringFromStringArray(wholeFixCode));
+				editListFromDiff = Utils.getEditListFromDiff(Utils.getStringFromStringArray(wholePreFixCode),Utils.getStringFromStringArray(wholeFixCode));
 
 			} catch (MissingObjectException e) {
 				System.err.println("The sha1 does not exist: " + fixSha1 + ":" + fixPath);
@@ -158,7 +142,7 @@ public class NoiseFilterRunner {
 				continue;
 			}
 
-			biChange.setIsNoise(isNoise(biChange,wholeBICode,wholeFixCode,editListFromDiff));
+			biChange.setIsNoise(isNoise(biChange,wholePreFixCode,wholeFixCode,editListFromDiff));
 		}
 	}
 

@@ -37,7 +37,7 @@ public class NameChange implements Filter {
 			return false;
 		
 		String biSource = biWholeCodeAST.getStringCode();
-		int startPositionOfBILine = getStartPosition(biSource,biChange.getLineNum());
+		int startPositionOfBILine = getStartPosition(biSource,biChange.getLineNumInPrevFixRev());
 		
 		if(startPositionOfBILine <0){
 			System.err.println("Warning: line does not exist in BI source code " + ": " + biChange.getLine());
@@ -92,7 +92,7 @@ public class NameChange implements Filter {
 		ASTNode node = NodeFinder.perform(biWholeCodeAST.getCompilationUnit(), startPosition,2);
 		int a = node.getNodeType();*/
 		
-		int biLineNum = biChange.getLineNum();
+		int biLineNum = biChange.getLineNumInPrevFixRev();
 		int fixLineNum = biChange.getEdit().getBeginB()+1;
 		
 		ArrayList<VariableDeclarationFragment> lstBIVariableDeclarationFragment = biWholeCodeAST.getVariableDeclarationFragments();
@@ -170,7 +170,7 @@ public class NameChange implements Filter {
 			return false;
 		}
 		
-		int biLineNum = biChange.getLineNum();
+		int biLineNum = biChange.getLineNumInPrevFixRev();
 		int fixLineNum = biChange.getEdit().getBeginB()+1;
 		
 		ArrayList<MethodDeclaration> lstBIMethodDeclaration = biWholeCodeAST.getMethodDeclarations();
