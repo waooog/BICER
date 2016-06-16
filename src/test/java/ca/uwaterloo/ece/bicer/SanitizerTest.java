@@ -16,7 +16,7 @@ public class SanitizerTest {
         
     	Sanitizer ster = new Sanitizer();
     	
-    	ster.sanitizer("/Users/JC/Documents/UW/ODP/projects/lucene/biChanges.txt", "/Documents/UW/ODP/projects/lucene/git/git");
+    	ster.sanitizer("data/exampleBIChanges.txt", System.getProperty("user.home") + "/git/BICER");
     	
     	//assertTrue("someLibraryMethod should return 'true'", classUnderTest.someLibraryMethod());
     }
