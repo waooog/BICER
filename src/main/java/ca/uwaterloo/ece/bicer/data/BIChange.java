@@ -109,4 +109,13 @@ public class BIChange {
 	public String setBISha1(String biSha1) {
 		return BISha1;
 	}
+	
+	public String toString(){
+		return getBISha1() + "\t" +
+				getBIPath() + "\t" +
+				getPath() + "\t" + 
+				getIsAddedLine() + "\t" +
+				getLineNum() + "\t" +
+				getLine();
+	}
 }
