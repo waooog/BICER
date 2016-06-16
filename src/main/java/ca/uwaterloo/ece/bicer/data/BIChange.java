@@ -114,6 +114,7 @@ public class BIChange {
 		return getBISha1() + "\t" +
 				getBIPath() + "\t" +
 				getPath() + "\t" + 
+				getFixSha1() + "\t" +
 				getIsAddedLine() + "\t" +
 				getLineNum() + "\t" +
 				getLine();
