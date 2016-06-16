@@ -157,7 +157,7 @@ public class Utils {
 	        RevCommit commit = blame.getSourceCommit(biChange.getLineNum()-1);
 	        if(!commit.name().equals(biChange.getBISha1())){
 	        	System.err.println("WARNING: Wrong BI Sha1 - correct BI Sha1 = " + commit.name() + " lineNum=" + biChange.getLineNum() + "\n" + biChange.toString());
-	        	System.err.println("git blame -w -C " + biChange.getFixSha1() + "~1 " + biChange.getPath());
+	        	System.err.println("git blame -w -C " + biChange.getFixSha1() + "~1 -- " + biChange.getPath());
 	        	biChange.setBISha1(commit.name());
 	        }
 	        biChange.setBISha1(commit.name());
