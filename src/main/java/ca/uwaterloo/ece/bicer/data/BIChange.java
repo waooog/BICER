@@ -29,7 +29,7 @@ public class BIChange {
 		BIDate = splitString[4];
 		FixDate = splitString[5];
 		lineNum = Integer.parseInt(splitString[6]);
-		isAddedLine = splitString[7].equals("t")?true:false;
+		isAddedLine = splitString[7].equals("t")||splitString[7].equals("true")?true:false;
 		line = splitString[8];
 		filteredDueTo = "";
 	}
