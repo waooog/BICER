@@ -127,7 +127,7 @@ public class Utils {
 	        ArrayList<Integer> candidateLineNums = new ArrayList<Integer>(); // line num starts from 0
 	        for(Edit edit:editList){
 	        	if(edit.getType()==Edit.Type.DELETE || edit.getType()==Edit.Type.REPLACE){
-		        	for(int i = edit.getBeginA();i<edit.getLengthA();i++){
+		        	for(int i = edit.getBeginA();i<edit.getBeginA()+edit.getLengthA();i++){
 		        		if(biChange.getLine().equals(splitlines[i].trim()))
 		        			candidateLineNums.add(i);
 		        	}
@@ -135,27 +135,30 @@ public class Utils {
 	        }
 	        
 	        // get the best lineNum
-	        int rawLineNum = biChange.getLineNum();
+	        int originalLineNum = biChange.getLineNum();
 	        if(candidateLineNums.size()==1){
-				biChange.setLineNum(candidateLineNums.get(0)+1);
+	        	biChange.setLineNum(candidateLineNums.get(0)+1);
+	        	if(biChange.getLineNum()!=candidateLineNums.get(0)+1){
+		        	System.err.println("WARNING: LinNum updated: " + originalLineNum +  "==>" + biChange.getLineNum() + "\n" + biChange.toString());
+		        }
 			}
 			else{
-				int currentGap = -1;
 				// heuristic to get the best matching line
 				for(int i=0;i<candidateLineNums.size();i++){
-					int lineNum = candidateLineNums.get(i);
-					int gap = Math.abs(lineNum-(rawLineNum-1));
-					
-					if(currentGap < 0 || gap < currentGap){
-						currentGap = gap;
-						biChange.setLineNum(lineNum+1);
+					int lineIdx = candidateLineNums.get(i);
+					if(lineIdx<=(originalLineNum-1)){
+						biChange.setLineNum(lineIdx+1);
 					}
 				}
+				if(originalLineNum!=biChange.getLineNum())
+					System.err.println("WARNING: LineNum updated(2): " + originalLineNum +  "==>" + biChange.getLineNum() + "\n" + biChange.toString());
 			}
 	        
 	        RevCommit commit = blame.getSourceCommit(biChange.getLineNum()-1);
 	        if(!commit.name().equals(biChange.getBISha1())){
-	        	System.err.println("WARNING: Wrong BI Sha1\n" + biChange.toString());
+	        	System.err.println("WARNING: Wrong BI Sha1 - correct BI Sha1 = " + commit.name() + " lineNum=" + biChange.getLineNum() + "\n" + biChange.toString());
+	        	System.err.println("git blame -w -C " + biChange.getFixSha1() + "~1 " + biChange.getPath());
+	        	biChange.setBISha1(commit.name());
 	        }
 	        biChange.setBISha1(commit.name());
             /*for (int i = 0; i < splitlines.length; i++) {
