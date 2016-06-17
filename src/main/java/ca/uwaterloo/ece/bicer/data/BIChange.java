@@ -115,6 +115,10 @@ public class BIChange {
 	public Edit getEdit() {
 		return edit;
 	}
+	
+	public EditList getEditListFromDiff() {
+		return editList;
+	}
 
 	public void setBISha1(String biSha1) {
 		BISha1=biSha1;
