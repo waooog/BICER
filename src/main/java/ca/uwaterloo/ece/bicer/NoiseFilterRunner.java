@@ -109,13 +109,18 @@ public class NoiseFilterRunner {
 
 			// load whole fix code
 			try {
-				try{
-					wholePreFixCode = Utils.fetchBlob(repo, preFixSha1, fixPath).split("\n");
-				} catch (IOException e) {
+				String code = Utils.fetchBlob(repo, preFixSha1, fixPath);
+				if(code.equals("")){
 					System.out.println("WARNING pre fix revision path does not exist: " + fixPath);
 					System.out.println("Try to get code from biPath " + biPath);
-					wholePreFixCode = Utils.fetchBlob(repo, preFixSha1, biPath).split("\n");
+					code = Utils.fetchBlob(repo, biChange.getBISha1(), biPath);
+					if(code.equals("")){
+						System.out.println("WARNING even bi path does not exist: " + biPath);
+						System.exit(0);
+					}
 				}
+				
+				wholePreFixCode = code.split("\n");
 				
 				wholeFixCode = Utils.fetchBlob(repo, fixSha1, fixPath).split("\n");
 
