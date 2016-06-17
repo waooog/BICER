@@ -64,8 +64,10 @@ public class CosmeticChange implements Filter {
 		
 		int indexOf;
 		if((indexOf = affectedFixCode.indexOf(stmtWithoutWhiteSpaces))!= -1){
-			if(indexOf != affectedFixCode.lastIndexOf(stmtWithoutWhiteSpaces))
+			if(indexOf != affectedFixCode.lastIndexOf(stmtWithoutWhiteSpaces)){
 				System.err.println("WARNING(" + name + "): not a single occurence for: " + stmt);
+				return false; // let this case just buggy
+			}
 			return true;
 		}
 		
