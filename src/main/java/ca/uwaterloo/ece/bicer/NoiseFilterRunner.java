@@ -125,6 +125,7 @@ public class NoiseFilterRunner {
 				wholeFixCode = Utils.fetchBlob(repo, fixSha1, fixPath).split("\n");
 
 				editListFromDiff = Utils.getEditListFromDiff(Utils.getStringFromStringArray(wholePreFixCode),Utils.getStringFromStringArray(wholeFixCode));
+				//editListFromDiff = Utils.getEditListFromDiff(git, preFixSha1, fixSha1, fixPath);//Utils.getEditListFromDiff(Utils.getStringFromStringArray(wholePreFixCode),Utils.getStringFromStringArray(wholeFixCode));
 
 			} catch (MissingObjectException e) {
 				System.err.println("The sha1 does not exist: " + fixSha1 + ":" + fixPath);

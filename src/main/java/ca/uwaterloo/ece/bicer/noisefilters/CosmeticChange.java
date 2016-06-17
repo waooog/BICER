@@ -36,6 +36,13 @@ public class CosmeticChange implements Filter {
 
 	private boolean doesAFixCosmeticChange(String stmt, String[] fixCode) {
 		
+		// check edit is null, if null skip
+		if(biChange.getEdit()==null){
+			System.err.println("WARNING: Diff results are different between jGit and git diff");
+			System.err.println(biChange.toString());
+			return false;
+		}
+		
 		// only consider REPLACE case
 		if(biChange.getEdit().getType()!=Edit.Type.REPLACE)
 			return false;

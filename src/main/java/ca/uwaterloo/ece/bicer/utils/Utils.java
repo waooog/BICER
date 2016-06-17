@@ -219,12 +219,17 @@ public class Utils {
 			DiffFormatter df = new DiffFormatter(out);
 			df.setRepository(repo);
 
-			DiffEntry entry = diffs.get(0);
-			df.format(entry);
-
-			FileHeader fileHeader = df.toFileHeader( entry );
+			for(DiffEntry entry:diffs){
+		
+				df.format(entry);
+				FileHeader fileHeader = df.toFileHeader( entry );
+				if(!fileHeader.getNewPath().equals(path))
+					continue;
+				
+				return fileHeader.toEditList();
+			}
+			
 			df.close();
-			return fileHeader.toEditList();
 
 		} catch (IndexOutOfBoundsException e){
 					
