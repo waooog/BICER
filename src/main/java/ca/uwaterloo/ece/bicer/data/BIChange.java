@@ -160,4 +160,31 @@ public class BIChange {
 	public void setLineNumInPrevFixRev(int lineNum) {
 		lineNumInPrevFixRev = lineNum;
 	}
+	
+	public boolean equals(BIChange compareWith){
+		if(!BISha1.equals(compareWith.BISha1))
+			return false;
+		if(!biPath.equals(compareWith.biPath))
+			return false;
+		if(!path.equals(compareWith.path))
+			return false;
+		if(!FixSha1.equals(compareWith.FixSha1))
+			return false;
+		if(!BIDate.equals(compareWith.BIDate))
+			return false;
+		if(!FixDate.equals(compareWith.FixDate))
+			return false;
+		if(lineNum!=compareWith.lineNum)
+			return false;
+		if(lineNumInPrevFixRev!=compareWith.lineNumInPrevFixRev)
+			return false;
+		if(isAddedLine!=compareWith.isAddedLine)
+			return false;
+		if(!line.equals(compareWith.line))
+			return false;;
+		if(isNoise!=compareWith.isNoise)
+			return false;
+		
+		return true;
+	}
 }
