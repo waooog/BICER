@@ -1,5 +1,7 @@
 package ca.uwaterloo.ece.bicer.noisefilters;
 
+import org.eclipse.jgit.diff.Edit;
+
 import ca.uwaterloo.ece.bicer.data.BIChange;
 import ca.uwaterloo.ece.bicer.utils.Utils;
 
@@ -34,20 +36,28 @@ public class CosmeticChange implements Filter {
 
 	private boolean doesAFixCosmeticChange(String stmt, String[] fixCode) {
 		
+		// only consider REPLACE case
+		if(biChange.getEdit().getType()!=Edit.Type.REPLACE)
+			return false;
+
+		// get changed code range
+		int startLineInFixCode  = biChange.getEdit().getBeginB();
+		int endLineInFixCode  = biChange.getEdit().getEndB();
+		
 		String stmtWithoutWhiteSpaces = stmt.replaceAll("\\s", "");
 		
 		if (stmtWithoutWhiteSpaces.length()<4)
 			System.err.println("WARNING(" + name + "): a too short line: " + stmt);
 		
-		String wholeCodeWithoutSpace = "";
+		String affectedFixCode = "";
 		
-		for(String s:fixCode){
-			wholeCodeWithoutSpace += Utils.removeLineComments(s).replaceAll("\\s", "");
+		for(int i=startLineInFixCode; i<=endLineInFixCode;i++){
+			affectedFixCode += Utils.removeLineComments(fixCode[i]).replaceAll("\\s", "");
 		}
 		
 		int indexOf;
-		if((indexOf = wholeCodeWithoutSpace.indexOf(stmtWithoutWhiteSpaces))!= -1){
-			if(indexOf != wholeCodeWithoutSpace.lastIndexOf(stmtWithoutWhiteSpaces))
+		if((indexOf = affectedFixCode.indexOf(stmtWithoutWhiteSpaces))!= -1){
+			if(indexOf != affectedFixCode.lastIndexOf(stmtWithoutWhiteSpaces))
 				System.err.println("WARNING(" + name + "): not a single occurence for: " + stmt);
 			return true;
 		}
