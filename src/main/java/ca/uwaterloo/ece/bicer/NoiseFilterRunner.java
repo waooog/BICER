@@ -79,10 +79,7 @@ public class NoiseFilterRunner {
 		// List Noisy BI changes
 		System.out.println("\n\nNoisy BI changes\nBI_SHA1\tPATH\tBIDATE\tFixDATE\t DUE_TO");
 		for(BIChange biChange:noisyBIChanges){
-			System.out.println(biChange.getBISha1() + "\t" + biChange.getPath() +
-					"\t" + biChange.getBIDate() + "\t" + biChange.getFixDate() +
-					"\t" + biChange.getFilteredDueTo() + "\t" +  biChange.getIsAddedLine() + 
-					"\t" + biChange.getLine());
+			System.out.println(biChange.getRecord() + "\t" +biChange.getFilteredDueTo());
 		}
 	}
 
