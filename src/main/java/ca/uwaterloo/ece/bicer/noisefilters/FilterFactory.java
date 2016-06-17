@@ -1,5 +1,7 @@
 package ca.uwaterloo.ece.bicer.noisefilters;
 
+import org.eclipse.jgit.diff.EditList;
+
 import ca.uwaterloo.ece.bicer.data.BIChange;
 import ca.uwaterloo.ece.bicer.utils.JavaASTParser;
 
@@ -25,9 +27,14 @@ public class FilterFactory {
 		if(filter == Filters.COSMETIC_CHANGE)
 			return new CosmeticChange(biChange,wholeFixCode);
 		
-		if (filter == Filters.MODIFIER_CHANGE)
-			return new ModifierChange(biChange,wholeFixCode);
+
 		
+		return null;
+	}
+	
+	public Filter createFilter(Filters filter,BIChange biChange, String[] wholeFixCode, EditList editListFromDiffOfPrev){
+		if (filter == Filters.MODIFIER_CHANGE)
+			return new ModifierChange(biChange,wholeFixCode,editListFromDiffOfPrev);
 		return null;
 	}
 	
