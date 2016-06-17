@@ -120,6 +120,7 @@ public class NameChange implements Filter {
 				if(exp!=null)
 					biLineNodes.add(exp);
 				originalName = ((VariableDeclarationFragment)varDecFragNode).getName().toString();
+				break;
 			}
 		}
 		
@@ -139,6 +140,7 @@ public class NameChange implements Filter {
 				if(exp!=null)
 					fixLineNodes.add(exp);
 				changedName = ((VariableDeclarationFragment)varDecFragNode).getName().toString();
+				break;
 			}
 		}
 		
