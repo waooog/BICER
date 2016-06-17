@@ -11,12 +11,10 @@ public class ModifierChange implements Filter{
 	BIChange biChange;
 	boolean isNoise=false;
 	String[] wholeFixCode;
-	EditList editListFromDiff;
 	
-	public ModifierChange (BIChange biChange, String[] wholeFixCode, EditList editListFromDiff){
+	public ModifierChange (BIChange biChange, String[] wholeFixCode){
 		this.biChange=biChange;
 		this.wholeFixCode=wholeFixCode;
-		this.editListFromDiff=editListFromDiff;
 		this.isNoise=filterOut();
 	}
 	@Override
@@ -32,7 +30,7 @@ public class ModifierChange implements Filter{
 			stmt=stmt.replaceAll("(public|private|protected)\\s*", "");// remove modifiers
 			stmt=Utils.removeLineComments(stmt).trim(); // remove comments and space
 			// if stmt contains a modifier, test each statements in the wholeFixCode
-			for( Edit edit:editListFromDiff){
+			for( Edit edit:biChange.getEditListFromDiff()){
 					for(int i=edit.getBeginB();i<edit.getEndB();i++){
 						String fixStmt=wholeFixCode[i];
 						String initFixStmt=fixStmt;
@@ -47,7 +45,7 @@ public class ModifierChange implements Filter{
 			stmt=Utils.removeLineComments(stmt).trim(); // remove comments and space
 	        /*if stmt does not contain a modifer, 
 		    we only test statements in the wholeFixCode that has a modifers  */
-			for( Edit edit:editListFromDiff){
+			for( Edit edit:biChange.getEditListFromDiff()){
 				//if(edit.getBeginA()<edit.getEndA()&&edit.getBeginB()<edit.getEndB()){
 					for(int i=edit.getBeginB();i<edit.getEndB();i++){
 						String fixStmt=wholeFixCode[i];
