@@ -206,7 +206,7 @@ public class NoiseFilterRunner {
 			int beginA = edit.getBeginA();
 			int endA = edit.getEndA();
 			
-			if(beginA < biChange.getLineNum() && biChange.getLineNum()<=endA){
+			if(beginA < biChange.getLineNumInPrevFixRev() && biChange.getLineNumInPrevFixRev()<=endA){
 				biChange.setEdit(edit);
 				break;
 			}
