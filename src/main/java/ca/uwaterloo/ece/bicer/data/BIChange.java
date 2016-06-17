@@ -19,6 +19,8 @@ public class BIChange {
 	EditList editList;
 	
 	String filteredDueTo;
+	
+	public BIChange(){}
 
 	public BIChange(String changeInfo,boolean forSenitizer){
 		String[] splitString = changeInfo.split("\t");
@@ -50,6 +52,10 @@ public class BIChange {
 	
 	public void setBIPath(String biPath){
 		this.biPath = biPath;
+	}
+	
+	public void setPath(String path){
+		this.path = path;
 	}
 	
 	public void setFilteredDueTo(String filterName) {
@@ -114,6 +120,10 @@ public class BIChange {
 
 	public Edit getEdit() {
 		return edit;
+	}
+	
+	public EditList getEditListFromDiff() {
+		return editList;
 	}
 
 	public void setBISha1(String biSha1) {

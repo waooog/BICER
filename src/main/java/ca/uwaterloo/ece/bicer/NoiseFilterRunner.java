@@ -70,8 +70,7 @@ public class NoiseFilterRunner {
 		System.out.println("BI_SHA1\tPATH\tBIDATE\tFixDATE");
 		for(BIChange biChange:biChanges){
 			if(!biChange.isNoise() && !biChangesNotExist.contains(biChange))
-				System.out.println(biChange.getBISha1() + "\t" + biChange.getPath() +
-						"\t" + biChange.getBIDate() + "\t" + biChange.getFixDate());
+				System.out.println(biChange.getRecord());
 			else if (biChange.isNoise()){
 				noisyBIChanges.add(biChange);
 			}
