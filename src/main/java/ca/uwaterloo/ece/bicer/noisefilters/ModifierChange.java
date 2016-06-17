@@ -1,5 +1,8 @@
 package ca.uwaterloo.ece.bicer.noisefilters;
 
+import org.eclipse.jgit.diff.Edit;
+import org.eclipse.jgit.diff.EditList;
+
 import ca.uwaterloo.ece.bicer.data.BIChange;
 import ca.uwaterloo.ece.bicer.utils.Utils;
 
@@ -12,7 +15,7 @@ public class ModifierChange implements Filter{
 	public ModifierChange (BIChange biChange, String[] wholeFixCode){
 		this.biChange=biChange;
 		this.wholeFixCode=wholeFixCode;
-		this.isNoise=filterOut();	
+		this.isNoise=filterOut();
 	}
 	@Override
 	public boolean filterOut() {
@@ -27,24 +30,32 @@ public class ModifierChange implements Filter{
 			stmt=stmt.replaceAll("(public|private|protected)\\s*", "");// remove modifiers
 			stmt=Utils.removeLineComments(stmt).trim(); // remove comments and space
 			// if stmt contains a modifier, test each statements in the wholeFixCode
-			for(String fixStmt:wholeFixCode){
-				String initFixStmt=fixStmt;
-				initFixStmt=Utils.removeLineComments(initFixStmt).trim();
-				fixStmt=fixStmt.replaceAll("(public|private|protected)\\s*", "");
-				fixStmt=Utils.removeLineComments(fixStmt).trim();
-				if(stmt.equals(fixStmt)&&!initStmt.equals(initFixStmt)) return true;
-			}
+			for( Edit edit:biChange.getEditListFromDiff()){
+					for(int i=edit.getBeginB();i<edit.getEndB();i++){
+						String fixStmt=wholeFixCode[i];
+						String initFixStmt=fixStmt;
+						initFixStmt=Utils.removeLineComments(initFixStmt).trim();
+						fixStmt=fixStmt.replaceAll("(public|private|protected)\\s*", "");
+						fixStmt=Utils.removeLineComments(fixStmt).trim();
+						if(stmt.equals(fixStmt)&&!initStmt.equals(initFixStmt)) return true;					
+					}								
+			}			
+
 		}else{
 			stmt=Utils.removeLineComments(stmt).trim(); // remove comments and space
 	        /*if stmt does not contain a modifer, 
 		    we only test statements in the wholeFixCode that has a modifers  */
-			for(String fixStmt:wholeFixCode){
-				if(containModifier(fixStmt)){
-					fixStmt=fixStmt.replaceAll("(public|private|protected)\\s*", "");
-					fixStmt=Utils.removeLineComments(fixStmt).trim();
-					if(stmt.equals(fixStmt)) return true;					
-				}
-			}
+			for( Edit edit:biChange.getEditListFromDiff()){
+				//if(edit.getBeginA()<edit.getEndA()&&edit.getBeginB()<edit.getEndB()){
+					for(int i=edit.getBeginB();i<edit.getEndB();i++){
+						String fixStmt=wholeFixCode[i];
+						if(containModifier(fixStmt)){
+							fixStmt=fixStmt.replaceAll("(public|private|protected)\\s*", "");
+							fixStmt=Utils.removeLineComments(fixStmt).trim();
+							if(stmt.equals(fixStmt)) return true;	
+						}	
+					}
+			}				
 		}
 		
 		return false;

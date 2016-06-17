@@ -1,5 +1,7 @@
 package ca.uwaterloo.ece.bicer.noisefilters;
 
+import org.eclipse.jgit.diff.EditList;
+
 import ca.uwaterloo.ece.bicer.data.BIChange;
 import ca.uwaterloo.ece.bicer.utils.JavaASTParser;
 
@@ -27,9 +29,10 @@ public class FilterFactory {
 		
 		if (filter == Filters.MODIFIER_CHANGE)
 			return new ModifierChange(biChange,wholeFixCode);
-		
+
 		return null;
 	}
+	
 	
 public Filter createFilter(Filters filter,BIChange biChange, JavaASTParser biWholeCodeAST, JavaASTParser fixWholeCodeAST){
 
