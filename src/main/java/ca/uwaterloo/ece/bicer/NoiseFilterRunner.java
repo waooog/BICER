@@ -142,6 +142,12 @@ public class NoiseFilterRunner {
 			if(biChange.getLine().trim().length()<2){
 				biChange.setFilteredDueTo("One character line");
 				Edit edit = biChange.getEdit();
+				// check edit is null, if null skip
+				if(biChange.getEdit()==null){
+					System.err.println("WARNING not filtered: Diff results are different between jGit and git diff");
+					System.err.println(biChange.toString());
+					biChange.setIsNoise(false);
+				}
 				int beginA = edit.getBeginA();
 				int endA = edit.getEndA();
 				
