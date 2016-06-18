@@ -60,6 +60,10 @@ public class CosmeticChange implements Filter {
 		
 		for(int i=startLineInFixCode; i<=endLineInFixCode;i++){
 			affectedFixCode += Utils.removeLineComments(fixCode[i]).replaceAll("\\s", "");
+			// if a change happens in the front, do not filter. That can be adding a modifier or similar changes.
+			int indexOf = fixCode[i].trim().indexOf(biChange.getLine().trim());
+			if(indexOf>0)
+				return false;
 		}
 		
 		int indexOf;
