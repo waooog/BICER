@@ -35,7 +35,7 @@ public class ModifierChange implements Filter{
 						String fixStmt=wholeFixCode[i];
 						String initFixStmt=fixStmt;
 						initFixStmt=Utils.removeLineComments(initFixStmt).trim();
-						fixStmt=fixStmt.replaceAll("(private|protected)\\s*", "");
+						fixStmt=fixStmt.replaceAll("(private|protected)\\s*", ""); // public removed, private|protected to public can be a real fix
 						fixStmt=Utils.removeLineComments(fixStmt).trim();
 						if(stmt.equals(fixStmt)&&!initStmt.equals(initFixStmt)) return true;					
 					}								
@@ -50,7 +50,7 @@ public class ModifierChange implements Filter{
 					for(int i=edit.getBeginB();i<edit.getEndB();i++){
 						String fixStmt=wholeFixCode[i];
 						if(containModifier(fixStmt)){
-							fixStmt=fixStmt.replaceAll("(public|private|protected)\\s*", "");
+							fixStmt=fixStmt.replaceAll("(private|protected)\\s*", ""); // public removed, private|protected to public can be a real fix
 							fixStmt=Utils.removeLineComments(fixStmt).trim();
 							if(stmt.equals(fixStmt)) return true;	
 						}	
