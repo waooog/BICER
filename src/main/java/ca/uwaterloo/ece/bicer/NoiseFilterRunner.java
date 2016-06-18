@@ -137,6 +137,7 @@ public class NoiseFilterRunner {
 				continue;
 			}
 
+			updateBIChangeWithEditList(biChange,wholePreFixCode,wholeFixCode,editListFromDiff);
 			// ignore line with only one character such as {,}
 			if(biChange.getLine().trim().length()<2){
 				biChange.setFilteredDueTo("One character line");
@@ -158,8 +159,6 @@ public class NoiseFilterRunner {
 	private boolean isNoise(BIChange biChange,String[] wholeBICode, String[] wholeFixCode, EditList editListFromDiff){
 
 		FilterFactory factory = new FilterFactory();
-
-		updateBIChangeWithEditList(biChange,wholeBICode,wholeFixCode,editListFromDiff);
 
 		JavaASTParser biWholeCodeAST = new JavaASTParser(Utils.getStringFromStringArray(wholeBICode));
 		JavaASTParser fixedWholeCodeAST = new JavaASTParser(Utils.getStringFromStringArray(wholeFixCode));
