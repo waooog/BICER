@@ -28,7 +28,8 @@ public class ResultValidationTest {
     	 * BI_SHA1 PATH    BIDATE  FixDATE  DUE_TO isAddedLine   line
     	 */
     	String pathForBIChangesNoiseFiltered =  dir + "biChangesNoiseFiltered.txt"; 
-    	String pathForBIManuallyVerified = dir + project + "BIs.txt";
+    	//String pathForBIManuallyVerified = dir + project + "BIs.txt";
+    	String pathForBIManuallyVerified = dir + project + "BIsManualIssueCorrected.txt";
     	
     	ArrayList<BIChange> biChanges = loadBIChanges(pathForBIChanges, true);
     	ArrayList<BIChange> biChangesSanitized = loadBIChanges(pathForBIChangesSanitized, false);
@@ -126,7 +127,7 @@ public class ResultValidationTest {
     	System.out.println("\n\nFalse Negatives that must not be filtered! At least, one BIC line must exist if not to be FN");
     	
     	for(String FN:FNs){
-    		System.out.println("+ " + FN);
+    		System.out.println(FN);
     	}
     	
     	// FN BIC lines. To be TP, at least one following FN BIC lines per key should be alive even after filtering.
@@ -136,13 +137,13 @@ public class ResultValidationTest {
     		BIChange originalBIChangeIdentifiedAsNoise = biChanges.get(indexFromSenitizedBIs);
     		String key = originalBIChangeIdentifiedAsNoise.getBISha1() + "\t" + originalBIChangeIdentifiedAsNoise.getPath();
     		if(FNs.contains(key))
-    			System.out.println("FN (at least, one of lines with the same key must be alive but filtered.): " + noisyBiChange.getFilteredDueTo() + "\t" + originalBIChangeIdentifiedAsNoise.getRecord());
+    			System.out.println("FN (at least, one of lines with the same key must be alive but filtered.):\t" + noisyBiChange.getFilteredDueTo() + "\t" + originalBIChangeIdentifiedAsNoise.getRecord());
     	}
     	
     	System.out.println("\n\nFalse Positives that should be filtered!");
     	
     	for(String FP:FPs){
-    		System.out.println("- " + FP);
+    		System.out.println(FP);
     	}
     	
     	for(BIChange biChangeAliveAfterFiltering:biChangesSanitizedNoiseFiltered){
