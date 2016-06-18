@@ -140,7 +140,14 @@ public class NoiseFilterRunner {
 			// ignore line with only one character such as {,}
 			if(biChange.getLine().trim().length()<2){
 				biChange.setFilteredDueTo("One character line");
-				biChange.setIsNoise(true);
+				Edit edit = biChange.getEdit();
+				int beginA = edit.getBeginA();
+				int endA = edit.getEndA();
+				
+				if(edit.getType()==Edit.Type.DELETE && (endA-beginA)==1)
+					biChange.setIsNoise(false); // single line delete change should not be noise
+				else
+					biChange.setIsNoise(true);
 				continue;
 			}
 
