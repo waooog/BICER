@@ -35,7 +35,7 @@ public class ModifierChange implements Filter{
 						String fixStmt=wholeFixCode[i];
 						String initFixStmt=fixStmt;
 						initFixStmt=Utils.removeLineComments(initFixStmt).trim();
-						fixStmt=fixStmt.replaceAll("(public|private|protected)\\s*", "");
+						fixStmt=fixStmt.replaceAll("(private|protected)\\s*", "");
 						fixStmt=Utils.removeLineComments(fixStmt).trim();
 						if(stmt.equals(fixStmt)&&!initStmt.equals(initFixStmt)) return true;					
 					}								
