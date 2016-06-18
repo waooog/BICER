@@ -6,6 +6,7 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
 
 import ca.uwaterloo.ece.bicer.data.BIChange;
 import ca.uwaterloo.ece.bicer.utils.JavaASTParser;
+import ca.uwaterloo.ece.bicer.utils.Utils;
 
 public class RemoveUnnecessaryMethod implements Filter {
 	
@@ -57,7 +58,7 @@ public class RemoveUnnecessaryMethod implements Filter {
 			return false;
 		
 		// (2) check all lines for the method are removed.
-		if(!((potentialBeginALineNum >= biChange.getEdit().getBeginA()+1) && (potentialEndALineNum <= biChange.getEdit().getEndA()+1))){
+		if(!((potentialBeginALineNum > biChange.getEdit().getBeginA()) && (potentialEndALineNum <= biChange.getEdit().getEndA()))){
 			return false;
 		}
 		
@@ -66,13 +67,18 @@ public class RemoveUnnecessaryMethod implements Filter {
 		return notExistMethodAndBILine(lstMethodDeclaration,biMethodDecNodeHavingBILine);
 	}
 
+	@SuppressWarnings("unchecked")
 	private boolean notExistMethodAndBILine(ArrayList<MethodDeclaration> lstMethodDeclaration, MethodDeclaration methodHavingBILine) {
 		
 		for(MethodDeclaration methodDecl:lstMethodDeclaration){
 			
+			//System.out.println(methodDecl.getName().toString());
+			//System.out.println(methodDecl.parameters().toString());
+	
+			
 			// (1) check if a method with the same name and parameters exists. if it exists, not a noise.
 			if(methodDecl.getName().toString().equals(methodHavingBILine.getName().toString())
-					&& methodDecl.parameters().toString().equals(methodHavingBILine.parameters().toString()))
+					&& Utils.compareMethodParametersFromAST(methodHavingBILine.parameters(),methodDecl.parameters()))
 				return false;
 			
 			// (2) check if an exactly same method exists >> it implies Method position changed

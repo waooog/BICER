@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.StructuralPropertyDescriptor;
 import org.eclipse.jgit.api.BlameCommand;
 import org.eclipse.jgit.api.Git;
@@ -302,5 +304,20 @@ public class Utils {
 			string += line +"\n";
 
 		return string;
+	}
+
+	public static boolean compareMethodParametersFromAST(List<SingleVariableDeclaration> parameters1, List<SingleVariableDeclaration> parameters2) {
+		
+		if(parameters1.size()!=parameters2.size())
+			return false;
+		
+		for(int i=0;i<parameters1.size();i++){
+			String type1 = parameters1.get(i).getType().toString();
+			String type2 = parameters2.get(i).getType().toString();
+			if(!type1.equals(type2.toString()))
+				return false;
+		}
+		
+		return true;
 	}
 }
