@@ -184,6 +184,14 @@ public class NoiseFilterRunner {
 		// Filter 06: Change a Modifer
 		Filter changeMidifier = factory.createFilter(Filters.MODIFIER_CHANGE, biChange, wholeFixCode);
 		filters.add(changeMidifier);
+		
+		// Filter 07: Change a assertion
+		Filter assertionChange = factory.createFilter(Filters.ASSERTION_CHANGE, biChange, wholeFixCode);
+		filters.add(assertionChange);
+
+		// Filter 08: Add or detele a genetic type
+		Filter geneticTypeChange = factory.createFilter(Filters.GENERIC_CHANGE, biChange, wholeFixCode);
+		filters.add(geneticTypeChange);
 
 		boolean isNoise = false;
 		for(Filter filter:filters){

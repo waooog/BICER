@@ -14,6 +14,8 @@ public class FilterFactory {
 		NAME_CHANGE,
 		REMOVE_UN_METHOD,
 		MODIFIER_CHANGE,
+		ASSERTION_CHANGE,
+		GENERIC_CHANGE,
 	}
 	
 	public Filter createFilter(Filters filter,BIChange biChange, String[] wholeFixCode){
@@ -29,12 +31,18 @@ public class FilterFactory {
 		
 		if (filter == Filters.MODIFIER_CHANGE)
 			return new ModifierChange(biChange,wholeFixCode);
-
+		
+		if (filter == Filters.ASSERTION_CHANGE)
+			return new AssertionChange(biChange);
+		
+		if (filter == Filters.GENERIC_CHANGE)
+			return new GenericTypeChange(biChange,wholeFixCode);
+		
 		return null;
 	}
 	
 	
-public Filter createFilter(Filters filter,BIChange biChange, JavaASTParser biWholeCodeAST, JavaASTParser fixWholeCodeAST){
+	public Filter createFilter(Filters filter,BIChange biChange, JavaASTParser biWholeCodeAST, JavaASTParser fixWholeCodeAST){
 
 		if(filter == Filters.NAME_CHANGE)
 			return new NameChange(biChange,biWholeCodeAST,fixWholeCodeAST);
