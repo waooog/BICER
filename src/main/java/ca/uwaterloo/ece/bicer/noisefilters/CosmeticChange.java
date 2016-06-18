@@ -36,6 +36,8 @@ public class CosmeticChange implements Filter {
 
 	private boolean doesAFixCosmeticChange(String stmt, String[] fixCode) {
 		
+		// TODO consider all possible cosmetic change cases
+		
 		// check edit is null, if null skip
 		if(biChange.getEdit()==null){
 			System.err.println("WARNING: Diff results are different between jGit and git diff");
@@ -61,9 +63,17 @@ public class CosmeticChange implements Filter {
 		for(int i=startLineInFixCode; i<=endLineInFixCode;i++){
 			affectedFixCode += Utils.removeLineComments(fixCode[i]).replaceAll("\\s", "");
 			// if a change happens in the front, do not filter. That can be adding a modifier or similar changes.
+			// B ==> A B
 			int indexOf = fixCode[i].trim().indexOf(biChange.getLine().trim());
 			if(indexOf>0)
 				return false;
+			
+			// the following also can happen. this should not be noise.
+			// B C ==> A B\nC
+			// (1) get the corresponding fix line
+			
+			// what about
+			// B C ==> B\cC
 		}
 		
 		int indexOf;
