@@ -147,6 +147,7 @@ public class NoiseFilterRunner {
 					System.err.println("WARNING not filtered: Diff results are different between jGit and git diff");
 					System.err.println(biChange.toString());
 					biChange.setIsNoise(false);
+					continue;
 				}
 				int beginA = edit.getBeginA();
 				int endA = edit.getEndA();
