@@ -15,7 +15,7 @@ public class ModifierChangeTest {
     	NoiseFilterRunner runner = new NoiseFilterRunner();
     	
     	//String [] args ={"-d","data/exampleBIChanges.txt", "-g","/Users/jiangchenyang/Documents/uwaterloo/BICER"};
-    	String [] args ={"-d","/Users/jiangchenyang/Documents/uwaterloo/noisybi/sanBiData/lucene/biChangesSanitized.txt", "-g", "/Users/jiangchenyang/Documents/uwaterloo/noisybi/git/lucene/git"};
+    	String [] args ={"-d","/Users/jiangchenyang/Documents/uwaterloo/noisybi/sanBiData/jackrabbit/biChangesSanitized.txt", "-g", "/Users/jiangchenyang/Documents/uwaterloo/noisybi/git/jackrabbit/git"};
     	runner.run(args);
 	}
 
