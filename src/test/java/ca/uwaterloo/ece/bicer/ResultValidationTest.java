@@ -17,7 +17,7 @@ import ca.uwaterloo.ece.bicer.utils.Utils;
 public class ResultValidationTest {
     @Test public void testSomeLibraryMethod() {
     	
-    	String project ="projectName";
+    	String project ="project";
     	String dir = System.getProperty("user.home") + "/path/" + project +"/";
         
     	String pathForBIChanges = dir + "biChanges.txt";
@@ -36,14 +36,26 @@ public class ResultValidationTest {
     	if(biChanges.size()!=biChangesSanitized.size()){
     		System.err.println("FATAL: the number of changes must be same between the original and sanitized data");
     		System.exit(0);
+    	}else{
+    		// check their lines are same by index
+    		for(int i=0;i<biChanges.size();i++){
+    			if(!biChanges.get(i).getLine().equals(biChangesSanitized.get(i).getLine())){
+    				System.err.println("FATAL: order of lines are not consistent between origianl and sanitized");
+    				System.exit(0);
+    			}
+    		}
     	}
     		
-    	ArrayList<BIChange> biChangesNoiseFiltered = getBIChangesNoiseFiltered( Utils.getLines(pathForBIChangesNoiseFiltered, true));
-    	ArrayList<String> biSha1AndPathManuallyVerified = getBISha1AndPath(Utils.getLines(pathForBIManuallyVerified, true));
+    	ArrayList<BIChange> biChangesSanitizedNoiseFiltered = getBIChangesNoiseFiltered( Utils.getLines(pathForBIChangesNoiseFiltered, true));
+    	ArrayList<BIChange> identifiedAsNoise = getBIChangesIdentifiedAsNoise(Utils.getLines(pathForBIChangesNoiseFiltered, true));
+    	Set<String> biSha1AndPathForAllOriginalBICs = getBISha1AndPathFromBILines(Utils.getLines(pathForBIChanges, true));
+    	Set<String> biSha1AndPathManuallyVerified = getBISha1AndPath(Utils.getLines(pathForBIManuallyVerified, true));
+    	Set<String> biSha1AndPathManuallyVerifiedNoises = getBISha1AndPath(biSha1AndPathForAllOriginalBICs,biSha1AndPathManuallyVerified);
+    	
     	
     	// match (2) (3)
     	ArrayList<Integer> correctBIChangeIndexAfterFiltering = new ArrayList<Integer>();
-    	for(BIChange biChangeFiltered:biChangesNoiseFiltered){
+    	for(BIChange biChangeFiltered:biChangesSanitizedNoiseFiltered){
     		for(BIChange biChageSanitized:biChangesSanitized){
     			
     			if(biChangeFiltered.equals(biChageSanitized)){
@@ -57,34 +69,43 @@ public class ResultValidationTest {
     		}
     	}
     	
+    	// check
+    	
     	// generate biSha1+path from none-sanitized but tool filtered data (1)
     	ArrayList<String> biSha1AndPathFromNoneSanitizedDataToolFiltered = new ArrayList<String>();
     	for(int i=0; i<correctBIChangeIndexAfterFiltering.size();i++){
-    		BIChange biChange = biChanges.get(i);
+    		BIChange biChange = biChanges.get(correctBIChangeIndexAfterFiltering.get(i));
     		biSha1AndPathFromNoneSanitizedDataToolFiltered.add(biChange.getBISha1()+ "\t" + biChange.getPath());
     	}
     	
     	// find FP and FN
-    	Set<String> FPs = new HashSet<String>();
-    	Set<String> FNs = new HashSet<String>();
+    	Set<String> FPs = new HashSet<String>(); // Actual noisy BI but the filters could not filter out them
+    	Set<String> FNs = new HashSet<String>(); // Real BIs but the filters removed them.
     	Set<String> TPs1 = new HashSet<String>();
     	Set<String> TPs2 = new HashSet<String>();
+    	Set<String> TNs = new HashSet<String>();
     	
-    	// find FPs
+    	// Find FPs: Actual noisy BI but the filters could not filter out them
+    	// Find them in BIChanges still alive after filtering
     	for(String key:biSha1AndPathFromNoneSanitizedDataToolFiltered){
+    		
     		if(biSha1AndPathManuallyVerified.contains(key))
-    			TPs1.add(key);
+    			TPs1.add(key); // since it is a set, key is unique
     		else
     			FPs.add(key);
     	}
     	
-    	//find TPs
+    	// Find FNs: Real BIs but the filters removed them.
+    	// Find them in BIChanges manually verified but not in the alive BI changes after filtered.
     	for(String key:biSha1AndPathManuallyVerified){
     		if(biSha1AndPathFromNoneSanitizedDataToolFiltered.contains(key))
-    			TPs2.add(key);
+    			TPs2.add(key); // since it is a set, key is unique
     		else
     			FNs.add(key);
     	}
+    	
+    	// Find TNs: Real noises and removed correctly
+    	
     	
     	// sanity check: TP1 should be same as TP2
     	for(String key:TPs1)
@@ -93,26 +114,29 @@ public class ResultValidationTest {
 				System.exit(0);
     		}
     	
+    	System.out.println("# All BIs: " + biSha1AndPathForAllOriginalBICs.size());
     	System.out.println("# real BIs: " + biSha1AndPathManuallyVerified.size());
+    	System.out.println("# real noisy BIs: " + biSha1AndPathManuallyVerifiedNoises.size());
+    	
     	System.out.println("# TP BIs: " + TPs1.size());
     	System.out.println("# FN BIs: " + FNs.size());
     	System.out.println("TP+FN=" + (TPs1.size()+FNs.size()) + " This should be same as # real BIs=" + biSha1AndPathManuallyVerified.size());
     	System.out.println("# FP BIs: " + FPs.size());
     	
-    	
-    	System.out.println("\n\nFalse Negatives that must not be filtered!");
+    	System.out.println("\n\nFalse Negatives that must not be filtered! At least, one BIC line must exist if not to be FN");
     	
     	for(String FN:FNs){
     		System.out.println("+ " + FN);
     	}
-
-    	ArrayList<BIChange> identifiedAsNoise = getBIChangesIdentifiedAsNoise(Utils.getLines(pathForBIChangesNoiseFiltered, true));
+    	
+    	// FN BIC lines. To be TP, at least one following FN BIC lines per key should be alive even after filtering.
+    	System.out.println("\nFN BIC lines. To be TP, at least one of following FN BIC lines per key should be alive even after filtering.");
     	for(BIChange noisyBiChange:identifiedAsNoise){
     		int indexFromSenitizedBIs = findBIChange(biChangesSanitized,noisyBiChange);
-    		BIChange originalBIChange = biChanges.get(indexFromSenitizedBIs);
-    		String key = originalBIChange.getBISha1() + "\t" + originalBIChange.getPath();
+    		BIChange originalBIChangeIdentifiedAsNoise = biChanges.get(indexFromSenitizedBIs);
+    		String key = originalBIChangeIdentifiedAsNoise.getBISha1() + "\t" + originalBIChangeIdentifiedAsNoise.getPath();
     		if(FNs.contains(key))
-    			System.out.println("FN (this must not be filtered but filtered): " + noisyBiChange.getFilteredDueTo() + "\t" + originalBIChange.getRecord());
+    			System.out.println("FN (at least, one of lines with the same key must be alive but filtered.): " + noisyBiChange.getFilteredDueTo() + "\t" + originalBIChangeIdentifiedAsNoise.getRecord());
     	}
     	
     	System.out.println("\n\nFalse Positives that should be filtered!");
@@ -121,16 +145,43 @@ public class ResultValidationTest {
     		System.out.println("- " + FP);
     	}
     	
-    	for(BIChange biChangeAliveAfterFiltering:biChangesNoiseFiltered){
+    	for(BIChange biChangeAliveAfterFiltering:biChangesSanitizedNoiseFiltered){
     		int indexFromSenitizedBIs = findBIChange(biChangesSanitized,biChangeAliveAfterFiltering);
     		BIChange originalBIChange = biChanges.get(indexFromSenitizedBIs);
     		String key = originalBIChange.getBISha1() + "\t" + originalBIChange.getPath();
+
     		if(FPs.contains(key))
-    			System.out.println("FP (this must be filtered but did not): " +  originalBIChange.getRecord());
+    			System.out.println("FP (this must be filtered but did not)\t" +  originalBIChange.getRecord());
     	}
     }
     
-    private int findBIChange(ArrayList<BIChange> biChangesSanitized, BIChange noisyBiChange) {
+    private Set<String> getBISha1AndPath(Set<String> biSha1AndPathForAllOriginalBICs,
+			Set<String> biSha1AndPathManuallyVerified) {
+    	Set<String> keys = new HashSet<String>();
+    	
+    	for(String key:biSha1AndPathForAllOriginalBICs){
+    		if(!biSha1AndPathManuallyVerified.contains(key))
+    			keys.add(key);
+    	}
+    	
+		return keys;
+	}
+
+	private Set<String> getBISha1AndPath(ArrayList<BIChange> biChanges, ArrayList<BIChange> biChangesSanitized,
+			ArrayList<BIChange> identifiedAsNoise) {
+		
+    	Set<String> keys = new HashSet<String>();
+    	
+    	for(BIChange noise:identifiedAsNoise){
+    		int indexFromTheSanitized = findBIChange(biChangesSanitized,noise);
+    		BIChange noiseInOriginal = biChanges.get(indexFromTheSanitized);
+    		keys.add(noiseInOriginal.getBISha1() + "\t" + noiseInOriginal.getPath());
+    	}
+    	
+		return keys;
+	}
+
+	private int findBIChange(ArrayList<BIChange> biChangesSanitized, BIChange noisyBiChange) {
 		
     	for(BIChange biChange:biChangesSanitized){
     		if(biChange.equals(noisyBiChange))
@@ -140,11 +191,22 @@ public class ResultValidationTest {
 		return -1;
 	}
 
-	private ArrayList<String> getBISha1AndPath(ArrayList<String> lines) {
-    	ArrayList<String> keys = new ArrayList<String>();
+	private HashSet<String> getBISha1AndPath(ArrayList<String> lines) {
+		HashSet<String> keys = new HashSet<String>();
     	
     	for(String line:lines){
     		keys.add(line);
+    	}
+    	
+		return keys;
+	}
+	
+	private HashSet<String> getBISha1AndPathFromBILines(ArrayList<String> lines) {
+		HashSet<String> keys = new HashSet<String>();
+    	
+    	for(String line:lines){
+    		String[] splitLine = line.split("\t");
+    		keys.add(splitLine[0] +"\t" + splitLine[2]);
     	}
     	
 		return keys;
