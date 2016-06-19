@@ -91,6 +91,9 @@ public class CosmeticChange implements Filter {
 				 
 				 if(existInFirstFixStmt && existInBiLine)
 					 return true;
+				 
+				 if(existInFirstFixStmt && !existInBiLine)
+					 return false;
 			 }
 		 }
 
