@@ -3,18 +3,21 @@ package ca.uwaterloo.ece.bicer.noisefilters;
 import org.eclipse.jgit.diff.Edit;
 
 import ca.uwaterloo.ece.bicer.data.BIChange;
+import ca.uwaterloo.ece.bicer.utils.JavaASTParser;
 import ca.uwaterloo.ece.bicer.utils.Utils;
 
 public class CosmeticChange implements Filter {
 	
 	final String name="Cosmetic change";
 	BIChange biChange;
+	String[] wholePreFixCode;
 	String[] wholeFixCode;
 	boolean isNoise=false;
 	
-	public CosmeticChange(BIChange biChange, String[] wholeFixCode) {
+	public CosmeticChange(BIChange biChange, JavaASTParser preFixWholeCodeAST, JavaASTParser fixWholeCodeAST) {
 		this.biChange = biChange;
-		this.wholeFixCode = wholeFixCode;
+		wholePreFixCode = preFixWholeCodeAST.getStringCode().split("\n");
+		wholeFixCode = fixWholeCodeAST.getStringCode().split("\n");
 		
 		isNoise = filterOut();
 	}
@@ -60,7 +63,39 @@ public class CosmeticChange implements Filter {
 		
 		String affectedFixCode = "";
 		
-		for(int i=startLineInFixCode; i<=endLineInFixCode;i++){
+		/*
+		 *  This is a unique case to deal with
+		 *  -            qManager = new QueryManagerImpl(session,
+		 *  -                    session.getNamePathResolver(), session.getItemManager(),
+		 *  -                    session.getHierarchyManager(), wspManager);
+		 *  +            qManager = new QueryManagerImpl(session, session,
+		 *  +                    session.getItemManager(), wspManager);
+		 */
+		 if(biChange.getEdit().getBeginA()+1 == biChange.getLineNumInPrevFixRev()){
+			 boolean existInFirstFixStmt = false;
+			 boolean existInBiLine = false;
+			 int beginA = biChange.getEdit().getBeginA();
+			 int endA = biChange.getEdit().getEndA();
+			 int beginB = biChange.getEdit().getBeginB();
+			 int endB = biChange.getEdit().getEndB();
+			 if(endA-beginA>=2 &&endB-beginB>=2){
+				 String biStmtWOSpace = biChange.getLine().replaceAll("\\s", "");
+				 String fixstmtsWOSpace = (fixCode[beginB] + fixCode[beginB+1]).replaceAll("\\s", "");
+				 if(fixstmtsWOSpace.indexOf(biStmtWOSpace)>=0)
+					 existInFirstFixStmt = true;
+				 
+				 String fixstmtWOSpace = (fixCode[beginB]).replaceAll("\\s", "");
+				 String biStmtsWOSpace = (biChange.getLine() + wholePreFixCode[biChange.getLineNumInPrevFixRev()]).replaceAll("\\s", ""); // biChange.getLineNumInPrevFixRev() is the same as the index of the next line of bi line.
+				 if(biStmtsWOSpace.indexOf(fixstmtWOSpace)>=0)
+					 existInBiLine = true;
+				 
+				 if(existInFirstFixStmt && existInBiLine)
+					 return true;
+			 }
+		 }
+
+		
+		for(int i=startLineInFixCode; i<endLineInFixCode;i++){
 			affectedFixCode += Utils.removeLineComments(fixCode[i]).replaceAll("\\s", "");
 			// if a change happens in the front, do not filter. That can be adding a modifier or similar changes.
 			// B ==> A B
@@ -70,12 +105,17 @@ public class CosmeticChange implements Filter {
 			
 			// the following also can happen. this should not be noise.
 			// B C ==> A B\nC
-			// (1) get the corresponding fix line
-			
-			// what about
-			// B C ==> B\cC
+			// (1) Merge the first and second fix line
+			String mergeFirstAndSecondFixLine="";
+			String biLineWithoutSpace = biChange.getLine().replaceAll("\\s", "");
+			if(i+1<endLineInFixCode)
+				mergeFirstAndSecondFixLine = Utils.removeLineComments((fixCode[i] + fixCode[i+1]).replaceAll("\\s", ""));
+			indexOf = mergeFirstAndSecondFixLine.indexOf(biLineWithoutSpace);
+			if(indexOf>0)
+				return false;
 		}
 		
+		// B C ==> B\nC or B\nC==> B C
 		int indexOf;
 		if((indexOf = affectedFixCode.indexOf(stmtWithoutWhiteSpaces))!= -1){
 			if(indexOf != affectedFixCode.lastIndexOf(stmtWithoutWhiteSpaces)){
