@@ -167,7 +167,7 @@ public class NoiseFilterRunner {
 
 		FilterFactory factory = new FilterFactory();
 
-		JavaASTParser biWholeCodeAST = new JavaASTParser(Utils.getStringFromStringArray(wholePreFixCode));
+		JavaASTParser preFixWholeCodeAST = new JavaASTParser(Utils.getStringFromStringArray(wholePreFixCode));
 		JavaASTParser fixedWholeCodeAST = new JavaASTParser(Utils.getStringFromStringArray(wholeFixCode));
 
 		// TODO Implement filtering
@@ -183,15 +183,15 @@ public class NoiseFilterRunner {
 		filters.add(removeUnnImportFilter);
 
 		// Filter 03: Cosmetic change
-		Filter cosmeticChangeFilter = factory.createFilter(Filters.COSMETIC_CHANGE, biChange, wholeFixCode);
+		Filter cosmeticChangeFilter = factory.createFilter(Filters.COSMETIC_CHANGE, biChange, preFixWholeCodeAST, fixedWholeCodeAST);
 		filters.add(cosmeticChangeFilter);
 
 		// Filter 04: Change a name
-		Filter nameChange = factory.createFilter(Filters.NAME_CHANGE, biChange, biWholeCodeAST, fixedWholeCodeAST);
+		Filter nameChange = factory.createFilter(Filters.NAME_CHANGE, biChange, preFixWholeCodeAST, fixedWholeCodeAST);
 		filters.add(nameChange);
 
 		// Filter 05: Remove unnecessary method
-		Filter removeUnnecessaryMethod = factory.createFilter(Filters.REMOVE_UN_METHOD, biChange, biWholeCodeAST, fixedWholeCodeAST);
+		Filter removeUnnecessaryMethod = factory.createFilter(Filters.REMOVE_UN_METHOD, biChange, preFixWholeCodeAST, fixedWholeCodeAST);
 		filters.add(removeUnnecessaryMethod);
 		
 		// Filter 06: Change a Modifer
