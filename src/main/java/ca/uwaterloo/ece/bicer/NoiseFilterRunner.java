@@ -163,11 +163,11 @@ public class NoiseFilterRunner {
 		}
 	}
 
-	private boolean isNoise(BIChange biChange,String[] wholeBICode, String[] wholeFixCode, EditList editListFromDiff){
+	private boolean isNoise(BIChange biChange,String[] wholePreFixCode, String[] wholeFixCode, EditList editListFromDiff){
 
 		FilterFactory factory = new FilterFactory();
 
-		JavaASTParser biWholeCodeAST = new JavaASTParser(Utils.getStringFromStringArray(wholeBICode));
+		JavaASTParser biWholeCodeAST = new JavaASTParser(Utils.getStringFromStringArray(wholePreFixCode));
 		JavaASTParser fixedWholeCodeAST = new JavaASTParser(Utils.getStringFromStringArray(wholeFixCode));
 
 		// TODO Implement filtering
@@ -218,7 +218,7 @@ public class NoiseFilterRunner {
 		return isNoise;
 	}
 
-	private void updateBIChangeWithEditList(BIChange biChange,String[] wholeBICode,String[] wholeFixedCode, EditList editListFromDiff) {
+	private void updateBIChangeWithEditList(BIChange biChange,String[] wholePreFixCode,String[] wholeFixedCode, EditList editListFromDiff) {
 		
 		for(Edit edit:editListFromDiff){
 			int beginA = edit.getBeginA();
