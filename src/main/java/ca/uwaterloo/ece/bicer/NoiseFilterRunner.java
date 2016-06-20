@@ -175,7 +175,7 @@ public class NoiseFilterRunner {
 		ArrayList<Filter> filters = new ArrayList<Filter>();
 
 		// Filter 01: Position change of declaration statements
-		Filter postisionChangeFilter = factory.createFilter(Filters.POSITION_CHANGE, biChange, wholeFixCode);
+		Filter postisionChangeFilter = factory.createFilter(Filters.POSITION_CHANGE, biChange,preFixWholeCodeAST, fixedWholeCodeAST);
 		filters.add(postisionChangeFilter);
 
 		// Filter 02: Remove unnecessary import (java) and include (c)

@@ -18,9 +18,6 @@ public class FilterFactory {
 	
 	public Filter createFilter(Filters filter,BIChange biChange, String[] wholeFixCode){
 		
-		if (filter == Filters.POSITION_CHANGE)
-			return new PositionChange(biChange,wholeFixCode);
-		
 		if(filter == Filters.REMOVE_UN_IMPORT)
 			return new RemoveUnnImport(biChange,wholeFixCode);
 		
@@ -39,6 +36,9 @@ public class FilterFactory {
 	
 	public Filter createFilter(Filters filter,BIChange biChange, JavaASTParser preFixWholeCodeAST, JavaASTParser fixWholeCodeAST){
 
+		if (filter == Filters.POSITION_CHANGE)
+			return new PositionChange(biChange,preFixWholeCodeAST, fixWholeCodeAST);
+		
 		if(filter == Filters.COSMETIC_CHANGE)
 			return new CosmeticChange(biChange,preFixWholeCodeAST, fixWholeCodeAST);
 		
