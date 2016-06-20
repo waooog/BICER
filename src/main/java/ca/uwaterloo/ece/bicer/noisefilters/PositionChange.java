@@ -74,6 +74,7 @@ public class PositionChange implements Filter {
 		// TODO java methods
 		if(isPositionChangeOfMethod())
 			return true;
+		
 		// TODO c constants / variables
 
 		// TODO c functions / structs
@@ -103,7 +104,7 @@ public class PositionChange implements Filter {
 					(
 							((TypeDeclaration)varDecFragNode.getParent()).getName().toString()
 							)
-					)
+			)
 				return true;
 		}
 
