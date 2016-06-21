@@ -64,16 +64,19 @@ public class CosmeticChange implements Filter {
 		
 		// (1) check all deleted lines and added lines are same
 		// get deleted lines without spaces
-		String deletedLinesWithotSpaces = "";
+		String deletedLines = "";
 		for(int i=startLineInPreFixCode;i<endLineInPreFixCode;i++){
-			deletedLinesWithotSpaces += wholePreFixCode[i];
+			deletedLines += wholePreFixCode[i];
 		}
+		deletedLines = Utils.removeLineComments(deletedLines);
 		// get addedLines
-		String addedLinesWithoutSpaces = "";
+		String addedLines = "";
 		for(int i=startLineInFixCode;i<endLineInFixCode;i++){
-			addedLinesWithoutSpaces += wholeFixCode[i];
+			addedLines += wholeFixCode[i];
 		}
-		if(addedLinesWithoutSpaces.replaceAll("\\s", "").equals(deletedLinesWithotSpaces.replaceAll("\\s", "")))
+		addedLines = Utils.removeLineComments(addedLines);
+		
+		if(addedLines.replaceAll("\\s", "").equals(deletedLines.replaceAll("\\s", "")))
 			return true;
 		
 		if (stmtWithoutWhiteSpaces.length()<4)
