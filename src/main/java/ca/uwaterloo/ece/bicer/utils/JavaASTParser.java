@@ -12,6 +12,7 @@ public class JavaASTParser {
 	ArrayList<FieldAccess> lstFieldAccess = new ArrayList<FieldAccess>();
 	ArrayList<IfStatement> lstIfStatement = new ArrayList<IfStatement>();
 	ArrayList<VariableDeclarationFragment> lstVariableDeclarationFragment = new ArrayList<VariableDeclarationFragment>();
+	ArrayList<SingleVariableDeclaration> lstSingleVariableDeclaration = new ArrayList<SingleVariableDeclaration>();
 	ArrayList<SimpleName> lstSimpleName = new ArrayList<SimpleName>();
 	
 
@@ -63,6 +64,11 @@ public class JavaASTParser {
 
 					public boolean visit(final FieldDeclaration node) {
 						lstFieldDeclaration.add(node);
+						return super.visit(node);
+					}
+					
+					public boolean visit(final SingleVariableDeclaration node) {
+						lstSingleVariableDeclaration.add(node);
 						return super.visit(node);
 					}
 					
@@ -594,5 +600,9 @@ public class JavaASTParser {
 	
 	public ArrayList<VariableDeclarationFragment> getVariableDeclarationFragments() {
 		return lstVariableDeclarationFragment;
+	}
+
+	public ArrayList<SingleVariableDeclaration> getSingleVariableDeclarations() {
+		return lstSingleVariableDeclaration;
 	}
 }
