@@ -31,6 +31,11 @@ public class RemoveUnnecessaryMethod implements Filter {
 		if(!biChange.getIsAddedLine())
 			return false;
 		
+		if(biChange.getLine().trim().equals("@Override")){
+			biChange.setFilteredDueTo("Ignore @Override|" + biChange.getFilteredDueTo());
+			return true;
+		}
+		
 		ArrayList<MethodDeclaration> lstMethodDeclaration = biWholeCodeAST.getMethodDeclarations();
 		
 		// (1) get method that contains a BI line that is not a line for method declaration.
@@ -90,8 +95,6 @@ public class RemoveUnnecessaryMethod implements Filter {
 					return false;
 			}else{
 				if(methodDecl.getBody()!=null){
-					int a = methodDecl.getBody().getLength();
-					int b = methodHavingBILine.getBody().getLength();
 					if(methodDecl.getBody().toString().equals(methodHavingBILine.getBody().toString())
 							&& !methodDecl.getBody().toString().replaceAll("\\s","").equals("{}"))
 						return false;
