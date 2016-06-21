@@ -29,7 +29,7 @@ public class PositionChange implements Filter {
 	public PositionChange(BIChange biChange,JavaASTParser preFixWholeCodeAST,JavaASTParser fixedWholeCodeAST) {
 
 		this.biChange = biChange;
-		this.wholeFixCode = preFixWholeCodeAST.getStringCode().split("\n");
+		this.wholeFixCode = fixedWholeCodeAST.getStringCode().split("\n");
 		this.preFixWholeCodeAST = preFixWholeCodeAST;
 		this.fixedWholeCodeAST = fixedWholeCodeAST;
 
@@ -46,18 +46,26 @@ public class PositionChange implements Filter {
 		String stmt = biChange.getLine();
 
 		// (1) Check the line is a declarative statement such as
-		// import, ClassName variable = ..., ClassName variable;, a whole method where the line lives.
-		if(areDeclarativeStmts(stmt)){
+		// import
+		if(isImportStmt(stmt)){
 
 			// (2) check if there is the same line in a different position.
 			if(Utils.doesSameLineExist(stmt, wholeFixCode, true, true))
 				return true;
 		}
+		
+		// java members
+		if(isPositionChangeOfFields())
+			return true;
+
+		// TODO java methods
+		if(isPositionChangeOfMethod())
+			return true;
 
 		return false;
 	}
 
-	private boolean areDeclarativeStmts(String stmt) {
+	private boolean isImportStmt(String stmt) {
 
 		// java import?
 		if (stmt.matches("^\\s*import\\s\\s*[a-zA-Z_$][a-zA-Z_$0-9.]*\\s*;.*"))
@@ -65,14 +73,6 @@ public class PositionChange implements Filter {
 
 		// c include?
 		if (stmt.matches("^\\s*#include\\s\\s*[\"<]\\s*[\\w\\-. ]+\\s*[\">].*"))
-			return true;
-
-		// java members
-		if(isPositionChangeOfFields())
-			return true;
-
-		// TODO java methods
-		if(isPositionChangeOfMethod())
 			return true;
 		
 		// TODO c constants / variables
