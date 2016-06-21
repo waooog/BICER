@@ -51,12 +51,30 @@ public class CosmeticChange implements Filter {
 		// only consider REPLACE case
 		if(biChange.getEdit().getType()!=Edit.Type.REPLACE)
 			return false;
+		
+		// get all prefix lines in edit
+		int startLineInPreFixCode  = biChange.getEdit().getBeginA();
+		int endLineInPreFixCode  = biChange.getEdit().getEndA();
 
 		// get changed code range
 		int startLineInFixCode  = biChange.getEdit().getBeginB();
 		int endLineInFixCode  = biChange.getEdit().getEndB();
 		
 		String stmtWithoutWhiteSpaces = stmt.replaceAll("\\s", "");
+		
+		// (1) check all deleted lines and added lines are same
+		// get deleted lines without spaces
+		String deletedLinesWithotSpaces = "";
+		for(int i=startLineInPreFixCode;i<endLineInPreFixCode;i++){
+			deletedLinesWithotSpaces += wholePreFixCode[i];
+		}
+		// get addedLines
+		String addedLinesWithoutSpaces = "";
+		for(int i=startLineInFixCode;i<endLineInFixCode;i++){
+			addedLinesWithoutSpaces += wholeFixCode[i];
+		}
+		if(addedLinesWithoutSpaces.replaceAll("\\s", "").indexOf(deletedLinesWithotSpaces.replaceAll("\\s", ""))>=0)
+			return true;
 		
 		if (stmtWithoutWhiteSpaces.length()<4)
 			System.err.println("WARNING(" + name + "): a too short line: " + stmt);
