@@ -6,6 +6,7 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jgit.diff.Edit;
@@ -81,51 +82,37 @@ public class NameChange implements Filter {
 		int biLineNum = biChange.getLineNumInPrevFixRev();
 		int fixLineNum = biChange.getEdit().getBeginB()+1;
 		
-		ArrayList<VariableDeclarationFragment> lstBIVariableDeclarationFragment = biWholeCodeAST.getVariableDeclarationFragments();
-		ArrayList<VariableDeclarationFragment> lstFixVariableDeclarationFragment = fixedWholeCodeAST.getVariableDeclarationFragments();
+		ArrayList<SingleVariableDeclaration> lstBISinggleVariableDeclaration = biWholeCodeAST.getSingleVariableDeclarations();
+		ArrayList<SingleVariableDeclaration> lstFixSingleVariableDeclaration = fixedWholeCodeAST.getSingleVariableDeclarations();
 		
 		String originalName = "";
 		String changedName = "";
 		
 		ArrayList<Object> biLineNodes = new ArrayList<Object>(), fixLineNodes = new ArrayList<Object>();
 		
-		for(ASTNode varDecFragNode:lstBIVariableDeclarationFragment){
+		for(SingleVariableDeclaration varDecFragNode:lstBISinggleVariableDeclaration){
+			
 			if(biLineNum==biWholeCodeAST.getCompilationUnit().getLineNumber(varDecFragNode.getStartPosition())){
-				ASTNode parent = varDecFragNode.getParent();
-				
-				if(parent instanceof VariableDeclarationStatement){
-					biLineNodes.add(((VariableDeclarationStatement)parent).getModifiers());
-					biLineNodes.add(((VariableDeclarationStatement)parent).getType());
-				}
-				if(parent instanceof FieldDeclaration){
-					biLineNodes.add(((FieldDeclaration)parent).getModifiers());
-					biLineNodes.add(((FieldDeclaration)parent).getType());
-				}
-
-				Expression exp = ((VariableDeclarationFragment)varDecFragNode).getInitializer();
+				biLineNodes.add(varDecFragNode.getModifiers());
+				biLineNodes.add(varDecFragNode.getType());	
+	
+				Expression exp = varDecFragNode.getInitializer();
 				if(exp!=null)
 					biLineNodes.add(exp);
-				originalName = ((VariableDeclarationFragment)varDecFragNode).getName().toString();
+				originalName = varDecFragNode.getName().toString();
 				break;
 			}
 		}
 		
-		for(ASTNode varDecFragNode:lstFixVariableDeclarationFragment){
+		for(SingleVariableDeclaration varDecFragNode:lstFixSingleVariableDeclaration){
 			if(fixLineNum==fixedWholeCodeAST.getCompilationUnit().getLineNumber(varDecFragNode.getStartPosition())){
-				ASTNode parent = varDecFragNode.getParent();
-				if(parent instanceof VariableDeclarationStatement){
-					fixLineNodes.add(((VariableDeclarationStatement)parent).getModifiers());
-					fixLineNodes.add(((VariableDeclarationStatement)parent).getType());
-				}
-				if(parent instanceof FieldDeclaration){
-					fixLineNodes.add(((FieldDeclaration)parent).getModifiers());
-					fixLineNodes.add(((FieldDeclaration)parent).getType());
-				}
-
-				Expression exp = ((VariableDeclarationFragment)varDecFragNode).getInitializer();
+				fixLineNodes.add(varDecFragNode.getModifiers());
+				fixLineNodes.add(varDecFragNode.getType());	
+	
+				Expression exp = varDecFragNode.getInitializer();
 				if(exp!=null)
 					fixLineNodes.add(exp);
-				changedName = ((VariableDeclarationFragment)varDecFragNode).getName().toString();
+				changedName = varDecFragNode.getName().toString();
 				break;
 			}
 		}
