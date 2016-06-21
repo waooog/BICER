@@ -73,7 +73,7 @@ public class CosmeticChange implements Filter {
 		for(int i=startLineInFixCode;i<endLineInFixCode;i++){
 			addedLinesWithoutSpaces += wholeFixCode[i];
 		}
-		if(addedLinesWithoutSpaces.replaceAll("\\s", "").indexOf(deletedLinesWithotSpaces.replaceAll("\\s", ""))>=0)
+		if(addedLinesWithoutSpaces.replaceAll("\\s", "").equals(deletedLinesWithotSpaces.replaceAll("\\s", "")))
 			return true;
 		
 		if (stmtWithoutWhiteSpaces.length()<4)
