@@ -31,7 +31,8 @@ public class RemoveUnnecessaryMethod implements Filter {
 		if(!biChange.getIsAddedLine())
 			return false;
 		
-		if(biChange.getLine().trim().equals("@Override")){
+		// Exceptional case for @Override since git diff and jgit diff are different
+		if(biChange.getLine().trim().equals("@Override") && (biChange.getEdit().getEndA()-biChange.getEdit().getBeginA())!=1){
 			biChange.setFilteredDueTo("Ignore @Override|" + biChange.getFilteredDueTo());
 			return true;
 		}
