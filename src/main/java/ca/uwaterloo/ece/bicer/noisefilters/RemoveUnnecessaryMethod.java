@@ -58,7 +58,7 @@ public class RemoveUnnecessaryMethod implements Filter {
 			return false;
 		
 		// (2) check all lines for the method are removed.
-		if(!((potentialBeginALineNum > biChange.getEdit().getBeginA()) && (potentialEndALineNum <= biChange.getEdit().getEndA()))){
+		if(!((potentialBeginALineNum > biChange.getEdit().getBeginA()) && (potentialEndALineNum-1 <= biChange.getEdit().getEndA()))){ // the closing } can be ignored
 			return false;
 		}
 		
