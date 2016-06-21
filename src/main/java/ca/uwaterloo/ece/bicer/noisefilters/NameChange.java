@@ -12,6 +12,7 @@ import org.eclipse.jgit.diff.Edit;
 
 import ca.uwaterloo.ece.bicer.data.BIChange;
 import ca.uwaterloo.ece.bicer.utils.JavaASTParser;
+import ca.uwaterloo.ece.bicer.utils.Utils;
 
 public class NameChange implements Filter {
 	
@@ -37,7 +38,7 @@ public class NameChange implements Filter {
 			return false;
 		
 		String biSource = biWholeCodeAST.getStringCode();
-		int startPositionOfBILine = getStartPosition(biSource,biChange.getLineNumInPrevFixRev());
+		int startPositionOfBILine = Utils.getStartPosition(biSource,biChange.getLineNumInPrevFixRev());
 		
 		if(startPositionOfBILine <0){
 			System.err.println("Warning: line does not exist in BI source code " + ": " + biChange.getLine());
@@ -54,21 +55,6 @@ public class NameChange implements Filter {
 			return true;
 		
 		return false;
-	}
-
-	private int getStartPosition(String biSource, int lineNum) {
-		
-		int currentPosition = 0;
-		String[] lines = biSource.split("\n");
-		
-		for(int i=0; i < lines.length; i++){
-			if(i==lineNum-1)
-				return currentPosition;
-			
-			currentPosition+=lines[i].length() + 1; // + 1 is for \n
-		}
-		
-		return -1;
 	}
 
 	private boolean isVariableNameChanged() {

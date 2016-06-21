@@ -320,4 +320,19 @@ public class Utils {
 		
 		return true;
 	}
+	
+	public static int getStartPosition(String biSource, int lineNum) {
+		
+		int currentPosition = 0;
+		String[] lines = biSource.split("\n");
+		
+		for(int i=0; i < lines.length; i++){
+			if(i==lineNum-1)
+				return currentPosition;
+			
+			currentPosition+=lines[i].length() + 1; // + 1 is for \n
+		}
+		
+		return -1;
+	}
 }
