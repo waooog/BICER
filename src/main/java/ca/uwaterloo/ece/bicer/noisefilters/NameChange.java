@@ -157,22 +157,28 @@ public class NameChange implements Filter {
 		ArrayList<Object> biLineNodes = new ArrayList<Object>(), fixLineNodes = new ArrayList<Object>();
 		
 		for(MethodDeclaration methodDecNode:lstBIMethodDeclaration){
-			if(biLineNum==biWholeCodeAST.getCompilationUnit().getLineNumber(methodDecNode.getStartPosition())){
+			if(biLineNum>=biWholeCodeAST.getCompilationUnit().getLineNumber(methodDecNode.getStartPosition())
+					&& biLineNum<biWholeCodeAST.getCompilationUnit().getLineNumber(methodDecNode.getStartPosition()+methodDecNode.getLength())
+					){
 				originalName = methodDecNode.getName().toString();
 				biLineNodes.add(methodDecNode.getModifiers());
 				if(methodDecNode.getReturnType2() != null)
 					biLineNodes.add(methodDecNode.getReturnType2());
 				biLineNodes.add(methodDecNode.parameters());
+				break;
 			}
 		}
 		
 		for(MethodDeclaration methodDecNode:lstFixMethodDeclaration){
-			if(fixLineNum==fixedWholeCodeAST.getCompilationUnit().getLineNumber(methodDecNode.getStartPosition())){
+			if(fixLineNum==fixedWholeCodeAST.getCompilationUnit().getLineNumber(methodDecNode.getStartPosition())
+					&& fixLineNum<fixedWholeCodeAST.getCompilationUnit().getLineNumber(methodDecNode.getStartPosition()+methodDecNode.getLength())
+					){
 				changedName = methodDecNode.getName().toString();
 				fixLineNodes.add(methodDecNode.getModifiers());
 				if(methodDecNode.getReturnType2() != null)
 					fixLineNodes.add(methodDecNode.getReturnType2());
 				fixLineNodes.add(methodDecNode.parameters());
+				break;
 			}
 		}
 		
