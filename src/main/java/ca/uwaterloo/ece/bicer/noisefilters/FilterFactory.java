@@ -25,7 +25,7 @@ public class FilterFactory {
 			return new ModifierChange(biChange,wholeFixCode);
 		
 		if (filter == Filters.ASSERTION_CHANGE)
-			return new AssertionChange(biChange);
+			return new AssertionChange(biChange,wholeFixCode);
 		
 		if (filter == Filters.GENERIC_CHANGE)
 			return new GenericTypeChange(biChange,wholeFixCode);
