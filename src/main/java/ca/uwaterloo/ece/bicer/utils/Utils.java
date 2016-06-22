@@ -335,4 +335,13 @@ public class Utils {
 		
 		return -1;
 	}
+	
+	static public ArrayList<BIChange> loadBIChanges(String pathToBIChangeData) {
+		ArrayList<String> BIChangeInfo = getLines(pathToBIChangeData, true);
+		ArrayList<BIChange> biChanges = new ArrayList<BIChange>();
+		for(String info: BIChangeInfo){
+			biChanges.add(new BIChange(info,false));
+		}
+		return biChanges;
+	}
 }
