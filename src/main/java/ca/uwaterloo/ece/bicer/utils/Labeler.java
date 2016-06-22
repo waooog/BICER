@@ -31,12 +31,17 @@ public class Labeler {
 		// relabel
 		for(Instance instance:instances){
 			String changeID = instance.stringValue(instances.attribute("change_id"));
-			String sha1 = sha1sbyChangeIDs.get(changeID);
+			String biPath = instance.stringValue(instances.attribute("412_full_path"));
+			String biSha1 = sha1sbyChangeIDs.get(changeID);
 			
-			String key = changeID + sha1;
+			String key = biSha1 + biPath;
 			
 			String newLabel = getNewLabel(key,startDate,endDate,lastDateForFixCollection,biChangesByKey);
+			
+			instance.classAttribute().setStringValue(newLabel);
 		}
+		
+		Utils.writeAFile(instances.toString(), pathToNewArff);
 		
 	}
 	
@@ -48,11 +53,11 @@ public class Labeler {
 		for(BIChange biChange:biChangesByKey.get(key)){
 			if(biChange.getFixDate().compareTo(lastDateForFixCollection)<0)
 				continue;
-			if(!(startDate.compareTo(biChange.getBIDate()) <= 0 && 0 <= biChange.getBISha1().compareTo(endDate)))
+			if(!(startDate.compareTo(biChange.getBIDate()) <= 0 && 0 <= biChange.getBIDate().compareTo(endDate)))
 				continue;
 			
 			// biChange is now valid for a buggy label
-			
+			newLabel = "1";
 				
 		}
 		
