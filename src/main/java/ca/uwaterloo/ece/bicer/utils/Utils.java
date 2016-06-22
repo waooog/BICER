@@ -2,6 +2,9 @@ package ca.uwaterloo.ece.bicer.utils;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -343,5 +346,20 @@ public class Utils {
 			biChanges.add(new BIChange(info,false));
 		}
 		return biChanges;
+	}
+	
+	public static void writeAFile(String lines, String targetFileName){
+		try {
+			File file= new File(targetFileName);
+			FileOutputStream fos = new FileOutputStream(file);
+			DataOutputStream dos=new DataOutputStream(fos);
+			
+			dos.writeBytes(lines);
+				
+			dos.close();
+			fos.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
 	}
 }
