@@ -43,13 +43,15 @@ public class Labeler {
 				count++;
 			
 			instance.setValue(instances.classAttribute(), newLabel);
+			if(newLabel.equals("1"))
+				System.out.println(instance.toString());
 		}
 
 		System.out.println("# of valid BI changes for the given period (A): " + countValidBIChanges(startDate,endDate,lastDateForFixCollection,biChangesByKey));
 		System.out.println("# of buggy instances actually labled (B): " + count);
 		System.out.println("If the numbers are different (B<A), there is an missing change in the original data : " + count);
 		
-		Utils.writeAFile(instances, pathToNewArff);
+		Utils.writeAFile(instances.toString(), pathToNewArff);
 	}
 	
 	private static String getNewLabel(String key, String startDate, String endDate, String lastDateForFixCollection,
