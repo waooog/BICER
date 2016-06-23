@@ -29,6 +29,7 @@ public class Labeler {
 		HashMap<String,ArrayList<BIChange>> biChangesByKey = getHashMapForBIChangesByKey(biChanges); // key: biSha1+biPath
 		
 		// relabel
+		int count =0;
 		for(Instance instance:instances){
 			String changeID = (int)instance.value(instances.attribute("change_id")) + "";
 			String biPath = instance.stringValue(instances.attribute("412_full_path"));
@@ -38,11 +39,17 @@ public class Labeler {
 			
 			String newLabel = getNewLabel(key,startDate,endDate,lastDateForFixCollection,biChangesByKey);
 			
-			instance.classAttribute().setStringValue(newLabel);
+			if(newLabel.equals("1"))
+				count++;
+			
+			instance.setValue(instances.classAttribute(), newLabel);
 		}
+
+		System.out.println("# of valid BI changes for the given period (A): " + countValidBIChanges(startDate,endDate,lastDateForFixCollection,biChangesByKey));
+		System.out.println("# of buggy instances actually labled (B): " + count);
+		System.out.println("If the numbers are different (B<A), there is an missing change in the original data : " + count);
 		
-		Utils.writeAFile(instances.toString(), pathToNewArff);
-		
+		Utils.writeAFile(instances, pathToNewArff);
 	}
 	
 	private static String getNewLabel(String key, String startDate, String endDate, String lastDateForFixCollection,
@@ -55,9 +62,9 @@ public class Labeler {
 		}
 		
 		for(BIChange biChange:biChangesByKey.get(key)){
-			if(biChange.getFixDate().compareTo(lastDateForFixCollection)<0)
+			if(biChange.getFixDate().compareTo(lastDateForFixCollection)>0) // if fixDate is earlier than lastDateForFixCollection
 				continue;
-			if(!(startDate.compareTo(biChange.getBIDate()) <= 0 && 0 <= biChange.getBIDate().compareTo(endDate)))
+			if(!(startDate.compareTo(biChange.getBIDate()) <= 0 && 0 >= biChange.getBIDate().compareTo(endDate)))
 				continue;
 			
 			// biChange is now valid for a buggy label
@@ -66,6 +73,28 @@ public class Labeler {
 		}
 		
 		return newLabel;
+	}
+	
+	private static int countValidBIChanges(String startDate, String endDate, String lastDateForFixCollection,
+			HashMap<String, ArrayList<BIChange>> biChangesByKey) {
+		
+		int count=0;
+
+		for(String key:biChangesByKey.keySet()){
+			boolean valid=false;
+			for(BIChange biChange:biChangesByKey.get(key)){
+				if(biChange.getFixDate().compareTo(lastDateForFixCollection)>0) // if fixDate is earlier than lastDateForFixCollection
+					continue;
+				if(!(startDate.compareTo(biChange.getBIDate()) <= 0 && 0 >= biChange.getBIDate().compareTo(endDate)))
+					continue;
+				
+				System.out.println("Valid BI: " + biChange.toString());
+				valid=true;
+				
+			}	
+			if (valid) count++;
+		}
+		return count;
 	}
 
 	private static HashMap<String, String> getSha1sByChangeIDs(String pathToChangeIDSha1Pair) {

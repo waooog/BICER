@@ -42,6 +42,8 @@ import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
 
 import ca.uwaterloo.ece.bicer.data.BIChange;
+import weka.core.Instance;
+import weka.core.Instances;
 
 public class Utils {
 	static public ArrayList<String> getLines(String file,boolean removeHeader){
@@ -355,6 +357,22 @@ public class Utils {
 			DataOutputStream dos=new DataOutputStream(fos);
 			
 			dos.writeBytes(lines);
+				
+			dos.close();
+			fos.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
+	}
+	
+	public static void writeAFile(Instances instances, String targetFileName){
+		try {
+			File file= new File(targetFileName);
+			FileOutputStream fos = new FileOutputStream(file);
+			DataOutputStream dos=new DataOutputStream(fos);
+			
+			for(Instance instance:instances)
+				dos.writeBytes(instance.toString());
 				
 			dos.close();
 			fos.close();
