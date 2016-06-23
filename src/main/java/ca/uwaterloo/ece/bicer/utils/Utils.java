@@ -353,6 +353,11 @@ public class Utils {
 	public static void writeAFile(String lines, String targetFileName){
 		try {
 			File file= new File(targetFileName);
+			File parent = file.getParentFile();
+			if(!parent.exists() && !parent.mkdirs()){
+			    System.err.println("Couldn't create dir: " + parent);
+			    System.exit(0);
+			}
 			FileOutputStream fos = new FileOutputStream(file);
 			DataOutputStream dos=new DataOutputStream(fos);
 			
