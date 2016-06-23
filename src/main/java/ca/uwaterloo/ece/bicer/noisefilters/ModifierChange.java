@@ -10,8 +10,8 @@ public class ModifierChange implements Filter{
 	final String name="Change the modifier";
 	BIChange biChange;
 	boolean isNoise=false;
-	String[] wholeFixCode;
-	
+	public String[] wholeFixCode;
+
 	public ModifierChange (BIChange biChange, String[] wholeFixCode){
 		this.biChange=biChange;
 		this.wholeFixCode=wholeFixCode;
