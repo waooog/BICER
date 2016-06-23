@@ -339,11 +339,11 @@ public class Utils {
 		return -1;
 	}
 	
-	static public ArrayList<BIChange> loadBIChanges(String pathToBIChangeData) {
+	static public ArrayList<BIChange> loadBIChanges(String pathToBIChangeData,boolean isNonSanitized) {
 		ArrayList<String> BIChangeInfo = getLines(pathToBIChangeData, true);
 		ArrayList<BIChange> biChanges = new ArrayList<BIChange>();
 		for(String info: BIChangeInfo){
-			biChanges.add(new BIChange(info,false));
+			biChanges.add(new BIChange(info,isNonSanitized));
 		}
 		return biChanges;
 	}

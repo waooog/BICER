@@ -25,12 +25,12 @@ public class Labeler {
 		HashMap<String,String> sha1sbyChangeIDs = getSha1sByChangeIDs(pathToChangeIDSha1Pair);
 		
 		// load BIChanges
-		ArrayList<BIChange> biChanges = Utils.loadBIChanges(pathToBIChanges);
+		ArrayList<BIChange> biChanges = Utils.loadBIChanges(pathToBIChanges,true);
 		HashMap<String,ArrayList<BIChange>> biChangesByKey = getHashMapForBIChangesByKey(biChanges); // key: biSha1+biPath
 		
 		// relabel
 		for(Instance instance:instances){
-			String changeID = instance.stringValue(instances.attribute("change_id"));
+			String changeID = (int)instance.value(instances.attribute("change_id")) + "";
 			String biPath = instance.stringValue(instances.attribute("412_full_path"));
 			String biSha1 = sha1sbyChangeIDs.get(changeID);
 			
@@ -49,6 +49,10 @@ public class Labeler {
 			HashMap<String, ArrayList<BIChange>> biChangesByKey) {
 		
 		String newLabel = "0"; // 0: clean 1: buggy
+		
+		if(biChangesByKey.get(key)==null){
+			return newLabel;
+		}
 		
 		for(BIChange biChange:biChangesByKey.get(key)){
 			if(biChange.getFixDate().compareTo(lastDateForFixCollection)<0)
@@ -84,7 +88,7 @@ public class Labeler {
 		HashMap<String,ArrayList<BIChange>> biChangesByKey = new HashMap<String,ArrayList<BIChange>>(); // key: biSha1+biPath
 		
 		for(BIChange biChange: biChanges){
-			String key = biChange.getBISha1() + biChange.getBIPath();
+			String key = biChange.getBISha1() + biChange.getBIPath().toLowerCase();
 			
 			if(biChangesByKey.containsKey(key)){
 				biChangesByKey.get(key).add(biChange);
