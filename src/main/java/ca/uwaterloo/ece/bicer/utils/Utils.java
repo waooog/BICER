@@ -364,20 +364,4 @@ public class Utils {
 			e.printStackTrace();
 		} 
 	}
-	
-	public static void writeAFile(Instances instances, String targetFileName){
-		try {
-			File file= new File(targetFileName);
-			FileOutputStream fos = new FileOutputStream(file);
-			DataOutputStream dos=new DataOutputStream(fos);
-			
-			for(Instance instance:instances)
-				dos.writeBytes(instance.toString());
-				
-			dos.close();
-			fos.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} 
-	}
 }
