@@ -174,37 +174,37 @@ public class NoiseFilterRunner {
 
 		ArrayList<Filter> filters = new ArrayList<Filter>();
 
-		// Filter 01: Position change of declaration statements
-		Filter postisionChangeFilter = factory.createFilter(Filters.POSITION_CHANGE, biChange,preFixWholeCodeAST, fixedWholeCodeAST);
-		filters.add(postisionChangeFilter);
-
-		// Filter 02: Remove unnecessary import (java) and include (c)
-		Filter removeUnnImportFilter = factory.createFilter(Filters.REMOVE_UN_IMPORT, biChange, wholeFixCode);
-		filters.add(removeUnnImportFilter);
-
-		// Filter 03: Cosmetic change
-		Filter cosmeticChangeFilter = factory.createFilter(Filters.COSMETIC_CHANGE, biChange, preFixWholeCodeAST, fixedWholeCodeAST);
-		filters.add(cosmeticChangeFilter);
-
-		// Filter 04: Change a name
-		Filter nameChange = factory.createFilter(Filters.NAME_CHANGE, biChange, preFixWholeCodeAST, fixedWholeCodeAST);
-		filters.add(nameChange);
-
-		// Filter 05: Remove unnecessary method
-		Filter removeUnnecessaryMethod = factory.createFilter(Filters.REMOVE_UN_METHOD, biChange, preFixWholeCodeAST, fixedWholeCodeAST);
-		filters.add(removeUnnecessaryMethod);
+//		// Filter 01: Position change of declaration statements
+//		Filter postisionChangeFilter = factory.createFilter(Filters.POSITION_CHANGE, biChange,preFixWholeCodeAST, fixedWholeCodeAST);
+//		filters.add(postisionChangeFilter);
+//
+//		// Filter 02: Remove unnecessary import (java) and include (c)
+//		Filter removeUnnImportFilter = factory.createFilter(Filters.REMOVE_UN_IMPORT, biChange, wholeFixCode);
+//		filters.add(removeUnnImportFilter);
+//
+//		// Filter 03: Cosmetic change
+//		Filter cosmeticChangeFilter = factory.createFilter(Filters.COSMETIC_CHANGE, biChange, preFixWholeCodeAST, fixedWholeCodeAST);
+//		filters.add(cosmeticChangeFilter);
+//
+//		// Filter 04: Change a name
+//		Filter nameChange = factory.createFilter(Filters.NAME_CHANGE, biChange, preFixWholeCodeAST, fixedWholeCodeAST);
+//		filters.add(nameChange);
+//
+//		// Filter 05: Remove unnecessary method
+//		Filter removeUnnecessaryMethod = factory.createFilter(Filters.REMOVE_UN_METHOD, biChange, preFixWholeCodeAST, fixedWholeCodeAST);
+//		filters.add(removeUnnecessaryMethod);
 		
 		// Filter 06: Change a Modifer
-		Filter changeMidifier = factory.createFilter(Filters.MODIFIER_CHANGE, biChange, wholeFixCode);
+		Filter changeMidifier = factory.createFilter(Filters.MODIFIER_CHANGE, biChange, preFixWholeCodeAST, fixedWholeCodeAST);
 		filters.add(changeMidifier);
 		
-		// Filter 07: Change a assertion
-		Filter assertionChange = factory.createFilter(Filters.ASSERTION_CHANGE, biChange, wholeFixCode);
-		filters.add(assertionChange);
-
-		// Filter 08: Add or detele a genetic type
-		Filter geneticTypeChange = factory.createFilter(Filters.GENERIC_CHANGE, biChange, wholeFixCode);
-		filters.add(geneticTypeChange);
+//		// Filter 07: Change a assertion
+//		Filter assertionChange = factory.createFilter(Filters.ASSERTION_CHANGE, biChange, wholeFixCode);
+//		filters.add(assertionChange);
+//
+//		// Filter 08: Add or detele a genetic type
+//		Filter geneticTypeChange = factory.createFilter(Filters.GENERIC_CHANGE, biChange, wholeFixCode);
+//		filters.add(geneticTypeChange);
 
 		boolean isNoise = false;
 		for(Filter filter:filters){
