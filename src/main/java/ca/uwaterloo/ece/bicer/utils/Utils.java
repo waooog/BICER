@@ -2,6 +2,9 @@ package ca.uwaterloo.ece.bicer.utils;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -39,6 +42,8 @@ import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
 
 import ca.uwaterloo.ece.bicer.data.BIChange;
+import weka.core.Instance;
+import weka.core.Instances;
 
 public class Utils {
 	static public ArrayList<String> getLines(String file,boolean removeHeader){
@@ -334,5 +339,34 @@ public class Utils {
 		}
 		
 		return -1;
+	}
+	
+	static public ArrayList<BIChange> loadBIChanges(String pathToBIChangeData,boolean isNonSanitized) {
+		ArrayList<String> BIChangeInfo = getLines(pathToBIChangeData, true);
+		ArrayList<BIChange> biChanges = new ArrayList<BIChange>();
+		for(String info: BIChangeInfo){
+			biChanges.add(new BIChange(info,isNonSanitized));
+		}
+		return biChanges;
+	}
+	
+	public static void writeAFile(String lines, String targetFileName){
+		try {
+			File file= new File(targetFileName);
+			File parent = file.getParentFile();
+			if(!parent.exists() && !parent.mkdirs()){
+			    System.err.println("Couldn't create dir: " + parent);
+			    System.exit(0);
+			}
+			FileOutputStream fos = new FileOutputStream(file);
+			DataOutputStream dos=new DataOutputStream(fos);
+			
+			dos.writeBytes(lines);
+				
+			dos.close();
+			fos.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
 	}
 }

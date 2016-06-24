@@ -170,7 +170,7 @@ public class NameChange implements Filter {
 		}
 		
 		for(MethodDeclaration methodDecNode:lstFixMethodDeclaration){
-			if(fixLineNum==fixedWholeCodeAST.getCompilationUnit().getLineNumber(methodDecNode.getStartPosition())
+			if(fixLineNum>=fixedWholeCodeAST.getCompilationUnit().getLineNumber(methodDecNode.getStartPosition())
 					&& fixLineNum<fixedWholeCodeAST.getCompilationUnit().getLineNumber(methodDecNode.getStartPosition()+methodDecNode.getLength())
 					){
 				changedName = methodDecNode.getName().toString();
