@@ -15,8 +15,8 @@ public class Labeler {
 	
 	static public void relabelArff(String pathToArff,String classAttributeName,String positiveLabel,
 									String pathToChangeIDSha1Pair,
-									String pathToBIChanges,String pathToNewArff,
-									String startDate,String endDate,String lastDateForFixCollection){
+									String pathToBIChangesforLabeling,String pathToNewArff,
+									String startDate,String endDate,String lastDateForFixCollection,String pathToAllBIChanges){
 		
 		// load arff
 		Instances instances = loadArff(pathToArff, classAttributeName);
@@ -24,9 +24,17 @@ public class Labeler {
 		// load changd_id and sha1 pair
 		HashMap<String,String> sha1sbyChangeIDs = getSha1sByChangeIDs(pathToChangeIDSha1Pair);
 		
-		// load BIChanges
-		ArrayList<BIChange> biChanges = Utils.loadBIChanges(pathToBIChanges,true);
-		HashMap<String,ArrayList<BIChange>> biChangesByKey = getHashMapForBIChangesByKey(biChanges); // key: biSha1+biPath
+		// load BIChanges for labeling
+		ArrayList<BIChange> biChangesForLabeling = Utils.loadBIChanges(pathToBIChangesforLabeling,true);
+		// load all BIChanges to get all info
+		
+		// do this when biChangesForLabeling has only BISha1 and path
+		if(!pathToBIChangesforLabeling.equals(pathToAllBIChanges)){
+			ArrayList<BIChange> biChangesForOldPaths = Utils.loadBIChanges(pathToAllBIChanges,true);	
+			biChangesForLabeling = getBiChangesForLabelingWithOldPath(biChangesForLabeling,biChangesForOldPaths);
+		}
+		
+		HashMap<String,ArrayList<BIChange>> biChangesByKey = getHashMapForBIChangesByKey(biChangesForLabeling); // key: biSha1+biPath
 		
 		// relabel
 		int count =0;
@@ -66,6 +74,23 @@ public class Labeler {
 		Utils.writeAFile(instances.toString(), pathToNewArff);
 	}
 	
+	private static ArrayList<BIChange> getBiChangesForLabelingWithOldPath(ArrayList<BIChange> biChangesForLabeling,
+			ArrayList<BIChange> biChangesForOldPaths) {
+		
+		ArrayList<BIChange> newBIChangesForLabeling = new ArrayList<BIChange>();
+		
+		for(BIChange biChange:biChangesForLabeling){
+			for(BIChange biChangeForOldPaths:biChangesForOldPaths){
+				if(biChange.getBISha1().equals(biChangeForOldPaths.getBISha1())
+						&& biChange.getPath().equals(biChangeForOldPaths.getPath())){
+					newBIChangesForLabeling.add(biChangeForOldPaths);
+				}
+			}
+		}
+		
+		return newBIChangesForLabeling;
+	}
+
 	private static String getNewLabel(String key, String startDate, String endDate, String lastDateForFixCollection,
 			HashMap<String, ArrayList<BIChange>> biChangesByKey) {
 		
