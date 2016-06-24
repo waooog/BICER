@@ -21,9 +21,6 @@ public class FilterFactory {
 		if(filter == Filters.REMOVE_UN_IMPORT)
 			return new RemoveUnnImport(biChange,wholeFixCode);
 		
-		if (filter == Filters.MODIFIER_CHANGE)
-			return new ModifierChange(biChange,wholeFixCode);
-		
 		if (filter == Filters.ASSERTION_CHANGE)
 			return new AssertionChange(biChange,wholeFixCode);
 		
@@ -47,6 +44,9 @@ public class FilterFactory {
 	
 		if(filter == Filters.REMOVE_UN_METHOD)
 			return new RemoveUnnecessaryMethod(biChange,preFixWholeCodeAST,fixWholeCodeAST);
+		
+		if (filter == Filters.MODIFIER_CHANGE)
+		return new ModifierChange(biChange,preFixWholeCodeAST,fixWholeCodeAST);
 		
 		return null;
 	}

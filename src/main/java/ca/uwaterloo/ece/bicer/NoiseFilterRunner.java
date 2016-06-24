@@ -195,7 +195,7 @@ public class NoiseFilterRunner {
 		filters.add(removeUnnecessaryMethod);
 		
 		// Filter 06: Change a Modifer
-		Filter changeMidifier = factory.createFilter(Filters.MODIFIER_CHANGE, biChange, wholeFixCode);
+		Filter changeMidifier = factory.createFilter(Filters.MODIFIER_CHANGE, biChange, preFixWholeCodeAST, fixedWholeCodeAST);
 		filters.add(changeMidifier);
 		
 		// Filter 07: Change a assertion
