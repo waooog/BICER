@@ -25,23 +25,30 @@ public class BIChange {
 	public BIChange(String changeInfo,boolean forSenitizer){
 		String[] splitString = changeInfo.split("\t");
 		
-		BISha1 = splitString[0];
-		biPath = splitString[1];
-		path = splitString[2];
-		FixSha1 = splitString[3];
-		BIDate = splitString[4];
-		FixDate = splitString[5];
-		lineNum = Integer.parseInt(splitString[6]); // if applying Sanitizer, this will be line num in BI code.
-		if(!forSenitizer){
-			lineNumInPrevFixRev = Integer.parseInt(splitString[7]); // lineNum in the prv. of fix revision.
-			isAddedLine = splitString[8].equals("t")||splitString[8].equals("true")?true:false;
-			line = splitString[9];
-		}else{
-			lineNumInPrevFixRev = Integer.parseInt(splitString[6]); // lineNum in the prv. of fix revision.
-			isAddedLine = splitString[7].equals("t")||splitString[7].equals("true")?true:false;
-			line = splitString[8];
-		}
+		if(splitString.length==2){
+			
+			BISha1 = splitString[0];
+			path = splitString[1];
+			
+		} else{
 		
+			BISha1 = splitString[0];
+			biPath = splitString[1];
+			path = splitString[2];
+			FixSha1 = splitString[3];
+			BIDate = splitString[4];
+			FixDate = splitString[5];
+			lineNum = Integer.parseInt(splitString[6]); // if applying Sanitizer, this will be line num in BI code.
+			if(!forSenitizer){
+				lineNumInPrevFixRev = Integer.parseInt(splitString[7]); // lineNum in the prv. of fix revision.
+				isAddedLine = splitString[8].equals("t")||splitString[8].equals("true")?true:false;
+				line = splitString[9];
+			}else{
+				lineNumInPrevFixRev = Integer.parseInt(splitString[6]); // lineNum in the prv. of fix revision.
+				isAddedLine = splitString[7].equals("t")||splitString[7].equals("true")?true:false;
+				line = splitString[8];
+			}
+		}
 		
 		filteredDueTo = "";
 	}
