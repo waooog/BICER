@@ -205,6 +205,10 @@ public class NoiseFilterRunner {
 		// Filter 08: Add or detele a genetic type
 		Filter geneticTypeChange = factory.createFilter(Filters.GENERIC_CHANGE, biChange, wholeFixCode);
 		filters.add(geneticTypeChange);
+		
+		// Filter 09: Rebuild def-use chain
+		Filter rebuildDefUseChain = factory.createFilter(Filters.REBUILD_DEF_USE_CHAIN, biChange, preFixWholeCodeAST, fixedWholeCodeAST);
+		filters.add(rebuildDefUseChain);
 
 		boolean isNoise = false;
 		for(Filter filter:filters){
