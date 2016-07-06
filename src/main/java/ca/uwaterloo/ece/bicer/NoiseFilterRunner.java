@@ -209,6 +209,10 @@ public class NoiseFilterRunner {
 		// Filter 09: Rebuild def-use chain
 		Filter rebuildDefUseChain = factory.createFilter(Filters.REBUILD_DEF_USE_CHAIN, biChange, preFixWholeCodeAST, fixedWholeCodeAST);
 		filters.add(rebuildDefUseChain);
+		
+		// Filter 10: Remove def-use chain
+		Filter removeDefUseChain = factory.createFilter(Filters.REMOVE_DEF_USE_CHAIN, biChange, preFixWholeCodeAST, fixedWholeCodeAST);
+		filters.add(removeDefUseChain);
 
 		boolean isNoise = false;
 		for(Filter filter:filters){
