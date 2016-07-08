@@ -1,11 +1,16 @@
 package ca.uwaterloo.ece.bicer.noisefilters;
 
+import java.util.StringTokenizer;
+
 import ca.uwaterloo.ece.bicer.data.BIChange;
 import ca.uwaterloo.ece.bicer.utils.JavaASTParser;
+import ca.uwaterloo.ece.bicer.utils.Utils;
 
 public class StringValueChange  implements Filter{
-	final String name="String value change";
+	final String name="String value change (in a throw statement)";
 	BIChange biChange;
+	String wholeFixCode;
+	String preCode;
 	JavaASTParser preFixWholeCodeAST;
 	JavaASTParser fixedWholeCodeAST;
 	boolean isNoise=false;
@@ -16,18 +21,54 @@ public class StringValueChange  implements Filter{
 		this.biChange = biChange;
 		this.preFixWholeCodeAST = preFixWholeCodeAST;
 		this.fixedWholeCodeAST = fixedWholeCodeAST;
+		
+		this.wholeFixCode =  fixedWholeCodeAST.getStringCode();
+		this.preCode = preFixWholeCodeAST.getStringCode();
+		isNoise = filterOut();
 	}
 
 	@Override
 	public boolean filterOut() {
 		// TODO Auto-generated method stub
+		// No need to consider a deleted line in a BI change
+		if(!biChange.getIsAddedLine())
+			return false;
+
+		String stmt = biChange.getLine();
+		
+		// (1) Check the line is a declarative statement such as
+		// import
+		StringTokenizer stokenize;
+		if(isThrowStmt(stmt)){
+			stokenize = new StringTokenizer(stmt, "(");
+			String throw_st_before = stokenize.nextToken();
+			
+			//fixline
+			String fixline="";//TODO
+			stokenize = new StringTokenizer(fixline, "(");
+			String throw_st_after = stokenize.nextToken();
+		
+			if(throw_st_before.equals(throw_st_after))
+				return true;
+		} 
+		
 		return false;
 	}
 
+	private boolean isThrowStmt(String stmt) {
+
+		// Tthrow statements
+		if (stmt.matches("^\\s*throw\\s\\s*[a-zA-Z_$][a-zA-Z_$0-9.]*\\s*;.*"))
+			return true;
+
+
+		return false;		
+	}
+	
 	@Override
 	public boolean isNoise() {
 		// TODO Auto-generated method stub
-		return false;
+		return this.isNoise;
 	}
 
 	@Override
