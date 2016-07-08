@@ -9,8 +9,7 @@ import ca.uwaterloo.ece.bicer.utils.Utils;
 public class StringValueChange  implements Filter{
 	final String name="String value change (in a throw statement)";
 	BIChange biChange;
-	String wholeFixCode;
-	String preCode;
+	String[] wholeFixCode;
 	JavaASTParser preFixWholeCodeAST;
 	JavaASTParser fixedWholeCodeAST;
 	boolean isNoise=false;
@@ -22,8 +21,7 @@ public class StringValueChange  implements Filter{
 		this.preFixWholeCodeAST = preFixWholeCodeAST;
 		this.fixedWholeCodeAST = fixedWholeCodeAST;
 		
-		this.wholeFixCode =  fixedWholeCodeAST.getStringCode();
-		this.preCode = preFixWholeCodeAST.getStringCode();
+		this.wholeFixCode = fixedWholeCodeAST.getStringCode().split("\n");
 		isNoise = filterOut();
 	}
 
@@ -43,14 +41,9 @@ public class StringValueChange  implements Filter{
 			stokenize = new StringTokenizer(stmt, "(");
 			String throw_st_before = stokenize.nextToken();
 			
-			//fixline
-			String fixline="";//TODO
-			stokenize = new StringTokenizer(fixline, "(");
-			String throw_st_after = stokenize.nextToken();
-		
-			if(throw_st_before.equals(throw_st_after))
+			if(Utils.doesContainLine(throw_st_before, wholeFixCode, true, true))
 				return true;
-		} 
+		}
 		
 		return false;
 	}
