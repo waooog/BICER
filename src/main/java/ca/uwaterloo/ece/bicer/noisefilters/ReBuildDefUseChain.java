@@ -1,5 +1,4 @@
 package ca.uwaterloo.ece.bicer.noisefilters;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -76,58 +75,95 @@ public class ReBuildDefUseChain implements Filter{
 				}	
 			}
 		}
+		
 		for(MethodDeclaration md : fixedWholeCodeAST.getMethodDeclarations()){
-			if( md.getBody()!=null){
-				for(Object st: md.getBody().statements()){
-					if(((Statement)st).getNodeType()==ASTNode.VARIABLE_DECLARATION_STATEMENT) {
-						VariableDeclarationStatement varDecStmt= (VariableDeclarationStatement) st;
-						List<VariableDeclarationFragment> varDecFragList= varDecStmt.fragments();
-						for(VariableDeclarationFragment vdf: varDecFragList){
-							int lineNum=fixedWholeCodeAST.getCompilationUnit().getLineNumber(vdf.getStartPosition())-1;
-							for(Edit ed: editList){
-								if(lineNum>=ed.getBeginB()&&lineNum<ed.getEndB()) varDecMap.put(vdf.getName().toString(), vdf);
-								else if(lineNum<ed.getBeginB()) break;
-							}	
+			int startLine=fixedWholeCodeAST.getCompilationUnit().getLineNumber(md.getStartPosition());
+			int endLine=fixedWholeCodeAST.getCompilationUnit().getLineNumber(md.getStartPosition()+md.getLength());
+			if(edit!=null && edit.getBeginB()+1>=startLine&&edit.getEndB()<=endLine){
+				if( md.getBody()!=null){
+					for(Object st: md.getBody().statements()){
+						if(((Statement)st).getNodeType()==ASTNode.VARIABLE_DECLARATION_STATEMENT) {
+							VariableDeclarationStatement varDecStmt= (VariableDeclarationStatement) st;
+							List<VariableDeclarationFragment> varDecFragList= varDecStmt.fragments();
+							for(VariableDeclarationFragment vdf: varDecFragList){
+								int lineNum=fixedWholeCodeAST.getCompilationUnit().getLineNumber(vdf.getStartPosition())-1;
+								for(Edit ed: editList){
+									if(lineNum>=ed.getBeginB()&&lineNum<ed.getEndB()) varDecMap.put(vdf.getName().toString(), vdf);
+									else if(lineNum<ed.getBeginB()) break;
+								}	
+
+							}							
 						}
 					}
-				}					
-			}
-
-		}			
-		for(String varName:varDecMap.keySet()){
-			Edit ed=biChange.getEdit();
-			if(ed!=null){
-				for(int i=ed.getBeginB();i<ed.getEndB();i++){
-					if(wholeFixCode[i].indexOf(varName)!=-1){
-						if(varDecMap.get(varName).getInitializer()!=null){							
-							String fixInit=varDecMap.get(varName).getInitializer().toString();
-							String fixInit2=null;
-							if(fixInit.matches("^\\(\\w*\\)\\s*\\S+"))
-								fixInit2=fixInit.replaceAll("^\\(\\w*\\)\\s*",""); // remove force casting
-							int index=stmt.indexOf(fixInit);
-							if(index!=-1){
-								String fixedStmt=wholeFixCode[i];
-								fixedStmt=fixedStmt.replaceAll(varName, fixInit);
-								fixedStmt=Utils.removeLineComments(fixedStmt).trim();
-								stmt=Utils.removeLineComments(stmt).trim();
-								stmt=stmt.replaceAll("\\s", "");
-								fixedStmt=fixedStmt.replaceAll("\\s", "");
-								if(fixedStmt.equals(stmt)) return true;
-							}else if(fixInit2!=null&&stmt.indexOf(fixInit2)!=-1){
-								String fixedStmt=wholeFixCode[i];
-								fixedStmt=fixedStmt.replaceAll(varName, fixInit2);
-								fixedStmt=Utils.removeLineComments(fixedStmt).trim();
-								stmt=Utils.removeLineComments(stmt).trim();
-								stmt=stmt.replaceAll("\\s", "");
-								fixedStmt=fixedStmt.replaceAll("\\s", "");
-								if(fixedStmt.equals(stmt)) return true;								
+					
+					for(String varName:varDecMap.keySet()){
+						VariableDeclarationFragment vdf =varDecMap.get(varName);
+						for(int i=edit.getBeginB();i<edit.getEndB();i++){
+							if(wholeFixCode[i].indexOf(varName)!=-1){
+								if(vdf.getInitializer()!=null){							
+									String fixInit=vdf.getInitializer().toString();
+									String fixInit2=null;
+									if(fixInit.matches("^\\(\\w*\\)\\s*\\S+"))
+										fixInit2=fixInit.replaceAll("^\\(\\w*\\)\\s*",""); // remove force casting
+									int index=stmt.indexOf(fixInit);
+									if(index!=-1){
+										String fixedStmt=wholeFixCode[i];
+										fixedStmt=fixedStmt.replaceAll(varName, fixInit);
+										fixedStmt=Utils.removeLineComments(fixedStmt).trim();
+										stmt=Utils.removeLineComments(stmt).trim();
+										stmt=stmt.replaceAll("\\s", "");
+										fixedStmt=fixedStmt.replaceAll("\\s", "");
+										if(fixedStmt.equals(stmt)){
+											int decLine=fixedWholeCodeAST.getCompilationUnit().getLineNumber(vdf.getStartPosition());
+											if(decLine>=startLine&&decLine<=endLine){
+												decLine--;
+												if(decLine+1==i) return true;
+												else if(decLine>=i) continue;
+												else{
+													for(int m=decLine+1;m<i;m++){
+														if(!(wholeFixCode[m].matches("^\\s*(//|\\*|/\\*|\\*/|@).*")||wholeFixCode[m].matches("^\\s+"))){
+															break;
+														}else if(m==i-1){
+															return true;
+														}
+													}
+													continue;
+												}
+											}else return true;
+										}
+									}else if(fixInit2!=null&&stmt.indexOf(fixInit2)!=-1){
+										String fixedStmt=wholeFixCode[i];
+										fixedStmt=fixedStmt.replaceAll(varName, fixInit2);
+										fixedStmt=Utils.removeLineComments(fixedStmt).trim();
+										stmt=Utils.removeLineComments(stmt).trim();
+										stmt=stmt.replaceAll("\\s", "");
+										fixedStmt=fixedStmt.replaceAll("\\s", "");
+										if(fixedStmt.equals(stmt)){
+											int decLine=fixedWholeCodeAST.getCompilationUnit().getLineNumber(vdf.getStartPosition());
+											if(decLine>=startLine&&decLine<=endLine){
+												decLine--;
+												if(decLine+1==i) return true;
+												else if(decLine>=i) continue;
+												else{
+													for(int m=decLine+1;m<i;m++){
+														if(!(wholeFixCode[m].matches("^\\s*(//|\\*|/\\*|\\*/|@).*")||wholeFixCode[m].matches("^\\s+"))){
+															break;
+														}else if(m==i-1){
+															return true;
+														}
+													}
+													continue;
+												}
+											}else return true;
+										}						
+									}
+								}
 							}
 						}
 					}
-				}				
+				}
 			}
-
-		}
+		}			
 		return false;
 	}
 
