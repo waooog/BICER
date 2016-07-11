@@ -31,7 +31,7 @@ public class RemoveUnnImport implements Filter {
 			
 			// (2) check if there is the same line in a different position.
 			//     If the same line does not exist, it is a noise.
-			if(!Utils.doesSameLineExist(stmt, wholeFixCode, true, true))
+			if(!Utils.doesSameLineExist(stmt, wholeFixCode, true, true,biChange.getIsAddedLine(),biChange.getEdit()))
 				return true;
 		}
 		

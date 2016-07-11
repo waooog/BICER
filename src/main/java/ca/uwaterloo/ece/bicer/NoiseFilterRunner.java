@@ -102,7 +102,7 @@ public class NoiseFilterRunner {
 			String fixSha1 = biChange.getFixSha1();
 			String biPath = biChange.getBIPath();
 			String fixPath = biChange.getPath();
-
+			
 			// load whole fix code
 			try {
 				String code = Utils.fetchBlob(repo, preFixSha1, fixPath);
@@ -231,6 +231,13 @@ public class NoiseFilterRunner {
 		for(Edit edit:editListFromDiff){
 			int beginA = edit.getBeginA();
 			int endA = edit.getEndA();
+			
+			if(edit.getType().equals(Edit.Type.INSERT)){
+				if(beginA <= biChange.getLineNumInPrevFixRev() && biChange.getLineNumInPrevFixRev()<=endA+1){
+					biChange.setEdit(edit);
+					break;
+				}
+			}
 			
 			if(beginA < biChange.getLineNumInPrevFixRev() && biChange.getLineNumInPrevFixRev()<=endA){
 				biChange.setEdit(edit);
