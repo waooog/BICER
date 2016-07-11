@@ -26,8 +26,8 @@ public class CosmeticChange implements Filter {
 	public boolean filterOut() {
 		
 		// No need to consider a deleted line in a BI change
-		if(!biChange.getIsAddedLine())
-			return false;
+		//if(!biChange.getIsAddedLine())
+		//	return false;
 		
 		String stmt = Utils.removeLineComments(biChange.getLine());
 		
