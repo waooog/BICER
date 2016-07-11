@@ -296,6 +296,25 @@ public class Utils {
 		return false;
 	}
 
+	static public boolean doesContainLine(String line,String[] lines,boolean trim,boolean ignoreLineComments){
+
+		line = ignoreLineComments?removeLineComments(line):line;
+
+		for(String lineCompare:lines){
+			lineCompare = ignoreLineComments?removeLineComments(lineCompare):lineCompare;
+			if(trim){
+				if(lineCompare.trim().contains(line.trim()))
+					return true;
+			}
+			else{
+				if(lineCompare.contains(line))
+					return true;
+			}
+		}
+
+		return false;
+	}
+	
 	public static String removeLineComments(String line) {
 		// http://stackoverflow.com/questions/2613432/remove-source-file-comments-using-intellij
 		return line.replaceAll("(/\\*([^*]|[\\r\\n]|(\\*+([^*/]|[\\r\\n])))*\\*+/|[ \\t]*//.*)", "");
