@@ -138,6 +138,10 @@ public class NoiseFilterRunner {
 			}
 
 			updateBIChangeWithEditList(biChange,wholePreFixCode,wholeFixCode,editListFromDiff);
+			
+			if( !(!biChange.getIsAddedLine() && biChange.getEdit()==null))
+				continue;
+			
 			// ignore line with only one character such as {,}
 			if(biChange.getLine().trim().length()<2){
 				biChange.setFilteredDueTo("One character line");
@@ -231,13 +235,6 @@ public class NoiseFilterRunner {
 		for(Edit edit:editListFromDiff){
 			int beginA = edit.getBeginA();
 			int endA = edit.getEndA();
-			
-			if(edit.getType().equals(Edit.Type.INSERT)){
-				if(beginA <= biChange.getLineNumInPrevFixRev() && biChange.getLineNumInPrevFixRev()<=endA+1){
-					biChange.setEdit(edit);
-					break;
-				}
-			}
 			
 			if(beginA < biChange.getLineNumInPrevFixRev() && biChange.getLineNumInPrevFixRev()<=endA){
 				biChange.setEdit(edit);

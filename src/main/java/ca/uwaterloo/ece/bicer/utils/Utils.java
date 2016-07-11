@@ -277,13 +277,12 @@ public class Utils {
 
 	}
 
-	static public boolean doesSameLineExist(String line,String[] lines,boolean trim,boolean ignoreLineComments,boolean isAddedLine,Edit edit){
+	static public boolean doesSameLineExist(String line,String[] lines,boolean trim,boolean ignoreLineComments,boolean isAddedLine){
 
 		line = ignoreLineComments?removeLineComments(line):line;
 		
-		// if the line is not the added line in a BI change, then check the fix hunk type in only ADDED (Edit.Type.Insert). If only added, it is not a position change
+		// if the line is not the added line in a BI change, return false;
 		if(!isAddedLine){
-			if(edit.getType().equals(Edit.Type.INSERT))
 				return false;
 		}
 
