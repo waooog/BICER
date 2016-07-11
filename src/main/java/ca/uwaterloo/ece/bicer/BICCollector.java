@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,11 +20,14 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
+import org.eclipse.jgit.diff.Edit;
+import org.eclipse.jgit.diff.EditList;
 import org.eclipse.jgit.diff.RawTextComparator;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
 
+import ca.uwaterloo.ece.bicer.data.DeletedLineInCommits;
 import ca.uwaterloo.ece.bicer.utils.Utils;
 
 public class BICCollector {
@@ -61,6 +65,9 @@ public class BICCollector {
 			ArrayList<RevCommit> commits = getRevCommits();
 			
 			repo = git.getRepository();
+			
+			// get deleted lines from commits
+			HashMap<String,ArrayList<DeletedLineInCommits>> mapDeletedLines = getDeletedLinesInCommits(commits);
 			
 			for(RevCommit rev:commits){
 				String message = rev.getFullMessage();
@@ -109,7 +116,7 @@ public class BICCollector {
 				    		}
 				    		
 				    		
-				    		// get the previous commit and do blame for deleted liens in the prev commit
+				    		// get the previous commit and do blame for deleted lines in the previous commit
 				    		
 				    		// 
 						} catch (IOException e) {
@@ -121,6 +128,75 @@ public class BICCollector {
 			}
 			
 		}
+	}
+
+	private HashMap<String, ArrayList<DeletedLineInCommits>> getDeletedLinesInCommits(ArrayList<RevCommit> commits) {
+		
+		HashMap<String, ArrayList<DeletedLineInCommits>> deletedLines = new HashMap<String, ArrayList<DeletedLineInCommits>>();
+		
+		for(RevCommit rev:commits){
+			// get a list of files in the commit
+    		RevCommit parent = rev.getParent(0);
+    		DiffFormatter df = new DiffFormatter(DisabledOutputStream.INSTANCE);
+    		df.setRepository(repo);
+    		df.setDiffComparator(RawTextComparator.DEFAULT);
+    		df.setDetectRenames(true);
+    		List<DiffEntry> diffs;
+			try {
+	    		// do diff and get only deleted lines
+				diffs = df.scan(parent.getTree(), rev.getTree());
+				for (DiffEntry diff : diffs) {
+					String oldPath = diff.getOldPath();
+					String newPath = diff.getNewPath();
+					
+					// skip test case files
+					//if(newPath.indexOf("Test")>=0) continue;
+					
+					String id =  rev.name() + "";
+					
+					SimpleDateFormat ft =  new SimpleDateFormat ("yyyy-MM-dd HH:mm:ss");
+				    Date commitDate = new Date(rev.getCommitTime()* 1000L);
+				   
+					String date = ft.format(commitDate);
+					
+					String temp = Utils.fetchBlob(repo, id +  "~1", oldPath);
+					
+					String prevfileSource=Utils.removeLineComments(temp);
+					String fileSource=Utils.removeLineComments(Utils.fetchBlob(repo, id, newPath));	
+					
+					EditList editList = Utils.getEditListFromDiff(prevfileSource, fileSource);
+					
+					String[] arrPrevfileSource=Utils.removeLineComments(Utils.fetchBlob(repo, id +  "~1", oldPath)).split("\n");
+					
+					for(Edit edit:editList){
+						// deleted lines are in DELETE and REPLACE types
+						if(!edit.getType().equals(Edit.Type.INSERT)){
+							
+							int beginA = edit.getBeginA();
+							int endA = edit.getEndA();
+							
+							for(int lineIdx = beginA; lineIdx < endA; lineIdx++){
+								String line = arrPrevfileSource[lineIdx].trim();
+								if(line.length() <=8) continue; // only consider the line whose length > 8
+								DeletedLineInCommits deletedLine = new DeletedLineInCommits(id,date,oldPath,newPath,lineIdx+1,line);
+								if(!deletedLines.containsKey(line)){
+									ArrayList<DeletedLineInCommits> lstDeletedLines = new ArrayList<DeletedLineInCommits>();
+									lstDeletedLines.add(deletedLine);
+									deletedLines.put(line,lstDeletedLines);
+								}else{
+									deletedLines.get(line).add(deletedLine);
+								}
+							}
+						}
+					}
+	    		}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			df.close();
+		}
+
+		return deletedLines;
 	}
 
 	private ArrayList<RevCommit> getRevCommits() {
