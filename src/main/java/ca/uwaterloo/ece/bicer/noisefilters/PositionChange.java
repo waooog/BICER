@@ -39,8 +39,8 @@ public class PositionChange implements Filter {
 	@Override
 	public boolean filterOut() {
 
-		// No need to consider a deleted line in a BI change
-		if(!biChange.getIsAddedLine())
+		// No need to consider a deleted line in a BI change, but need to consider when it is import statement even in a deleted line in a BI change.
+		if(!biChange.getIsAddedLine() && !biChange.getLine().startsWith("import"))
 			return false;
 
 		String stmt = biChange.getLine();
