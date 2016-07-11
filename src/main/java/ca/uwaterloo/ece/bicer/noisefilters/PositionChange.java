@@ -50,7 +50,7 @@ public class PositionChange implements Filter {
 		if(isImportStmt(stmt)){
 
 			// (2) check if there is the same line in a different position.
-			if(Utils.doesSameLineExist(stmt, wholeFixCode, true, true,biChange.getIsAddedLine()))
+			if(Utils.doesSameLineExist(stmt, wholeFixCode, true, true,biChange.getIsAddedLine(),biChange.getEdit()))
 				return true;
 		}
 		
