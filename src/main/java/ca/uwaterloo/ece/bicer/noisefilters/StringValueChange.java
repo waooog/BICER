@@ -33,7 +33,7 @@ public class StringValueChange  implements Filter{
 			return false;
 
 		String stmt = biChange.getLine();
-		
+
 		// (1) Check the line is a declarative statement such as
 		// import
 		StringTokenizer stokenize;
@@ -54,7 +54,8 @@ public class StringValueChange  implements Filter{
 		if (stmt.matches("^\\s*throw\\s\\s*[a-zA-Z_$][a-zA-Z_$0-9.]*\\s*;.*"))
 			return true;
 
-
+		if (stmt.matches("^\\s*message\\s\\s*[a-zA-Z_$][a-zA-Z_$0-9.]*\\s*;.*"))
+			return true;
 		return false;		
 	}
 	
