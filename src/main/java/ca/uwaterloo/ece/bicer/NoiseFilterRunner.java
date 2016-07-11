@@ -139,9 +139,6 @@ public class NoiseFilterRunner {
 
 			updateBIChangeWithEditList(biChange,wholePreFixCode,wholeFixCode,editListFromDiff);
 			
-			if( !(!biChange.getIsAddedLine() && biChange.getEdit()==null))
-				continue;
-			
 			// ignore line with only one character such as {,}
 			if(biChange.getLine().trim().length()<2){
 				biChange.setFilteredDueTo("One character line");
