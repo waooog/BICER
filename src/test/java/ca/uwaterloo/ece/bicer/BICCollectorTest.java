@@ -14,10 +14,10 @@ public class BICCollectorTest {
     	BICCollector runner = new BICCollector();
     	
     	//String [] args ={"-d","data/exampleBIChanges.txt", "-g", System.getProperty("user.home") + "/git/BICER"};
-    	String [] args ={"-g",System.getProperty("user.home") + "/Documents/UW/ODP/projects/lucene/git/git",
+    	String [] args ={"-g",System.getProperty("user.home") + "/Documents/ODP/projects/lucene/git",
     						"-s", "2010-09-12 00:00:00",
     						"-e", "2010-11-12 23:59:59",
-    						"-b", System.getProperty("user.home") + "/Documents/UW/ODP/projects/lucene/lucene_bug_reports.txt"};
+    						"-b", System.getProperty("user.home") + "/Documents/ODP/projects/lucene/lucene_bug_reports.txt"};
     	
     	runner.run(args);
     	

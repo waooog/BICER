@@ -17,8 +17,8 @@ import ca.uwaterloo.ece.bicer.utils.Utils;
 public class ResultValidationTest {
     @Test public void testSomeLibraryMethod() {
     	
-    	String project ="project";
-    	String dir = System.getProperty("user.home") + "/path/" + project +"/";
+    	String project ="lucene";
+    	String dir = System.getProperty("user.home") + "/Documents/ODP/projects/" + project +"/";
         
     	String pathForBIChanges = dir + "biChanges.txt";
     	String pathForBIChangesSanitized = dir + "biChangesSanitized.txt";

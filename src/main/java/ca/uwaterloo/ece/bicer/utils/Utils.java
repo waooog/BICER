@@ -323,6 +323,7 @@ public class Utils {
 	
 	public static String removeLineComments(String line) {
 		// http://stackoverflow.com/questions/2613432/remove-source-file-comments-using-intellij
+		// (/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/|[ \t]*//.*)
 		return line.replaceAll("(/\\*([^*]|[\\r\\n]|(\\*+([^*/]|[\\r\\n])))*\\*+/|[ \\t]*//.*)", "");
 	}
 

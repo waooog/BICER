@@ -59,7 +59,7 @@ public class LabelerTest {
     	
     	String luceneEndDateForTestLabelCollection = "2014-01-16";
     	
-    	String path = System.getProperty("user.home") + "/projectpath/";
+    	String path = System.getProperty("user.home") + "/Documents/ODP/projects/lucene/";
     	
     	String pathToArff = path + "arffsOriginalWOTestCases/0/train.arff";
     	String classAttributeName = "500_Buggy?";
@@ -73,12 +73,12 @@ public class LabelerTest {
     	String lastDateForFixCollection="2010-11-29";
     	
     	// lucene training set
-    	boolean manual = true;
+    	boolean manual = false;
     	if(manual){
     		pathToBIChangesForLabeling = path + "luceneBIsManualIssueCorrected.txt";
     	}
     	
-    	/*for(int i=0; i<luceneTrainingStartDates.length;i++){
+    	for(int i=0; i<luceneTrainingStartDates.length;i++){
     		
     		pathToArff = path + "arffsOriginalWOTestCases/" + i +"/train.arff";
     		startDate = luceneTrainingStartDates[i];
@@ -98,7 +98,7 @@ public class LabelerTest {
     	
     	
     	// Lucene test sets
-    	lastDateForFixCollection = luceneEndDateForTestLabelCollection;
+    	/*lastDateForFixCollection = luceneEndDateForTestLabelCollection;
     	for(int i=0; i<luceneTestStartDates.length;i++){
 		
 			pathToArff = path + "arffsOriginalWOTestCases/" + i +"/test.arff";
@@ -182,7 +182,7 @@ public class LabelerTest {
     		pathToBIChangesForLabeling = path + "jackrabbitBIsManualIssueCorrected.txt";
     	}
     	pathToBIChangesForOldPaths = path + "biChanges.txt";
-    	for(int i=0; i<jackrabbitTrainingStartDates.length;i++){
+    	/*for(int i=0; i<jackrabbitTrainingStartDates.length;i++){
     		
     		pathToArff = path + "arffsOriginalWOTestCases/" + i +"/train.arff";
     		startDate = jackrabbitTrainingStartDates[i];
@@ -217,7 +217,7 @@ public class LabelerTest {
 			Labeler.relabelArff(pathToArff, classAttributeName, positiveLabel, pathToChangeIDSha1Pair,
 					pathToBIChangesForLabeling, pathToNewArff, startDate, endDate, lastDateForFixCollection,
 					pathToBIChangesForOldPaths);
-    	}
+    	}*/
     	//assertTrue("someLibraryMethod should return 'true'", classUnderTest.someLibraryMethod());
     }
 }
