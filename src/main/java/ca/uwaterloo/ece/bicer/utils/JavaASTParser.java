@@ -1,7 +1,9 @@
 package ca.uwaterloo.ece.bicer.utils;
 
 import java.util.ArrayList;
+import java.util.Map;
 
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.*;
 
 public class JavaASTParser {
@@ -37,7 +39,7 @@ public class JavaASTParser {
 		char[] content = source.toCharArray();
 		parser.setSource(content);
 		//parser.setUnitName("temp.java");
-		/*Map<String, String> options = JavaCore.getOptions();
+		Map<String, String> options = JavaCore.getOptions();
 		options.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_7);
 		options.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM,
 				JavaCore.VERSION_1_7);
@@ -47,7 +49,7 @@ public class JavaASTParser {
 		parser.setEnvironment(classPaths, sources, null, true);
 		parser.setResolveBindings(false);
 		parser.setCompilerOptions(options);
-		parser.setStatementsRecovery(true);*/
+		parser.setStatementsRecovery(true);
 
 		try {
 			final CompilationUnit unit = (CompilationUnit) parser.createAST(null);
