@@ -7,7 +7,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -325,6 +327,13 @@ public class Utils {
 		// http://stackoverflow.com/questions/2613432/remove-source-file-comments-using-intellij
 		// (/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/|[ \t]*//.*)
 		return line.replaceAll("(/\\*([^*]|[\\r\\n]|(\\*+([^*/]|[\\r\\n])))*\\*+/|[ \\t]*//.*)", "");
+	}
+	
+	public static String getStringDateTimeFromCommitTime(int commitTime){
+		SimpleDateFormat ft =  new SimpleDateFormat ("yyyy-MM-dd HH:mm:ss");
+		Date commitDate = new Date(commitTime* 1000L);
+
+		return ft.format(commitDate);
 	}
 
 	public static String getStringFromStringArray(String[] wholeFixCode) {

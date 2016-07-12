@@ -17,4 +17,11 @@ public class DeletedLineInCommits {
 		this.line = line;
 	}
 
+	public String getBIDate(){
+		return date;
+	}
+
+	public String getPath() {
+		return path;
+	}
 }

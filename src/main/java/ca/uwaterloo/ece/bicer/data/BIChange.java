@@ -10,8 +10,8 @@ public class BIChange {
 	String FixSha1;
 	String BIDate;
 	String FixDate;
-	int lineNum;
-	int lineNumInPrevFixRev;
+	int lineNum; // line num in BI file
+	int lineNumInPrevFixRev; // line num in previous commit of the fix commit
 	boolean isAddedLine;
 	String line;
 	boolean isNoise;
@@ -21,6 +21,19 @@ public class BIChange {
 	String filteredDueTo;
 	
 	public BIChange(){}
+	
+	public BIChange(String BISha1,String biPath,String FixSha1,String path,String BIDate,String FixDate,int lineNum,int lineNumInPrevFixRev,String line,boolean isAddedLine){
+		this.BISha1 = BISha1;
+		this.biPath = biPath;
+		this.FixSha1 = FixSha1;
+		this.path = path;
+		this.BIDate = BIDate;
+		this.FixDate = FixDate;
+		this.lineNum = lineNum;
+		this.lineNumInPrevFixRev = lineNumInPrevFixRev;
+		this.line = line;
+		this.isAddedLine = isAddedLine;
+	}
 
 	public BIChange(String changeInfo,boolean forSenitizer){
 		String[] splitString = changeInfo.split("\t");
