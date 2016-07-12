@@ -278,53 +278,57 @@ public class BICCollector {
 		return lineIndices;
 	}
 
+	/**
+	 * Get all deleted lines in commits. The return object, HashMap, is used to identify a BI commit that induce bug-fixing by a deleted line in the BI commit
+	 * @param commits
+	 * @return HashMap<String, ArrayList<DeletedLineInCommits>>
+	 */
 	private HashMap<String, ArrayList<DeletedLineInCommits>> getDeletedLinesInCommits(ArrayList<RevCommit> commits) {
 
+		// deletedLines are order by commit date (DESC, i.e., recent commit first)
 		HashMap<String, ArrayList<DeletedLineInCommits>> deletedLines = new HashMap<String, ArrayList<DeletedLineInCommits>>();
 
+		// Traverse all commits to collect deleted lines.
 		for(RevCommit rev:commits){
-			// get a list of files in the commit
-			RevCommit parent = rev.getParent(0);
+			
+			// Get basic commit info
+			String sha1 =  rev.name() + "";
+			String date = Utils.getStringDateTimeFromCommitTime(rev.getCommitTime());
+			
+			// Get diffs from affected files in the commit
+			RevCommit preRev = rev.getParent(0);
 			DiffFormatter df = new DiffFormatter(DisabledOutputStream.INSTANCE);
 			df.setRepository(repo);
 			df.setDiffComparator(RawTextComparator.DEFAULT);
 			df.setDetectRenames(true);
 			List<DiffEntry> diffs;
 			try {
-				// do diff and get only deleted lines
-				diffs = df.scan(parent.getTree(), rev.getTree());
+				// Deal with diff and get only deleted lines
+				diffs = df.scan(preRev.getTree(), rev.getTree());
 				for (DiffEntry diff : diffs) {
 					String oldPath = diff.getOldPath();
 					String newPath = diff.getNewPath();
 
-					// skip test case files
+					// Skip test case files
 					if(newPath.indexOf("Test")>=0 || !newPath.endsWith(".java")) continue;
 
-					String id =  rev.name() + "";
-
-					SimpleDateFormat ft =  new SimpleDateFormat ("yyyy-MM-dd HH:mm:ss");
-					Date commitDate = new Date(rev.getCommitTime()* 1000L);
-
-					String date = ft.format(commitDate);
-
-					String prevfileSource=Utils.removeLineComments(Utils.fetchBlob(repo, id +  "~1", oldPath));
-					String fileSource=Utils.removeLineComments(Utils.fetchBlob(repo, id, newPath));	
-
+					// Do diff on files without comments to only consider code lines
+					String prevfileSource=Utils.removeLineComments(Utils.fetchBlob(repo, sha1 +  "~1", oldPath));
+					String fileSource=Utils.removeLineComments(Utils.fetchBlob(repo, sha1, newPath));	
 					EditList editList = Utils.getEditListFromDiff(prevfileSource, fileSource);
-
-					String[] arrPrevfileSource=Utils.removeLineComments(Utils.fetchBlob(repo, id +  "~1", oldPath)).split("\n");
-
+					String[] arrPrevfileSource=Utils.removeLineComments(Utils.fetchBlob(repo, sha1 +  "~1", oldPath)).split("\n");
 					for(Edit edit:editList){
-						// deleted lines are in DELETE and REPLACE types
+						// Deleted lines are in DELETE and REPLACE types. So, ignore INSERT type.
 						if(!edit.getType().equals(Edit.Type.INSERT)){
 
 							int beginA = edit.getBeginA();
 							int endA = edit.getEndA();
 
+							// TODO compute actual line num in the original source file with comments
 							for(int lineIdx = beginA; lineIdx < endA; lineIdx++){
 								String line = arrPrevfileSource[lineIdx].trim();
 								if(line.length() <2) continue; // heuristic: ignore "}" or "{". only consider the line whose length >= 2
-								DeletedLineInCommits deletedLine = new DeletedLineInCommits(id,date,oldPath,newPath,lineIdx+1,line);
+								DeletedLineInCommits deletedLine = new DeletedLineInCommits(sha1,date,oldPath,newPath,lineIdx+1,line);
 								if(!deletedLines.containsKey(line)){
 									ArrayList<DeletedLineInCommits> lstDeletedLines = new ArrayList<DeletedLineInCommits>();
 									lstDeletedLines.add(deletedLine);
