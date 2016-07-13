@@ -19,13 +19,13 @@ public class NameChange implements Filter {
 	
 	final String name="Change a name";
 	BIChange biChange;
-	JavaASTParser biWholeCodeAST;
+	JavaASTParser preFixWholeCodeAST;
 	JavaASTParser fixedWholeCodeAST;
 	boolean isNoise=false;
 	
-	public NameChange(BIChange biChange, JavaASTParser biWholeCodeAST, JavaASTParser fixedWholeCodeAST) {
+	public NameChange(BIChange biChange, JavaASTParser preFixWholeCodeAST, JavaASTParser fixedWholeCodeAST) {
 		this.biChange = biChange;
-		this.biWholeCodeAST = biWholeCodeAST;
+		this.preFixWholeCodeAST = preFixWholeCodeAST;
 		this.fixedWholeCodeAST = fixedWholeCodeAST;
 		
 		isNoise = filterOut();
@@ -38,7 +38,7 @@ public class NameChange implements Filter {
 		if(!biChange.getIsAddedLine())
 			return false;
 		
-		String biSource = biWholeCodeAST.getStringCode();
+		String biSource = preFixWholeCodeAST.getStringCode();
 		int startPositionOfBILine = Utils.getStartPosition(biSource,biChange.getLineNumInPrevFixRev());
 		
 		if(startPositionOfBILine <0){
@@ -82,7 +82,7 @@ public class NameChange implements Filter {
 		int biLineNum = biChange.getLineNumInPrevFixRev();
 		int fixLineNum = biChange.getEdit().getBeginB()+1;
 		
-		ArrayList<SingleVariableDeclaration> lstBISinggleVariableDeclaration = biWholeCodeAST.getSingleVariableDeclarations();
+		ArrayList<SingleVariableDeclaration> lstBISinggleVariableDeclaration = preFixWholeCodeAST.getSingleVariableDeclarations();
 		ArrayList<SingleVariableDeclaration> lstFixSingleVariableDeclaration = fixedWholeCodeAST.getSingleVariableDeclarations();
 		
 		String originalName = "";
@@ -92,7 +92,7 @@ public class NameChange implements Filter {
 		
 		for(SingleVariableDeclaration varDecFragNode:lstBISinggleVariableDeclaration){
 			
-			if(biLineNum==biWholeCodeAST.getCompilationUnit().getLineNumber(varDecFragNode.getStartPosition())){
+			if(biLineNum==preFixWholeCodeAST.getCompilationUnit().getLineNumber(varDecFragNode.getStartPosition())){
 				biLineNodes.add(varDecFragNode.getModifiers());
 				biLineNodes.add(varDecFragNode.getType());	
 	
@@ -148,7 +148,7 @@ public class NameChange implements Filter {
 		int biLineNum = biChange.getLineNumInPrevFixRev();
 		int fixLineNum = biChange.getEdit().getBeginB()+1;
 		
-		ArrayList<MethodDeclaration> lstBIMethodDeclaration = biWholeCodeAST.getMethodDeclarations();
+		ArrayList<MethodDeclaration> lstBIMethodDeclaration = preFixWholeCodeAST.getMethodDeclarations();
 		ArrayList<MethodDeclaration> lstFixMethodDeclaration = fixedWholeCodeAST.getMethodDeclarations();
 		
 		String originalName = "";
@@ -157,8 +157,8 @@ public class NameChange implements Filter {
 		ArrayList<Object> biLineNodes = new ArrayList<Object>(), fixLineNodes = new ArrayList<Object>();
 		
 		for(MethodDeclaration methodDecNode:lstBIMethodDeclaration){
-			if(biLineNum>=biWholeCodeAST.getCompilationUnit().getLineNumber(methodDecNode.getStartPosition())
-					&& biLineNum<biWholeCodeAST.getCompilationUnit().getLineNumber(methodDecNode.getStartPosition()+methodDecNode.getLength())
+			if(biLineNum>=preFixWholeCodeAST.getCompilationUnit().getLineNumber(methodDecNode.getStartPosition())
+					&& biLineNum<preFixWholeCodeAST.getCompilationUnit().getLineNumber(methodDecNode.getStartPosition()+methodDecNode.getLength())
 					){
 				originalName = methodDecNode.getName().toString();
 				biLineNodes.add(methodDecNode.getModifiers());
