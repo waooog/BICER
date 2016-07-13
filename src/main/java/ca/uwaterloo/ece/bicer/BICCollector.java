@@ -307,6 +307,11 @@ public class BICCollector {
 		// deletedLines are order by commit date (DESC, i.e., recent commit first)
 		HashMap<String, ArrayList<DeletedLineInCommits>> deletedLines = new HashMap<String, ArrayList<DeletedLineInCommits>>();
 
+		DiffFormatter df = new DiffFormatter(DisabledOutputStream.INSTANCE);
+		df.setRepository(repo);
+		df.setDiffComparator(RawTextComparator.DEFAULT);
+		df.setDetectRenames(true);
+		
 		// Traverse all commits to collect deleted lines.
 		for(RevCommit rev:commits){
 			
@@ -316,10 +321,6 @@ public class BICCollector {
 			
 			// Get diffs from affected files in the commit
 			RevCommit preRev = rev.getParent(0);
-			DiffFormatter df = new DiffFormatter(DisabledOutputStream.INSTANCE);
-			df.setRepository(repo);
-			df.setDiffComparator(RawTextComparator.DEFAULT);
-			df.setDetectRenames(true);
 			List<DiffEntry> diffs;
 			try {
 				// Deal with diff and get only deleted lines
