@@ -2,6 +2,7 @@ package ca.uwaterloo.ece.bicer;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -47,6 +48,7 @@ public class BICCollector {
 	//private boolean verbose;
 	private Date startDate;
 	private Date endDate;
+	private Date labelEndDate;
 	private ArrayList<String> bugIDs;
 
 	private Git git;
@@ -313,11 +315,22 @@ public class BICCollector {
 		df.setDetectRenames(true);
 		
 		// Traverse all commits to collect deleted lines.
+		System.out.println("Number of commits: " + commits.size());
+		int i=0;
 		for(RevCommit rev:commits){
-			
+
 			// Get basic commit info
 			String sha1 =  rev.name() + "";
 			String date = Utils.getStringDateTimeFromCommitTime(rev.getCommitTime());
+			
+			try {
+				if((new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(date)).compareTo(endDate)>0)
+					continue;
+			} catch (ParseException e1) {
+				e1.printStackTrace();
+			}
+			
+			System.out.println(i++);
 			
 			// Get diffs from affected files in the commit
 			RevCommit preRev = rev.getParent(0);
@@ -346,6 +359,7 @@ public class BICCollector {
 
 							// Line num is not that important for deleted lines in BI commits
 							for(int lineIdx = beginA; lineIdx < endA; lineIdx++){
+								if(arrPrevfileSource.length<=lineIdx) continue; // split("\n") ignore last empty lines. So, lineIdx can be greater the array length. Ignore this case
 								String line = arrPrevfileSource[lineIdx].trim();
 								if(line.length() <2) continue; // heuristic: ignore "}" or "{". only consider the line whose length >= 2
 								DeletedLineInCommits deletedLine = new DeletedLineInCommits(sha1,date,oldPath,newPath,lineIdx+1,line);
@@ -363,9 +377,9 @@ public class BICCollector {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			df.close();
 		}
-
+		df.close();
+		
 		return deletedLines;
 	}
 
@@ -383,7 +397,7 @@ public class BICCollector {
 			for (RevCommit rev : logs) {
 				Date commitDate = new Date(rev.getCommitTime()* 1000L);
 
-				if(startDate.compareTo(commitDate)<=0 && commitDate.compareTo(endDate)<=0)
+				if(startDate.compareTo(commitDate)<=0 && commitDate.compareTo(labelEndDate)<=0)
 					commits.add(rev);
 			}             
 
@@ -419,11 +433,18 @@ public class BICCollector {
 				.argName("Start date")
 				.required()
 				.build());
-
+		
 		options.addOption(Option.builder("e").longOpt("enddate")
 				.desc("End date for collecting bug-introducing changes")
 				.hasArg()
 				.argName("End date")
+				.required()
+				.build());
+
+		options.addOption(Option.builder("l").longOpt("lenddate")
+				.desc("End date for collecting labels")
+				.hasArg()
+				.argName("Label End date")
 				.required()
 				.build());
 
@@ -455,6 +476,7 @@ public class BICCollector {
 
 			startDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(cmd.getOptionValue("s"));
 			endDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(cmd.getOptionValue("e"));
+			labelEndDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(cmd.getOptionValue("l"));
 
 		} catch (Exception e) {
 			printHelp(options);
