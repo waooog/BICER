@@ -16,6 +16,10 @@ public class DeletedLineInCommits {
 		this.lineNum = lineNum;
 		this.line = line;
 	}
+	
+	public String getSha1() {
+		return sha1;
+	}
 
 	public String getBIDate(){
 		return date;
@@ -23,5 +27,9 @@ public class DeletedLineInCommits {
 
 	public String getPath() {
 		return path;
+	}
+	
+	public int getLineNum() {
+		return lineNum;
 	}
 }

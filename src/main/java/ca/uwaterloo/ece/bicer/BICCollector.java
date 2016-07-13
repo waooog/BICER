@@ -149,13 +149,8 @@ public class BICCollector {
 
 								// get BI commit from lines in lstIdxOfOnlyInsteredLines
 								lstBIChanges.addAll(getBIChangesFromBILineIndices(id,rev.getCommitTime(), newPath, oldPath, origPrvFileSource,prevFileSource,lstIdxOfDeletedLines));
-								lstBIChanges.addAll(getBIChangesFromDeletedBILine(id,rev.getCommitTime(),mapDeletedLines,origFileSource,fileSource,lstIdxOfOnlyInsteredLines,oldPath));
+								lstBIChanges.addAll(getBIChangesFromDeletedBILine(id,rev.getCommitTime(),mapDeletedLines,origFileSource,fileSource,lstIdxOfOnlyInsteredLines,oldPath,newPath));
 							}
-
-
-							// get the previous commit and do blame for deleted lines in the previous commit
-
-							// 
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
@@ -163,23 +158,38 @@ public class BICCollector {
 					}
 				}
 			}
-			for(BIChange biChange:lstBIChanges)
-				System.out.println(biChange.toString());
+			System.out.println("BISha1\toldPath\tPath\tFixSha1\tBIDate\tFixDate\tLineNumInBI\tLineNumInPreFix\tisAddedLine\tLine");
+			for(BIChange biChange:lstBIChanges){
+				System.out.println(biChange.getBISha1() + "\t" +
+										biChange.getBIPath() + "\t" +
+										biChange.getPath() + "\t" +
+										biChange.getFixSha1() + "\t" +
+										biChange.getBIDate() + "\t" +
+										biChange.getFixDate() + "\t" +
+										biChange.getLineNum() + "\t" +
+										biChange.getLineNumInPrevFixRev() + "\t" +
+										biChange.getIsAddedLine() + "\t" +
+										biChange.getLine()
+									);
+			}
 		}
 	}
 
 	private ArrayList<BIChange> getBIChangesFromDeletedBILine(String fixSha1, int fixCommitTime,
 			HashMap<String, ArrayList<DeletedLineInCommits>> mapDeletedLines, String origFileSource, String fileSource,
-			ArrayList<Integer> lstIdxOfOnlyInsteredLines, String oldPath) {
+			ArrayList<Integer> lstIdxOfOnlyInsteredLines, String oldPath, String path) {
 		
 		ArrayList<BIChange> biChanges = new ArrayList<BIChange>();
 		
 		ArrayList<Integer> arrIndicesInOriginalFileSource = getOriginalLineIndices(origFileSource,fileSource,lstIdxOfOnlyInsteredLines);
 		
 		String[] arrOrigFileSource = origFileSource.split("\n");
-		for(int lineNum:arrIndicesInOriginalFileSource){
-			String key = arrOrigFileSource[lineNum].trim();
-			ArrayList<DeletedLineInCommits> lstDeletedLines = mapDeletedLines.get(key);
+		for(int lineIdx:arrIndicesInOriginalFileSource){
+			String line = arrOrigFileSource[lineIdx].trim();
+			ArrayList<DeletedLineInCommits> lstDeletedLines = mapDeletedLines.get(line);
+			
+			if(lstDeletedLines==null)
+				continue;
 			
 			DeletedLineInCommits deletedLineToConsider = null;
 			for(DeletedLineInCommits deletedLine:lstDeletedLines){
@@ -192,7 +202,16 @@ public class BICCollector {
 				return biChanges;
 			else{
 				// get BIChange from the deleted line
-				// TODO
+				String BISha1 = deletedLineToConsider.getSha1();
+				String biPath = deletedLineToConsider.getPath();
+				//String path;
+				String FixSha1 = fixSha1;
+				String BIDate = deletedLineToConsider.getBIDate();
+				String FixDate = Utils.getStringDateTimeFromCommitTime(fixCommitTime);
+				int lineNumInPrevFixRev = lineIdx+1; // this info is not important in case of a deleted line.
+				 
+				BIChange biChange = new BIChange(BISha1,biPath,FixSha1,path,BIDate,FixDate,lineIdx+1,lineNumInPrevFixRev,line,false);
+				biChanges.add(biChange);
 			}
 		}
 		
@@ -266,7 +285,7 @@ public class BICCollector {
 				int endB = prevEdit.getEndB();
 				int gap = idxOfDeletedLine - endB;
 				lineIndices.add(endA + gap);
-				if(!arrOrigPrvFileSource[endA + gap].trim().equals(arrPrevFileSource[idxOfDeletedLine].trim())){
+				if(!Utils.removeLineComments(arrOrigPrvFileSource[endA + gap].trim()).equals(arrPrevFileSource[idxOfDeletedLine].trim())){
 					System.err.println("Error: line contents are not same in original file source and the file source w/o comments.");
 					System.exit(0);
 				}
@@ -324,7 +343,7 @@ public class BICCollector {
 							int beginA = edit.getBeginA();
 							int endA = edit.getEndA();
 
-							// TODO compute actual line num in the original source file with comments
+							// Line num is not that important for deleted lines in BI commits
 							for(int lineIdx = beginA; lineIdx < endA; lineIdx++){
 								String line = arrPrevfileSource[lineIdx].trim();
 								if(line.length() <2) continue; // heuristic: ignore "}" or "{". only consider the line whose length >= 2
