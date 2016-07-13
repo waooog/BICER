@@ -214,7 +214,11 @@ public class NoiseFilterRunner {
 		// Filter 10: Remove def-use chain
 		Filter removeDefUseChain = factory.createFilter(Filters.REMOVE_DEF_USE_CHAIN, biChange, preFixWholeCodeAST, fixedWholeCodeAST);
 		filters.add(removeDefUseChain);
-
+		
+		//Filter 11: String value change
+		Filter stringValueChange = factory.createFilter(Filters.STRING_VALUE_CHANGE, biChange, preFixWholeCodeAST, fixedWholeCodeAST);
+		filters.add(stringValueChange);
+		
 		boolean isNoise = false;
 		for(Filter filter:filters){
 			if(filter.isNoise()){

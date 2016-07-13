@@ -32,7 +32,7 @@ public class StringValueChange  implements Filter{
 		if(!biChange.getIsAddedLine())
 			return false;
 
-		String stmt = biChange.getLine();
+		String stmt = biChange.getLine().trim();
 
 		// (1) Check the line is a declarative statement such as
 		// import
@@ -56,6 +56,22 @@ public class StringValueChange  implements Filter{
 
 		if (stmt.matches("^\\s*message\\s\\s*[a-zA-Z_$][a-zA-Z_$0-9.]*\\s*;.*"))
 			return true;
+		
+		if (stmt.matches("^\\s*log.info\\s\\s*[a-zA-Z_$][a-zA-Z_$0-9.]*\\s*;.*"))
+			return true;
+		
+		if (stmt.matches("^\\s*log.debug\\s\\s*[a-zA-Z_$][a-zA-Z_$0-9.]*\\s*;.*"))
+			return true;
+		
+		if (stmt.matches("^\\s*log.fatal\\s\\s*[a-zA-Z_$][a-zA-Z_$0-9.]*\\s*;.*"))
+			return true;
+		
+		if (stmt.matches("^\\s*log.warn\\s\\s*[a-zA-Z_$][a-zA-Z_$0-9.]*\\s*;.*"))
+			return true;
+		
+		if (stmt.matches("^\\s*log.error\\s\\s*[a-zA-Z_$][a-zA-Z_$0-9.]*\\s*;.*"))	
+			return true;
+		
 		return false;		
 	}
 	

@@ -16,6 +16,7 @@ public class FilterFactory {
 		GENERIC_CHANGE,
 		REBUILD_DEF_USE_CHAIN,
 		REMOVE_DEF_USE_CHAIN,
+		STRING_VALUE_CHANGE,
 	}
 	
 	public Filter createFilter(Filters filter,BIChange biChange, String[] wholeFixCode){
@@ -56,6 +57,9 @@ public class FilterFactory {
 		if (filter == Filters.REMOVE_DEF_USE_CHAIN)
 		return new RemoveDefUseChain(biChange,preFixWholeCodeAST,fixWholeCodeAST);
 		
+
+		if (filter == Filters.STRING_VALUE_CHANGE)
+			return new StringValueChange(biChange,preFixWholeCodeAST, fixWholeCodeAST);
 		return null;
 	}
 
