@@ -72,6 +72,9 @@ public class StringValueChange  implements Filter{
 		if (stmt.matches("^\\s*log.error\\s\\s*[a-zA-Z_$][a-zA-Z_$0-9.]*\\s*;.*"))	
 			return true;
 		
+		if (stmt.matches("^\\s*log.msg\\s\\s*[a-zA-Z_$][a-zA-Z_$0-9.]*\\s*;.*"))	
+			return true;
+			
 		return false;		
 	}
 	
